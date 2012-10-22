@@ -4,6 +4,7 @@ import uuid
 
 from jinja2 import Environment, PackageLoader
 from routr import GET, POST, route
+from routr.utils import inject_args
 from routr.exc import NoMatchFound
 from routrschema import qs
 from schemify import opt
@@ -30,12 +31,20 @@ def search(query=None):
 def template_view():
     return {'var': uuid.uuid4()}
 
+def show_request(request, path):
+    return {
+        'method': request.method,
+        'path': path,
+        'headers': dict(request.headers),
+    }
+
 routes = route(
     GET('/', hello, name='hello'),
     GET('/environ', environ, name='environ', renderer='json'),
     GET('/page/{pk:int}', page, name='page'),
     GET('/search', qs(query=opt(str)), search, name='search'),
     GET('/template', template_view, name='template', renderer='template.html'),
+    GET('/request/{path:path}', show_request, renderer='json'),
 )
 
 env = Environment(loader=PackageLoader('app', 'templates'))
@@ -49,6 +58,7 @@ def application(environ, start_response):
         trace = routes(request)
         view = trace.target
         args, kwargs = trace.args, trace.kwargs
+        args = inject_args(view, args, request=request)
         response = view(*args, **kwargs)
         if not isinstance(response, Response):
             response = process_renderer(trace, response)
