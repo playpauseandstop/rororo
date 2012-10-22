@@ -5,7 +5,6 @@ import uuid
 from jinja2 import Environment, PackageLoader
 from routr import GET, POST, route
 from routr.exc import NoMatchFound
-from routr.utils import import_string
 from routrschema import qs
 from schemify import opt
 from webob.exc import HTTPException
