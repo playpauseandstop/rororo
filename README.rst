@@ -2,7 +2,7 @@
 rororo
 ======
 
-Test project using `routr <http://pypi.python.org/pypi/routr>`_ library.
+Test project for `routr <http://pypi.python.org/pypi/routr>`_ library.
 
 Requirements
 ============
