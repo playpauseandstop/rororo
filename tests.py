@@ -3,44 +3,50 @@ import uuid
 from random import randint
 from unittest import TestCase
 
+from webob.request import Request
 from webtest import TestApp
 
-from app import application, environ, hello, page, routes, search, \
-    template_view
+from app import application, routes
+from views import environ, hello, page, search, show_request, template
 
 
 class TestRororo(TestCase):
 
     def test_environ(self):
-        response = environ()
-        self.assertTrue(response.json)
-        self.assertEqual(response.headers['Content-Type'], 'application/json')
+        result = environ()
+        self.assertIsInstance(result, dict)
 
     def test_hello(self):
-        response = hello()
-        self.assertTrue(response.body, 'Hello, world!')
+        self.assertEqual(hello(), 'Hello, world!')
 
     def test_page(self):
         pk = randint(1000, 9999)
-        response = page(pk)
-        self.assertTrue(response.body, 'Page #{}!'.format(pk))
+        self.assertEqual(page(pk), 'Page #{:d}'.format(pk))
 
     def test_search(self):
-        response = search()
-        self.assertTrue(response.body, 'Enter query to search')
+        self.assertTrue(search(), 'Enter query to search')
 
         query = str(uuid.uuid4())
-        response = search(query)
-        self.assertTrue(response.body, 'Searching {}...'.format(query))
+        self.assertTrue(search(query), 'Searching {}...'.format(query))
+
+    def test_show_request(self):
+        request = Request.blank('/request')
+        path = 'path.html'
+
+        data = show_request(request, path)
+        self.assertTrue(data)
+
+        self.assertIn('path', data)
+        self.assertEqual(data['path'], path)
+
+        self.assertIn('method', data)
+        self.assertEqual(data['method'], 'GET')
+
+        self.assertIn('headers', data)
 
     def test_template(self):
-        response = template_view()
-        self.assertIn('<h1>Hello, world!</h1>', response.body)
-        self.assertIn('<pre>This is random string', response.body)
-        self.assertIn(
-            '<a href="{}">'.format(routes.reverse('hello')),
-            response.body
-        )
+        data = template()
+        self.assertIn('var', data)
 
 
 class TestRororoWithWebtest(TestCase):
@@ -62,7 +68,7 @@ class TestRororoWithWebtest(TestCase):
     def test_page(self):
         pk = randint(1000, 9999)
         response = self.client.get(self.url('page', pk), status=200)
-        self.assertTrue(response.text, 'Page #{:d}!'.format(pk))
+        self.assertTrue(response.text, 'Page #{:d}'.format(pk))
 
     def test_search(self):
         response = self.client.get(self.url('search'), status=200)
@@ -71,6 +77,19 @@ class TestRororoWithWebtest(TestCase):
         query = str(uuid.uuid4())
         response = self.client.get(self.url('search', query=query), status=200)
         self.assertTrue(response.text, 'Searching {}...'.format(query))
+
+    def test_show_request(self):
+        path = 'path.html'
+        response = self.client.get(self.url('show_request', path), status=200)
+        self.assertTrue(response.json)
+
+        self.assertIn('path', response.json)
+        self.assertEqual(response.json['path'], path)
+
+        self.assertIn('method', response.json)
+        self.assertEqual(response.json['method'], 'GET')
+
+        self.assertIn('headers', response.json)
 
     def test_template(self):
         response = self.client.get(self.url('template'), status=200)
