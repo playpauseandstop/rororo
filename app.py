@@ -38,12 +38,12 @@ def template_view():
     return Response(template.render(var=uuid.uuid4()))
 
 
-routes = route('',
-    route(GET, '/', hello, name='hello'),
-    route(GET, '/environ', environ, name='environ'),
-    route(GET, '/page/{pk:int}', page, name='page'),
-    route(GET, '/search', qs(query=opt(str)), search, name='search'),
-    route(GET, '/template', template_view, name='template'),
+routes = route(
+    GET('/', hello, name='hello'),
+    GET('/environ', environ, name='environ'),
+    GET('/page/{pk:int}', page, name='page'),
+    GET('/search', qs(query=opt(str)), search, name='search'),
+    GET('/template', template_view, name='template'),
 )
 
 
