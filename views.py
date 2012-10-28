@@ -21,7 +21,7 @@ def page(pk):
 def search(query=None):
     if not query:
         return 'Enter query to search'
-    return 'Searching {}...'.format(query)
+    return 'Searching {0}...'.format(query)
 
 
 def show_request(request, path):

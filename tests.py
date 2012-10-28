@@ -25,13 +25,13 @@ class TestRororo(TestCase):
 
     def test_page(self):
         pk = randint(1000, 9999)
-        self.assertEqual(page(pk), 'Page #{:d}'.format(pk))
+        self.assertEqual(page(pk), 'Page #{0:d}'.format(pk))
 
     def test_search(self):
         self.assertTrue(search(), 'Enter query to search')
 
         query = str(uuid.uuid4())
-        self.assertTrue(search(query), 'Searching {}...'.format(query))
+        self.assertTrue(search(query), 'Searching {0}...'.format(query))
 
     def test_show_request(self):
         request = Request.blank('/request')
@@ -72,7 +72,7 @@ class TestRororoWithWebtest(TestCase):
     def test_page(self):
         pk = randint(1000, 9999)
         response = self.client.get(self.url('page', pk), status=200)
-        self.assertTrue(response.text, 'Page #{:d}'.format(pk))
+        self.assertTrue(response.text, 'Page #{0:d}'.format(pk))
 
     def test_search(self):
         response = self.client.get(self.url('search'), status=200)
@@ -80,7 +80,7 @@ class TestRororoWithWebtest(TestCase):
 
         query = str(uuid.uuid4())
         response = self.client.get(self.url('search', query=query), status=200)
-        self.assertTrue(response.text, 'Searching {}...'.format(query))
+        self.assertTrue(response.text, 'Searching {0}...'.format(query))
 
     def test_show_request(self):
         path = 'path.html'
@@ -100,6 +100,6 @@ class TestRororoWithWebtest(TestCase):
         self.assertIn('<h1>Hello, world!</h1>', response.text)
         self.assertIn('<pre>This is random string', response.text)
         self.assertIn(
-            '<p><a href="{}">'.format(self.url('hello')),
+            '<p><a href="{0}">'.format(self.url('hello')),
             response.text
         )
