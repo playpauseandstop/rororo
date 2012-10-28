@@ -9,6 +9,10 @@ from webtest import TestApp
 from app import application, routes
 from views import environ, hello, page, search, show_request, template
 
+# Add support of Python 2.6
+if not hasattr(TestCase, 'assertIn'):
+    from unittest2 import TestCase
+
 
 class TestRororo(TestCase):
 

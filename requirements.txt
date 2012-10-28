@@ -2,3 +2,4 @@ Jinja2==2.6
 WebTest==1.4.0
 routr==0.6
 routr-schema==0.1
+unittest2==0.5.1
