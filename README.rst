@@ -2,6 +2,8 @@
 rororo
 ======
 
+.. image:: https://secure.travis-ci.org/playpauseandstop/rororo.png
+
 Test project for `routr <http://pypi.python.org/pypi/routr>`_ library.
 
 Requirements
