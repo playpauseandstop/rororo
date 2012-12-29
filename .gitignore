@@ -1,3 +1,6 @@
+*.egg
 *.pyc
+*.pyo
 
 env/
+rororo.egg-info/

@@ -1,25 +1,11 @@
-.PHONY: clean distclean server
-
-ENV ?= env
-PROJECT = .
-PYTHON = $(ENV)/bin/python
-
-TEST_ARGS ?= -fv
-
-bootstrap:
-	bootstrapper -e $(ENV)
+.PHONY: clean distclean
 
 clean:
 	find . -name "*.pyc" -delete
+	-find . -name "*.egg*" -depth 1 -exec rm -rf {} \;
 
 distclean: clean
 	rm -rf $(ENV)/
 
-server:
-	$(ENV)/bin/python app.py
-
-shell:
-	$(ENV)/bin/ipython --pprint
-
 test: clean
-	$(ENV)/bin/python -m unittest discover $(TEST_ARGS) -s $(PROJECT)
+	python setup.py test
