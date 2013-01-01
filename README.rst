@@ -5,7 +5,8 @@ rororo
 .. image:: https://secure.travis-ci.org/playpauseandstop/rororo.png
 
 Functional nano web-framework built on top of `WebOb <http://webob.org/>`_,
-`routr <http://routr.readthedocs.com/>`_ and `Jinja <http://jinja.pocoo.org>`_.
+`routr <http://routr.readthedocs.com/>`_ and
+`Jinja2 <http://jinja.pocoo.org/>`_.
 
 Requirements
 ============
@@ -18,14 +19,10 @@ Requirements
 Installation
 ============
 
-As usual,
+Sometimes in future ``rororo`` will added to PyPI, but for now you can install
+it from master tarball, like::
 
-::
-
-    # pip install rororo
-
-Or if you want hard way, install it as you want and don't ask me why something
-does not work.
+    # pip install https://github.com/playpauseandstop/rororo/tarball/master#egg=rororo
 
 For what reason?
 ================
