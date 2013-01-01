@@ -9,6 +9,8 @@ renderers.
 """
 
 import copy
+import inspect
+import operator
 import os
 import traceback
 
@@ -26,33 +28,24 @@ from .exceptions import (
 
 
 DEFAULT_RENDERERS = (
-    (lambda renderer: renderer is None, lambda _, data: Response(data)),
-    ('json', lambda _, data: Response(json=data)),
+    (lambda renderer: renderer is None, lambda data: Response(data)),
+    ('json', lambda data: Response(json=data)),
     (
         lambda renderer: renderer.endswith(JINJA_HTML_TEMPLATES),
-        lambda renderer, data: jinja_renderer(renderer, data)
+        lambda settings, renderer, data: \
+            jinja_renderer(settings, renderer, data)
     )
 )
 DEFAULT_SETTINGS = (
     ('APP_DIR', None),
     ('DEBUG', False),
+    ('RENDERERS', ()),
     ('TEMPLATE_DIR', 'templates'),
 )
 JINJA_HTML_TEMPLATES = ('.htm', '.html', '.xhtml', '.xml')
-RENDERERS = []
-SETTINGS = {}
 
 
-def config(key, value=None):
-    """
-    Read/write setting to local storage.
-    """
-    if value is None:
-        return SETTINGS[key]
-    SETTINGS[key] = value
-
-
-def create_app(settings):
+def create_app(mixed=None, **kwargs):
     """
     Load settings from Python module and return valid WSGI application.
 
@@ -70,7 +63,7 @@ def create_app(settings):
         request = Request(environ)
 
         # Read routes from current config and initialize them
-        routes = get_routes()
+        routes = get_routes(settings)
 
         # Start routing
         try:
@@ -90,10 +83,11 @@ def create_app(settings):
             # Run view function
             response = view(*args, **kwargs)
 
-            # If response is not WebOb's instance - process it with available
-            # renderers
+            # If response is not WebOb's instance - process it with all
+            # available renderers
             if not isinstance(response, Response):
-                response = process_renderer(trace, response)
+                renderer = trace.annotation('renderer')
+                response = process_renderer(settings, renderer, response)
         # No route found in list of available ones
         except NoMatchFound as err:
             response = err.response
@@ -102,48 +96,75 @@ def create_app(settings):
             response = err
         # Wrap any other exception to "Server Error"
         except Exception as err:
-            message = traceback.format_exc() if config('DEBUG') else None
+            message = traceback.format_exc() if settings.DEBUG else None
             response = HTTPServerError(message)
 
         # And finally return response to WSGI server
         return response(environ, start_response)
 
-    # Populate settings with default ones
-    global SETTINGS
-    SETTINGS = dict(DEFAULT_SETTINGS)
+    # Load default setttings from predefined values
+    settings = type('Settings', (object, ), dict(DEFAULT_SETTINGS))()
 
-    # Make able to load settings from pathes, not previously imported modules
-    if isinstance(settings, basestring):
-        settings = import_string(settings)
+    # Make able to load settings from pathes, not only from previously imported
+    # modules
+    if mixed:
+        all_settings = import_string(mixed) \
+                       if isinstance(mixed, basestring) \
+                       else mixed
+    # But also have ability to load settings from keyword arguments to easify
+    # creating applications for testing
+    else:
+        all_settings = None
+        kwargs = dict(zip(
+            map(operator.methodcaller('upper'), kwargs.keys()),
+            kwargs.values()
+        ))
+        settings.__dict__.update(kwargs)
 
     # Only uppercased keys would be stored
-    for attr in dir(settings):
+    for attr in dir(all_settings):
         if attr.startswith('_') or not attr.isupper():
             continue
-        SETTINGS[attr] = getattr(settings, attr)
+        setattr(settings, attr, getattr(all_settings, attr))
 
-    # If no specified ``APP_DIR`` used - set it to dir, where settings module
-    # placed
-    if not SETTINGS['APP_DIR']:
-        SETTINGS['APP_DIR'] = \
-            os.path.abspath(os.path.dirname(settings.__file__))
+    # If ``APP_DIR`` not specified - set it to dir, where settings module
+    # placed or current work directory
+    if not settings.APP_DIR:
+        if hasattr(all_settings, '__file__'):
+            dirname = os.path.abspath(os.path.dirname(all_settings.__file__))
+        else:
+            dirname = os.getcwdu()
 
-    # And finally do some validation, check that routes properly configured
-    get_routes()
+        # Path should be an unicode
+        if not isinstance(dirname, unicode):
+            dirname = dirname.decode('utf-8')
+
+        settings.APP_DIR = dirname
+
+    # And finally do some validation, check that routes properly configured and
+    # if yes save them in application as well as settings
+    routes = get_routes(settings)
+
+    setattr(application, 'routes', routes)
+    setattr(application, 'settings', settings)
 
     # Return valid WSGI application
     return application
 
 
-def get_routes():
+def get_routes(settings):
     """
     Read routes from configuration and wrap it with ``routr.route`` function.
     """
     try:
-        routes = config('ROUTES')
-    except KeyError:
+        routes = settings.ROUTES
+    except AttributeError:
         raise ImproperlyConfigured('Please supply ROUTES setting. This '
                                    'setting is required.')
+
+    if not isinstance(routes, (list, tuple)):
+        raise ImproperlyConfigured('ROUTES should be a list or tuple.')
+
     return route(*routes)
 
 
@@ -156,30 +177,30 @@ def jinja_autoescape(filename):
     return filename.endswith(JINJA_HTML_TEMPLATES)
 
 
-def jinja_env():
+def jinja_env(settings):
     """
     Prepare Jinja environment.
     """
-    dirname = config('TEMPLATE_DIR')
+    dirname = settings.TEMPLATE_DIR
 
     if not os.path.isabs(dirname):
-        dirname = os.path.abspath(os.path.join(config('APP_DIR'), dirname))
+        dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
 
-    options = {'autfoescape': jinja_autoescape,
+    options = {'autoescape': jinja_autoescape,
                'loader': FileSystemLoader(dirname)}
     env = Environment(**options)
 
-    env.globals['config'] = config
-    env.globals['reverse'] = get_routes().reverse
+    env.globals['reverse'] = get_routes(settings).reverse
+    env.globals['settings'] = settings
 
     return env
 
 
-def jinja_renderer(filename, data):
+def jinja_renderer(settings, filename, data):
     """
     Render template from ``filename`` using Jinja template engine.
     """
-    template = jinja_env().get_template(filename)
+    template = jinja_env(settings).get_template(filename)
     return Response(template.render(**data))
 
 
@@ -192,32 +213,22 @@ def match_renderer(key, renderer):
            (not callable(key) and key == renderer)
 
 
-def process_renderer(trace, data):
+def process_renderer(settings, renderer, data):
     """
     Extract ``renderer`` metadata from trace and run all available renderers to
     convert data to valid response.
     """
-    renderer = trace.annotation('renderer')
-    renderers = tuple(DEFAULT_RENDERERS) + tuple(RENDERERS)
+    renderers = tuple(DEFAULT_RENDERERS) + tuple(settings.RENDERERS)
 
     for key, func in renderers:
         if match_renderer(key, renderer):
-           return func(renderer, data)
+            args_count = len(inspect.getargspec(func).args or ())
+
+            if args_count == 1:
+                return func(data)
+            elif args_count == 3:
+                return func(settings, renderer, data)
+            else:
+                raise ValueError('Renderer function has wrong args spec.')
 
     raise NoRendererFound(renderer)
-
-
-def renderer(key, func=None):
-    """
-    Read/write renderer to local storage.
-    """
-    if func is None:
-        renderers = tuple(DEFAULT_RENDERERS) + tuple(RENDERERS)
-
-        for added_key, added_func in renderers:
-            if match_renderer(added_key, key):
-                return added_func
-
-        raise NoRendererFound(func)
-    else:
-        RENDERERS.append((key, func))

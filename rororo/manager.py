@@ -25,10 +25,10 @@ def run(app, host=DEFAULT_HOST, port=DEFAULT_PORT):
     """
     Run simple WSGI server
     """
-    server = make_server(args.host, int(args.port), app)
+    server = make_server(host, int(port), app)
 
     try:
-        print('Starting server at http://{}:{}/'.format(args.host, args.port))
+        print('Starting server at http://{}:{}/'.format(host, port))
         server.serve_forever()
     except KeyboardInterrupt:
         print

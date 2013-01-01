@@ -9,7 +9,8 @@ Main Explorer application and custom validate management command.
 
 import os
 
-from rororo import create_app, run
+from rororo import create_app
+from rororo.manager import run
 
 import settings
 

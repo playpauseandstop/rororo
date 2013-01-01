@@ -35,7 +35,7 @@ class NoRendererFound(ValueError):
     Prettify message for "No renderer found" exception.
     """
     def __init__(self, renderer):
-        message = 'No renderer found: {!r}'.format(renderer)
+        message = 'Renderer {!r} does not exist.'.format(renderer)
         super(NoRendererFound, self).__init__(message)
 
 

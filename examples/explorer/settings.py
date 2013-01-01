@@ -11,7 +11,7 @@ ROOT_DIR = os.path.expanduser('~')
 SHOW_HIDDEN_ITEMS = True
 
 # List of available routes
-ROUTES = ('', (
+ROUTES = ('',
     GET('/{path:path}', 'views.explorer', name='explorer',
         renderer='explorer.html')
-))
+)

@@ -17,5 +17,5 @@ from schemify import ValidationError, anything, opt, validate
 from webob.request import Request
 from webob.response import Response
 
-from .app import config, create_app, renderer
+from .app import create_app
 from .manager import manage
