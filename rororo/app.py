@@ -39,6 +39,7 @@ DEFAULT_RENDERERS = (
 DEFAULT_SETTINGS = (
     ('APP_DIR', None),
     ('DEBUG', False),
+    ('JINJA_OPTIONS', {}),
     ('RENDERERS', ()),
     ('TEMPLATE_DIR', 'templates'),
 )
@@ -186,8 +187,10 @@ def jinja_env(settings):
     if not os.path.isabs(dirname):
         dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
 
-    options = {'autoescape': jinja_autoescape,
-               'loader': FileSystemLoader(dirname)}
+    options = settings.JINJA_OPTIONS
+    options.setdefault('autoescape', jinja_autoescape)
+    options.setdefault('loader', FileSystemLoader(dirname))
+
     env = Environment(**options)
 
     env.globals['reverse'] = get_routes(settings).reverse

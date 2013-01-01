@@ -29,6 +29,16 @@ ROUTES = ('',
 
 class TestRororo(TestCase):
 
+    def setUp(self):
+        if not os.path.isdir(TEMPLATE_DIR):
+            os.mkdir(TEMPLATE_DIR)
+
+        template = os.path.join(TEMPLATE_DIR, TEMPLATE_NAME)
+
+        if not os.path.isfile(template):
+            with open(template, 'w+') as handler:
+                handler.write(TEMPLATE)
+
     def test_create_app(self):
         app = create_app(__name__)
         self.assertTrue(callable(app), repr(app))
@@ -37,10 +47,12 @@ class TestRororo(TestCase):
         app = create_app(routes=ROUTES)
         self.assertEqual(app.settings.APP_DIR, os.getcwdu())
         self.assertFalse(app.settings.DEBUG)
+        self.assertEqual(app.settings.JINJA_OPTIONS, {})
         self.assertEqual(app.settings.RENDERERS, ())
         self.assertEqual(app.settings.TEMPLATE_DIR, 'templates')
 
     def test_create_app_improperly_configured(self):
+        self.assertRaises(ImproperlyConfigured, create_app)
         self.assertRaises(ImproperlyConfigured, create_app, exceptions)
         self.assertRaises(ImproperlyConfigured, create_app, routes={})
 
@@ -54,8 +66,21 @@ class TestRororo(TestCase):
         self.assertNotEqual(text_app.routes, json_app.routes)
         self.assertNotEqual(text_app.settings, json_app.settings)
 
-    def test_renderers(self):
-        pass
+    def test_routing_and_renderers(self):
+        app = TestApp(create_app(__name__))
+
+        response = app.get('/', status=200)
+        self.assertEqual(response.text, 'Hello, world!')
+
+        response = app.get('/json', status=200)
+        self.assertEqual(response.json, {'var': 'Hello, world!'})
+
+        response = app.get('/template', status=200)
+        self.assertEqual(response.text, '<p>Hello, world!</p>')
+
+        app.get('/does_not_exists.exe', status=404)
+        app.get('/server-error-1', status=500)
+        app.get('/server-error-2', status=500)
 
     def test_server_error(self):
         app = TestApp(create_app(__name__))
@@ -75,19 +100,6 @@ class TestRororo(TestCase):
         response = app.get('/server-error-1', status=500)
         self.assertIn('Traceback', response.text)
 
-    def test_routing(self):
-        app = TestApp(create_app(__name__))
-
-        response = app.get('/', status=200)
-        self.assertEqual(response.text, 'Hello, world!')
-
-        response = app.get('/json', status=200)
-        self.assertEqual(response.json, {'var': 'Hello, world!'})
-
-        app.get('/does_not_exists.exe', status=404)
-        app.get('/server-error-1', status=500)
-        app.get('/server-error-2', status=500)
-
 
 def index_view():
     return 'Hello, world!'
@@ -102,4 +114,4 @@ def server_error_view():
 
 
 def template_view():
-    return {'var': 'Hello world!'}
+    return {'var': 'Hello, world!'}
