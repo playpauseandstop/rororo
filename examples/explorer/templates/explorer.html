@@ -14,6 +14,10 @@
     File Explorer
   {% endif %}</h1>
 
+  {% if settings.DEBUG %}
+  <pre>Full path: {{ path }}</pre>
+  {% endif %}
+
   {% if type == "file" %}
   <pre>{{ content }}</pre>
   {% else %}

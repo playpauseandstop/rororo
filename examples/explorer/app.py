@@ -9,8 +9,7 @@ Main Explorer application and custom validate management command.
 
 import os
 
-from rororo import create_app
-from rororo.manager import run
+from rororo import create_app, manage
 
 import settings
 
@@ -34,5 +33,4 @@ app = create_app(settings)
 
 # Run rororo manager
 if __name__ == '__main__':
-    # manage(app, validate)
-    run(app)
+    manage(app, validate)

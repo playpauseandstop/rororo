@@ -1,3 +1,15 @@
+"""
+=====
+views
+=====
+
+Explorer view.
+
+If path is a directory - get list with all child directories and files, of path
+is a file - get file content, if path does not exist - show 404 error page.
+
+"""
+
 import operator
 import os
 
@@ -63,4 +75,4 @@ def explorer(path):
             content = handler.read()
         return {'content': content, 'path': path, 'type': 'file'}
     else:
-        raise HTTPNotFound(error.format(path))
+        raise HTTPNotFound(error.format(raw_path))
