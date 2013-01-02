@@ -24,6 +24,7 @@ setup(
         'routr==0.6.2',
         'routr-schema==0.1',
         'schemify==0.1',
+        'server-reloader>=0.1.2',
     ],
     test_suite='rororo.tests',
     platforms='any',

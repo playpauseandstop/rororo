@@ -1,6 +1,12 @@
 import json
 import os
+import sys
 import tempfile
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 from string import Template
 from unittest import TestCase
@@ -9,9 +15,8 @@ from jinja2.utils import escape
 from webob.response import Response
 from webtest import TestApp
 
-from rororo import GET, create_app, exceptions
+from rororo import GET, create_app, exceptions, manage
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
-from rororo.manager import manage
 
 
 DEBUG = True
@@ -69,6 +74,16 @@ class TestRororo(TestCase):
 
         with open(template, 'w+') as handler:
             handler.write(TEMPLATE)
+
+    def tearDown(self):
+        if hasattr(self, 'old_argv'):
+            sys.argv = self.old_argv
+
+        if hasattr(self, 'old_stdout'):
+            sys.stdout = self.old_stdout
+
+        if hasattr(self, 'old_stderr'):
+            sys.stderr = self.old_stderr
 
     def test_create_app(self):
         app = create_app(__name__)
@@ -135,6 +150,46 @@ class TestRororo(TestCase):
         response = app.get('/template', status=200)
         self.assertIn('DEBUG: True', response.text)
         self.assertNotIn('RENDERERS: ()', response.text)
+
+    def test_manage(self):
+        self.old_argv = sys.argv
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+
+        stdout, stderr = StringIO(), StringIO()
+        sys.argv = [sys.argv[0]]
+        sys.stdout, sys.stderr = stdout, stderr
+
+        # Run manager without arguments
+        app = create_app(__name__)
+
+        try:
+            manage(app)
+        except SystemExit as err:
+            self.assertEqual(err.code, 2)
+
+        # Run clean_pyc management command
+        sys.argv = [sys.argv[0], 'clean_pyc']
+
+        try:
+            manage(app)
+        except SystemExit as err:
+            self.assertEqual(err.code, 0)
+
+        # Run print_settings management command
+        sys.argv = [sys.argv[0], 'print_settings']
+
+        try:
+            manage(app)
+        except SystemExit as err:
+            self.assertEqual(err.code, 0)
+
+        # Run undefined management command
+        sys.argv = [sys.argv[0], 'does_not_exist']
+
+        try:
+            manage(app)
+        except SystemExit as err:
+            self.assertEqual(err.code, 2)
 
     def test_routing_and_renderers(self):
         app = TestApp(create_app(__name__))
