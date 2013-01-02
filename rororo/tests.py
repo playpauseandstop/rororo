@@ -1,29 +1,61 @@
+import json
 import os
 import tempfile
 
+from string import Template
 from unittest import TestCase
 
+from jinja2.utils import escape
+from webob.response import Response
 from webtest import TestApp
 
 from rororo import GET, create_app, exceptions
-from rororo.exceptions import ImproperlyConfigured
+from rororo.exceptions import ImproperlyConfigured, RouteReversalError
 from rororo.manager import manage
 
 
 DEBUG = True
-TEMPLATE = '<p>{{ var }}</p>'
+TEMPLATE = '<h1>{{ var }}</h1>'
 TEMPLATE_DIR = os.path.join(tempfile.gettempdir(), 'rororo')
 TEMPLATE_NAME = 'template.html'
+TEMPLATE_WITH_GLOBALS = """<h1>Hello, world!</h1>
 
+<h2>Links</h2>
+<ul>
+    <li><a href="{{ reverse("index") }}">Index view</a></li>
+    <li><a href="{{ reverse("lambda") }}">Lambda view</a></li>
+    <li><a href="{{ reverse("json") }}">JSON view</a></li>
+    <li><a href="{{ reverse("server_error") }}">Server Error view</a></li>
+</ul>
+
+<h2>Settings</h2>
+<ul>
+    <li>APP_DIR: {{ settings.APP_DIR }}</li>
+    <li>DEBUG: {{ settings.DEBUG }}</li>
+    <li>JINJA_OPTIONS: {{ settings.JINJA_OPTIONS }}</li>
+    <li>RENDERERS: {{ settings.RENDERERS }}</li>
+    <li>TEMPLATE_DIR: {{ settings.TEMPLATE_DIR }}</li>
+</ul>
+"""
+
+RENDERERS = (
+    ('custom_json', 'tests.custom_json_renderer'),
+    ('custom_template', 'tests.custom_template_renderer'),
+    ('wrong', Response),
+)
 ROUTES = ('',
     GET('/', 'tests.index_view', name='index'),
     GET('/json', 'tests.json_view', name='json', renderer='json'),
+    GET('/json/custom', 'tests.json_view', renderer='custom_json'),
+    GET('/lambda', lambda: 'Hello, world!', name='lambda', renderer='text'),
     GET('/server-error-1', 'tests.server_error_view', name='server_error'),
     GET('/server-error-2', 'tests.index_view', renderer='error'),
+    GET('/server-error-3', 'tests.index_view', renderer='wrong'),
     GET('/template',
         'tests.template_view',
         name='template',
         renderer=TEMPLATE_NAME),
+    GET('/template/custom', 'tests.template_view', renderer='custom_template'),
 )
 
 
@@ -33,11 +65,10 @@ class TestRororo(TestCase):
         if not os.path.isdir(TEMPLATE_DIR):
             os.mkdir(TEMPLATE_DIR)
 
-        template = os.path.join(TEMPLATE_DIR, TEMPLATE_NAME)
+        self.template = template = os.path.join(TEMPLATE_DIR, TEMPLATE_NAME)
 
-        if not os.path.isfile(template):
-            with open(template, 'w+') as handler:
-                handler.write(TEMPLATE)
+        with open(template, 'w+') as handler:
+            handler.write(TEMPLATE)
 
     def test_create_app(self):
         app = create_app(__name__)
@@ -66,21 +97,88 @@ class TestRororo(TestCase):
         self.assertNotEqual(text_app.routes, json_app.routes)
         self.assertNotEqual(text_app.settings, json_app.settings)
 
+    def test_create_app_reverse(self):
+        app = create_app(__name__)
+        self.assertEqual(app.routes.reverse('index'), '/')
+        self.assertEqual(app.routes.reverse('json'), '/json')
+        self.assertEqual(app.routes.reverse('server_error'), '/server-error-1')
+        self.assertEqual(app.routes.reverse('template'), '/template')
+        self.assertRaises(RouteReversalError,
+                          app.routes.reverse,
+                          'does_not_exist')
+
+    def test_jinja_renderer(self):
+        dirname = os.path.abspath(os.path.dirname(__file__))
+
+        with open(self.template, 'w+') as handler:
+            handler.write(TEMPLATE_WITH_GLOBALS)
+
+        app = TestApp(create_app(__name__))
+        response = app.get('/template', status=200)
+
+        self.assertIn('<a href="/">', response.text)
+        self.assertIn('<a href="/json">', response.text)
+        self.assertIn('<a href="/lambda">', response.text)
+        self.assertIn('<a href="/server-error-1">', response.text)
+
+        self.assertIn('APP_DIR: {}'.format(dirname), response.text)
+        self.assertIn('DEBUG: True', response.text)
+        self.assertIn('JINJA_OPTIONS: {}', response.text)
+        self.assertIn('RENDERERS: {}'.format(escape(RENDERERS)), response.text)
+        self.assertIn('TEMPLATE_DIR: {}'.format(TEMPLATE_DIR), response.text)
+
+        new_app = TestApp(create_app(routes=ROUTES, template_dir=TEMPLATE_DIR))
+        response = new_app.get('/template', status=200)
+        self.assertIn('DEBUG: False', response.text)
+        self.assertIn('RENDERERS: ()', response.text)
+
+        response = app.get('/template', status=200)
+        self.assertIn('DEBUG: True', response.text)
+        self.assertNotIn('RENDERERS: ()', response.text)
+
     def test_routing_and_renderers(self):
         app = TestApp(create_app(__name__))
 
         response = app.get('/', status=200)
+        self.assertEqual(
+            response.headers['Content-Type'], 'text/html; charset=UTF-8'
+        )
         self.assertEqual(response.text, 'Hello, world!')
 
         response = app.get('/json', status=200)
+        self.assertEqual(
+            response.headers['Content-Type'], 'application/json; charset=UTF-8'
+        )
         self.assertEqual(response.json, {'var': 'Hello, world!'})
 
-        response = app.get('/template', status=200)
-        self.assertEqual(response.text, '<p>Hello, world!</p>')
+        response = app.get('/json/custom', status=200)
+        self.assertEqual(
+            response.headers['Content-Type'], 'application/json; charset=UTF-8'
+        )
+        self.assertEqual(response.json, {'var': 'Hello, world!'})
 
-        app.get('/does_not_exists.exe', status=404)
+        response = app.get('/lambda', status=200)
+        self.assertEqual(
+            response.headers['Content-Type'], 'text/plain; charset=UTF-8'
+        )
+        self.assertEqual(response.text, 'Hello, world!')
+
+        response = app.get('/template', status=200)
+        self.assertEqual(
+            response.headers['Content-Type'], 'text/html; charset=UTF-8'
+        )
+        self.assertEqual(response.text, '<h1>Hello, world!</h1>')
+
+        response = app.get('/template/custom', status=200)
+        self.assertEqual(
+            response.headers['Content-Type'], 'text/html; charset=UTF-8'
+        )
+        self.assertEqual(response.text, '<h1>Hello, world!</h1>')
+
+        app.get('/does_not_exist.exe', status=404)
         app.get('/server-error-1', status=500)
         app.get('/server-error-2', status=500)
+        app.get('/server-error-3', status=500)
 
     def test_server_error(self):
         app = TestApp(create_app(__name__))
@@ -91,6 +189,9 @@ class TestRororo(TestCase):
         response = app.get('/server-error-2', status=500)
         self.assertIn("Renderer 'error' does not exist.", response.text)
 
+        response = app.get('/server-error-3', status=500)
+        self.assertIn('Renderer function has wrong args spec.', response.text)
+
     def test_server_error_debug(self):
         app = TestApp(create_app(debug=False, routes=ROUTES))
         response = app.get('/server-error-1', status=500)
@@ -99,6 +200,15 @@ class TestRororo(TestCase):
         app = TestApp(create_app(debug=True, routes=ROUTES))
         response = app.get('/server-error-1', status=500)
         self.assertIn('Traceback', response.text)
+
+
+def custom_json_renderer(data):
+    return Response(json.dumps(data, indent=4),
+                    content_type='application/json')
+
+
+def custom_template_renderer(settings, renderer, data):
+    return Response(Template('<h1>${var}</h1>').substitute(data))
 
 
 def index_view():

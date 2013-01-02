@@ -28,8 +28,9 @@ from .exceptions import (
 
 
 DEFAULT_RENDERERS = (
-    (lambda renderer: renderer is None, lambda data: Response(data)),
     ('json', lambda data: Response(json=data)),
+    ('text', lambda data: Response(data, content_type='text/plain')),
+    (lambda renderer: renderer is None, lambda data: Response(data)),
     (
         lambda renderer: renderer.endswith(JINJA_HTML_TEMPLATES),
         lambda settings, renderer, data: \
@@ -187,7 +188,7 @@ def jinja_env(settings):
     if not os.path.isabs(dirname):
         dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
 
-    options = settings.JINJA_OPTIONS
+    options = copy.deepcopy(settings.JINJA_OPTIONS)
     options.setdefault('autoescape', jinja_autoescape)
     options.setdefault('loader', FileSystemLoader(dirname))
 
@@ -223,9 +224,21 @@ def process_renderer(settings, renderer, data):
     """
     renderers = tuple(DEFAULT_RENDERERS) + tuple(settings.RENDERERS)
 
-    for key, func in renderers:
+    for key, mixed in renderers:
         if match_renderer(key, renderer):
+            is_class = False
+
+            if isinstance(mixed, basestring):
+                func = import_string(mixed)
+            elif inspect.isclass(mixed):
+                func = mixed.__init__
+                is_class = True
+            else:
+                func = mixed
+
             args_count = len(inspect.getargspec(func).args or ())
+            args_count = args_count - 1 if is_class else args_count
+            func = mixed if is_class else func
 
             if args_count == 1:
                 return func(data)
