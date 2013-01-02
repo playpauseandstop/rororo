@@ -1,7 +1,9 @@
 language: python
 python:
  - "2.7"
-install: "python setup.py install"
+install:
+ - "python setup.py install"
+ - "pip install --use-mirrors WebTest==1.4.3"
 script:
  - "python -m unittest discover rororo/"
  - "python -m unittest discover examples/"
