@@ -191,6 +191,19 @@ class TestRororo(TestCase):
         except SystemExit as err:
             self.assertEqual(err.code, 2)
 
+        # Run custom management command
+        sys.argv = [sys.argv[0], 'custom_command']
+
+        try:
+            manage(app)
+        except SystemExit as err:
+            self.assertEqual(err.code, 2)
+
+        try:
+            manage(app, custom_command)
+        except SystemExit as err:
+            self.assertEqual(err.code, 0)
+
     def test_routing_and_renderers(self):
         app = TestApp(create_app(__name__))
 
@@ -255,6 +268,10 @@ class TestRororo(TestCase):
         app = TestApp(create_app(debug=True, routes=ROUTES))
         response = app.get('/server-error-1', status=500)
         self.assertIn('Traceback', response.text)
+
+
+def custom_command(app):
+    print('Hello, world!')
 
 
 def custom_json_renderer(data):

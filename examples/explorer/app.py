@@ -15,14 +15,14 @@ import settings
 
 
 # Custom management command
-def validate():
+def validate(app):
     """
     Validate settings values.
     """
     if not os.path.isdir(settings.ROOT_DIR):
         print >> sys.stderr, 'Root directory not found at {!r}'.\
                              format(settings.ROOT_DIR)
-        return False
+        sys.exit(1)
 
     print('All OK!')
 

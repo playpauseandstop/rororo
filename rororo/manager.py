@@ -7,6 +7,7 @@ Support of custom management commands for rororo framework.
 
 """
 
+import copy
 import inspect
 import operator
 import subprocess
@@ -48,14 +49,19 @@ def manage(app, *commands):
     )
 
     # Find all available management commands and add they as parser sub-command
-    data = sorted(globals().iteritems(), key=operator.itemgetter(0))
+    data = copy.copy(globals().items())
     ignore = ('manage', )
+
+    for func in commands:
+        data.append((func.func_name, func))
+
+    data = sorted(data, key=operator.itemgetter(0))
 
     for key, value in data:
         # Only functions from current module would be available as sub-commands
         if key.startswith('_') or key in ignore or \
            not isinstance(value, types.FunctionType) or \
-           value.__module__ != __name__:
+           (value.__module__ != __name__ and not value in commands):
             continue
 
         # Add sub-command to main parser
