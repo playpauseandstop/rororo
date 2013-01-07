@@ -1,6 +1,6 @@
 import os
 
-from rororo import GET, static
+from rororo import GET
 
 
 # Debug settings
