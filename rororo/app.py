@@ -172,15 +172,18 @@ def get_routes(settings):
     if not isinstance(routes, (list, tuple)):
         raise ImproperlyConfigured('ROUTES should be a list or tuple.')
 
-    # Add static view to routes
-    dirname = settings.STATIC_DIR
-    routes = list(routes)
+    # Add static view to routes, but only in debug mode
+    if settings.DEBUG:
+        dirname = settings.STATIC_DIR
+        routes = list(routes)
 
-    if not os.path.isabs(dirname):
-        dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
+        if not os.path.isabs(dirname):
+            dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
 
-    index = 1 if isinstance(routes[0], basestring) else 0
-    routes.insert(index, static(settings.STATIC_URL, dirname, name='static'))
+        index = 1 if isinstance(routes[0], basestring) else 0
+        routes.insert(
+            index, static(settings.STATIC_URL, dirname, name='static')
+        )
 
     # And finally initialize routes with wrapping to ``route`` function
     return route(*routes)

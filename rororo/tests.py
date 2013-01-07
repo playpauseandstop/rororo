@@ -12,6 +12,7 @@ from string import Template
 from unittest import TestCase
 
 from jinja2.utils import escape
+from routr import route
 from webob.response import Response
 from webtest import TestApp
 
@@ -273,6 +274,14 @@ class TestRororo(TestCase):
         app = TestApp(create_app(__name__))
         response = app.get('/static/{}'.format(TEMPLATE_NAME), status=200)
         self.assertEqual(response.text, TEMPLATE)
+
+    def test_static_routes(self):
+        app = create_app(routes=ROUTES)
+        routes = route(*ROUTES)
+        self.assertEqual(len(routes.routes), len(app.routes.routes))
+
+        app = create_app(debug=True, routes=ROUTES)
+        self.assertNotEqual(len(routes.routes), len(app.routes.routes))
 
 
 def custom_command(app):
