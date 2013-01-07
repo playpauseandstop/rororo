@@ -1,6 +1,6 @@
 import os
 
-from rororo import GET
+from rororo import GET, static
 
 
 # Debug settings
@@ -13,5 +13,5 @@ SHOW_HIDDEN_ITEMS = True
 # List of available routes
 ROUTES = ('',
     GET('/{path:path}', 'views.explorer', name='explorer',
-        renderer='explorer.html')
+        renderer='explorer.html'),
 )

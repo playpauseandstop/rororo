@@ -15,7 +15,7 @@ import settings
 
 
 # Custom management command
-def validate(app):
+def validate(app, something):
     """
     Validate settings values.
     """
@@ -29,6 +29,7 @@ def validate(app):
 
 # Create rororo-compatible app
 app = create_app(settings)
+# app2 = create_app(routes=settings.ROUTES)
 
 
 # Run rororo manager
