@@ -20,8 +20,8 @@ from rororo.exceptions import ImproperlyConfigured, RouteReversalError
 
 
 DEBUG = True
+STATIC_DIR = TEMPLATE_DIR = os.path.join(tempfile.gettempdir(), 'rororo')
 TEMPLATE = '<h1>{{ var }}</h1>'
-TEMPLATE_DIR = os.path.join(tempfile.gettempdir(), 'rororo')
 TEMPLATE_NAME = 'template.html'
 TEMPLATE_WITH_GLOBALS = """<h1>Hello, world!</h1>
 
@@ -268,6 +268,11 @@ class TestRororo(TestCase):
         app = TestApp(create_app(debug=True, routes=ROUTES))
         response = app.get('/server-error-1', status=500)
         self.assertIn('Traceback', response.text)
+
+    def test_static(self):
+        app = TestApp(create_app(__name__))
+        response = app.get('/static/{}'.format(TEMPLATE_NAME), status=200)
+        self.assertEqual(response.text, TEMPLATE)
 
 
 def custom_command(app):

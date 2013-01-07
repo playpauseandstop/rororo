@@ -16,6 +16,7 @@ import traceback
 
 from jinja2 import Environment, FileSystemLoader
 from routr import route
+from routr.static import static
 from routr.utils import import_string, inject_args
 from webob.exc import no_escape
 from webob.request import Request
@@ -42,6 +43,8 @@ DEFAULT_SETTINGS = (
     ('DEBUG', False),
     ('JINJA_OPTIONS', {}),
     ('RENDERERS', ()),
+    ('STATIC_DIR', 'static'),
+    ('STATIC_URL', '/static'),
     ('TEMPLATE_DIR', 'templates'),
 )
 JINJA_HTML_TEMPLATES = ('.htm', '.html', '.xhtml', '.xml')
@@ -158,15 +161,28 @@ def get_routes(settings):
     """
     Read routes from configuration and wrap it with ``routr.route`` function.
     """
+    # Settings should contain ``ROUTES``
     try:
         routes = settings.ROUTES
     except AttributeError:
         raise ImproperlyConfigured('Please supply ROUTES setting. This '
                                    'setting is required.')
 
+    # Routes should be a list or a tuple
     if not isinstance(routes, (list, tuple)):
         raise ImproperlyConfigured('ROUTES should be a list or tuple.')
 
+    # Add static view to routes
+    dirname = settings.STATIC_DIR
+    routes = list(routes)
+
+    if not os.path.isabs(dirname):
+        dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
+
+    index = 1 if isinstance(routes[0], basestring) else 0
+    routes.insert(index, static(settings.STATIC_URL, dirname, name='static'))
+
+    # And finally initialize routes with wrapping to ``route`` function
     return route(*routes)
 
 
