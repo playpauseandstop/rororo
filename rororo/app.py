@@ -3,8 +3,108 @@
 rororo.app
 ==========
 
-Create WSGI application from settings module and register all available
-renderers.
+Create WSGI application and configure all necessary details.
+
+Create application
+==================
+
+The main idea of ``rororo`` is an ability to fast construct and use WSGI apps
+without Python OOP layer. And as ``rororo`` inspired from ``routr`` library
+the next idea is reuse its routing system and made them a core of framework.
+
+Routing
+-------
+
+You know, it maybe sounds very praised, but for me only necessary thing for
+WSGI app is proper routing layer for connect requested path info with necessary
+view function.
+
+And next big question, are we really everytime need to pass ``request``
+instance to our view functions? Sometime this is very big limitation and
+sometime this limitation walks our views away from all other buisness logic.
+
+Process renderers
+=================
+
+Custom renderers
+----------------
+
+Available settings
+==================
+
+APP_DIR
+-------
+
+Application directory. Needed if static or template directory has relative not
+absolute path, then rel path joined with app directory to result.
+
+By default: directory where settings module located or current working
+directory.
+
+DEBUG
+-----
+
+Debug mode. Main core feature of debug mode is support static files by adding
+static route to list of all application routes.
+
+By default: ``False``
+
+JINJA_FILTERS
+-------------
+
+Dictionary with filters to use in Jinja templates.
+
+By default: ``{}``
+
+JINJA_GLOBALS
+-------------
+
+Dictionary with globals which send to each Jinja template.
+
+By default: ``{}``
+
+JINJA_OPTIONS
+-------------
+
+Options to initialize Jinja2 environment.
+
+By default: ``{}``
+
+ROUTES
+------
+
+**Required**. All available routes for your app in list or tuple format. These
+routes would be wrapped with ``routr.route`` function.
+
+STATIC_DIR
+----------
+
+Directory where static files placed. Necessary only for debug mode and
+easyfying static files support. If value is relpath it would be joined with app
+directory.
+
+By default: ``'static'``
+
+STATIC_URL
+----------
+
+URL for static files route. Used only in debug mode.
+
+If you want to have static files handling by WebOb in any mode - just add::
+
+    static(STATIC_URL, STATIC_DIR, name='static')
+
+route to list of all ``ROUTES``.
+
+By default: ``'/static'``
+
+TEMPLATE_DIR
+------------
+
+Directory with Jinja templates. If value is relpath it would be joined with app
+directory.
+
+By default: ``'templates'``
 
 """
 
@@ -41,6 +141,8 @@ DEFAULT_RENDERERS = (
 DEFAULT_SETTINGS = (
     ('APP_DIR', None),
     ('DEBUG', False),
+    ('JINJA_FILTERS', {}),
+    ('JINJA_GLOBALS', {}),
     ('JINJA_OPTIONS', {}),
     ('RENDERERS', ()),
     ('STATIC_DIR', 'static'),
@@ -140,11 +242,11 @@ def create_app(mixed=None, **kwargs):
         else:
             dirname = os.getcwdu()
 
-        # Path should be an unicode
-        if not isinstance(dirname, unicode):
-            dirname = dirname.decode('utf-8')
-
         settings.APP_DIR = dirname
+
+    # Path should be an unicode
+    if not isinstance(settings.APP_DIR, unicode):
+        settings.APP_DIR = settings.APP_DIR.decode('utf-8')
 
     # And finally do some validation, check that routes properly configured and
     # if yes save them in application as well as settings
@@ -202,17 +304,27 @@ def jinja_env(settings):
     """
     Prepare Jinja environment.
     """
+    # Build path template directory
     dirname = settings.TEMPLATE_DIR
 
     if not os.path.isabs(dirname):
         dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
 
+    # Make Jinja environment
     options = copy.deepcopy(settings.JINJA_OPTIONS)
     options.setdefault('autoescape', jinja_autoescape)
     options.setdefault('loader', FileSystemLoader(dirname))
 
     env = Environment(**options)
 
+    # Populate all filters and globals from settings
+    for key, value in settings.JINJA_FILTERS.iteritems():
+        env.filters[key] = value
+
+    for key, value in settings.JINJA_GLOBALS.iteritems():
+        env.globals[key] = value
+
+    # Do not overwrite reverse and settings globals
     env.globals['reverse'] = get_routes(settings).reverse
     env.globals['settings'] = settings
 
