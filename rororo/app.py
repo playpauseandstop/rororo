@@ -252,6 +252,7 @@ def create_app(mixed=None, **kwargs):
     # if yes save them in application as well as settings
     routes = get_routes(settings)
 
+    setattr(application, 'reverse', routes.reverse)
     setattr(application, 'routes', routes)
     setattr(application, 'settings', settings)
 

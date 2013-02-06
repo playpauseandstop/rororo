@@ -110,11 +110,20 @@ class TestRororo(TestCase):
         routes = ('', GET('/', json_view, renderer='json'))
         json_app = create_app(routes=routes)
 
+        self.assertNotEqual(text_app.reverse, json_app.reverse)
         self.assertNotEqual(text_app.routes, json_app.routes)
         self.assertNotEqual(text_app.settings, json_app.settings)
 
     def test_create_app_reverse(self):
         app = create_app(__name__)
+
+        self.assertEqual(app.reverse('index'), '/')
+        self.assertEqual(app.reverse('index'), '/')
+        self.assertEqual(app.reverse('json'), '/json')
+        self.assertEqual(app.reverse('server_error'), '/server-error-1')
+        self.assertEqual(app.reverse('template'), '/template')
+        self.assertRaises(RouteReversalError, app.reverse, 'does_not_exist')
+
         self.assertEqual(app.routes.reverse('index'), '/')
         self.assertEqual(app.routes.reverse('json'), '/json')
         self.assertEqual(app.routes.reverse('server_error'), '/server-error-1')
