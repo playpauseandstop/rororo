@@ -21,6 +21,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+from routr.utils import import_string
 from wsgiref.simple_server import make_server
 
 import server_reloader
@@ -158,9 +159,15 @@ def run(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
 
     def run_server():
         """
-        Run simple WSGI server.
+        Run simple WSGI server with or without WDB web debugger.
         """
-        server = make_server(host, int(port), app)
+        wdb_app = None
+
+        if app.settings.USE_WDB:
+            wdb_klass = import_string('wdb:Wdb')
+            wdb_app = wdb_klass(app, **app.settings.WDB_KWARGS)
+
+        server = make_server(host, int(port), wdb_app or app)
 
         try:
             print('Starting server at http://{}:{}/'.format(host, port))

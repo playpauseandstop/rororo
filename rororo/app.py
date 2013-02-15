@@ -106,6 +106,22 @@ directory.
 
 By default: ``'templates'``
 
+USE_WDB
+-------
+
+Wrap WSGI application in `WDB web-debugger <https://github.com/Kozea/wdb>`_ or
+not.
+
+By default: ``False``
+
+WDB_KWARGS
+----------
+
+Keyword arguments passed to ``wdb.Wdb`` class init when wrapping original WSGI
+application.
+
+By default: ``{'start_disabled': False}``
+
 """
 
 import copy
@@ -148,6 +164,8 @@ DEFAULT_SETTINGS = (
     ('STATIC_DIR', 'static'),
     ('STATIC_URL', '/static'),
     ('TEMPLATE_DIR', 'templates'),
+    ('USE_WDB', False),
+    ('WDB_KWARGS', {'start_disabled': False}),
 )
 JINJA_HTML_TEMPLATES = ('.htm', '.html', '.xhtml', '.xml')
 
@@ -195,16 +213,22 @@ def create_app(mixed=None, **kwargs):
             if not isinstance(response, Response):
                 renderer = trace.annotation('renderer')
                 response = process_renderer(settings, renderer, response)
-        # No route found in list of available ones
-        except NoMatchFound as err:
-            response = err.response
-        # HTTP exception happened
-        except HTTPException as err:
-            response = err
-        # Wrap any other exception to "Server Error"
+        # Process exceptions
         except Exception as err:
-            message = traceback.format_exc() if settings.DEBUG else None
-            response = HTTPServerError(message)
+            # If WDB web debugger used - raise original exception
+            if settings.USE_WDB:
+                raise
+
+            # No route found in list of available ones
+            if isinstance(err, NoMatchFound):
+                response = err.response
+            # HTTP exception happened
+            elif isinstance(err, HTTPException):
+                response = err
+            # Wrap any other exception to "Server Error"
+            else:
+                message = traceback.format_exc() if settings.DEBUG else None
+                response = HTTPServerError(message)
 
         # And finally return response to WSGI server
         return response(environ, start_response)
