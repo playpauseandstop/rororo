@@ -120,7 +120,7 @@ WDB_KWARGS
 Keyword arguments passed to ``wdb.Wdb`` class init when wrapping original WSGI
 application.
 
-By default: ``{'start_disabled': False}``
+By default: ``{'start_disabled': True}``
 
 """
 
@@ -165,7 +165,7 @@ DEFAULT_SETTINGS = (
     ('STATIC_URL', '/static'),
     ('TEMPLATE_DIR', 'templates'),
     ('USE_WDB', False),
-    ('WDB_KWARGS', {'start_disabled': False}),
+    ('WDB_KWARGS', {'start_disabled': True}),
 )
 JINJA_HTML_TEMPLATES = ('.htm', '.html', '.xhtml', '.xml')
 
