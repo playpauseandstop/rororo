@@ -26,7 +26,6 @@ setup(
         'schemify==0.1',
         'server-reloader>=0.1.2',
     ],
-    test_suite='rororo.tests',
     platforms='any',
     classifiers=[
         'Development Status :: 3 - Alpha',

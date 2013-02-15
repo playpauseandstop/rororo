@@ -4,6 +4,7 @@ python:
 install:
  - "python setup.py install"
  - "pip install --use-mirrors WebTest==1.4.3"
+ - "pip install --use-mirrors wdb==0.9.3"
 script:
  - "python -m unittest discover rororo/"
- - "python -m unittest discover examples/"
+ - "python -m unittest discover examples/explorer/"
