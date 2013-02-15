@@ -5,6 +5,7 @@ from rororo import GET
 
 # Debug settings
 DEBUG = True
+USE_WDB = True
 
 # Explorer settings
 ROOT_DIR = os.path.expanduser('~')
