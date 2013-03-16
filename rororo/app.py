@@ -98,13 +98,14 @@ route to list of all ``ROUTES``.
 
 By default: ``'/static'``
 
-TEMPLATE_DIR
-------------
+TEMPLATE_DIRS
+-------------
 
-Directory with Jinja templates. If value is relpath it would be joined with app
-directory.
+Directories with Jinja templates.
 
-By default: ``'templates'``
+If value in list is relpath it would be joined with app directory.
+
+By default: ``('templates', )``
 
 USE_WDB
 -------
@@ -163,7 +164,7 @@ DEFAULT_SETTINGS = (
     ('RENDERERS', ()),
     ('STATIC_DIR', 'static'),
     ('STATIC_URL', '/static'),
-    ('TEMPLATE_DIR', 'templates'),
+    ('TEMPLATE_DIRS', ('templates', )),
     ('USE_WDB', False),
     ('WDB_KWARGS', {'start_disabled': True}),
 )

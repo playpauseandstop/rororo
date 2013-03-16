@@ -21,7 +21,8 @@ from rororo.exceptions import ImproperlyConfigured, RouteReversalError
 
 
 DEBUG = True
-STATIC_DIR = TEMPLATE_DIR = os.path.join(tempfile.gettempdir(), 'rororo')
+STATIC_DIR = os.path.join(tempfile.gettempdir(), 'rororo')
+TEMPLATE_DIRS = (STATIC_DIR, )
 TEMPLATE = '<h1>{{ var }}</h1>'
 TEMPLATE_NAME = 'template.html'
 TEMPLATE_WITH_GLOBALS = """<h1>Hello, world!</h1>
@@ -40,7 +41,7 @@ TEMPLATE_WITH_GLOBALS = """<h1>Hello, world!</h1>
     <li>DEBUG: {{ settings.DEBUG }}</li>
     <li>JINJA_OPTIONS: {{ settings.JINJA_OPTIONS }}</li>
     <li>RENDERERS: {{ settings.RENDERERS }}</li>
-    <li>TEMPLATE_DIR: {{ settings.TEMPLATE_DIR }}</li>
+    <li>TEMPLATE_DIRS: {{ settings.TEMPLATE_DIRS }}</li>
 </ul>
 """
 
@@ -68,10 +69,11 @@ ROUTES = ('',
 class TestRororo(TestCase):
 
     def setUp(self):
-        if not os.path.isdir(TEMPLATE_DIR):
-            os.mkdir(TEMPLATE_DIR)
+        if not os.path.isdir(STATIC_DIR):
+            os.mkdir(STATIC_DIR)
 
-        self.template = template = os.path.join(TEMPLATE_DIR, TEMPLATE_NAME)
+        self.template = template = os.path.join(TEMPLATE_DIRS[0],
+                                                TEMPLATE_NAME)
 
         with open(template, 'w+') as handler:
             handler.write(TEMPLATE)
@@ -96,7 +98,7 @@ class TestRororo(TestCase):
         self.assertFalse(app.settings.DEBUG)
         self.assertEqual(app.settings.JINJA_OPTIONS, {})
         self.assertEqual(app.settings.RENDERERS, ())
-        self.assertEqual(app.settings.TEMPLATE_DIR, 'templates')
+        self.assertEqual(app.settings.TEMPLATE_DIRS, ('templates', ))
 
     def test_create_app_improperly_configured(self):
         self.assertRaises(ImproperlyConfigured, create_app)
@@ -150,9 +152,11 @@ class TestRororo(TestCase):
         self.assertIn('DEBUG: True', response.text)
         self.assertIn('JINJA_OPTIONS: {}', response.text)
         self.assertIn('RENDERERS: {}'.format(escape(RENDERERS)), response.text)
-        self.assertIn('TEMPLATE_DIR: {}'.format(TEMPLATE_DIR), response.text)
+        self.assertIn('TEMPLATE_DIRS: {}'.format(escape(TEMPLATE_DIRS)),
+                      response.text)
 
-        new_app = TestApp(create_app(routes=ROUTES, template_dir=TEMPLATE_DIR))
+        new_app = TestApp(create_app(routes=ROUTES,
+                                     template_dirs=TEMPLATE_DIRS))
         response = new_app.get('/template', status=200)
         self.assertIn('DEBUG: False', response.text)
         self.assertIn('RENDERERS: ()', response.text)
