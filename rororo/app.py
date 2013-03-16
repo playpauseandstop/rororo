@@ -363,7 +363,7 @@ def jinja_renderer(settings, filename, data):
     Render template from ``filename`` using Jinja template engine.
     """
     template = jinja_env(settings).get_template(filename)
-    return Response(template.render(**data))
+    return Response(template.render(**(data or {})))
 
 
 def match_renderer(key, renderer):
