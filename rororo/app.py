@@ -330,15 +330,17 @@ def jinja_env(settings):
     Prepare Jinja environment.
     """
     # Build path template directory
-    dirname = settings.TEMPLATE_DIR
+    dirnames = list(settings.TEMPLATE_DIRS)
 
-    if not os.path.isabs(dirname):
-        dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
+    for i, dirname in enumerate(dirnames):
+        if not os.path.isabs(dirname):
+            dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
+        dirnames[i] = dirname
 
     # Make Jinja environment
     options = copy.deepcopy(settings.JINJA_OPTIONS)
     options.setdefault('autoescape', jinja_autoescape)
-    options.setdefault('loader', FileSystemLoader(dirname))
+    options.setdefault('loader', FileSystemLoader(dirnames))
 
     env = Environment(**options)
 
