@@ -330,7 +330,7 @@ def jinja_env(settings):
     Prepare Jinja environment.
     """
     # Build path template directory
-    dirnames = list(settings.TEMPLATE_DIRS)
+    dirnames = list(set(settings.TEMPLATE_DIRS).union({'templates'}))
 
     for i, dirname in enumerate(dirnames):
         if not os.path.isabs(dirname):
