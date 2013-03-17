@@ -39,6 +39,16 @@ class NoRendererFound(ValueError):
         super(NoRendererFound, self).__init__(message)
 
 
+class ValidationError(Exception):
+    """
+    Class for validation errors.
+
+    This is very basic class, no specific outputs or other things which
+    happened somewhere else. Just put an error message and then print it in
+    template for example.
+    """
+
+
 def inject(module):
     """
     Inject all exceptions from module to global namespace.
