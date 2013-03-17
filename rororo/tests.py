@@ -293,7 +293,7 @@ class TestRororo(TestCase):
     def test_static_routes(self):
         app = create_app(routes=ROUTES)
         routes = route(*ROUTES)
-        self.assertEqual(len(routes.routes), len(app.routes.routes))
+        self.assertNotEqual(len(routes.routes), len(app.routes.routes))
 
         app = create_app(debug=True, routes=ROUTES)
         self.assertNotEqual(len(routes.routes), len(app.routes.routes))
