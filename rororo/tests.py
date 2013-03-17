@@ -152,11 +152,13 @@ class TestRororo(TestCase):
         self.assertIn('DEBUG: True', response.text)
         self.assertIn('JINJA_OPTIONS: {}', response.text)
         self.assertIn('RENDERERS: {}'.format(escape(RENDERERS)), response.text)
-        self.assertIn('TEMPLATE_DIRS: {}'.format(escape(TEMPLATE_DIRS)),
-                      response.text)
+        self.assertIn(
+            'TEMPLATE_DIRS: {}'.format(escape(TEMPLATE_DIRS)), response.text
+        )
 
-        new_app = TestApp(create_app(routes=ROUTES,
-                                     template_dirs=TEMPLATE_DIRS))
+        new_app = TestApp(create_app(
+            routes=ROUTES, template_dirs=TEMPLATE_DIRS
+        ))
         response = new_app.get('/template', status=200)
         self.assertIn('DEBUG: False', response.text)
         self.assertIn('RENDERERS: ()', response.text)
