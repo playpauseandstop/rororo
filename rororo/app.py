@@ -70,6 +70,28 @@ Options to initialize Jinja2 environment.
 
 By default: ``{}``
 
+PACKAGES
+--------
+
+Sequence with all additional packages which would be installed to current app.
+
+Package is just a Python package compatible with rororo, same as reusable app
+is for Django project or Flask blueprint is for Flask app.
+
+Main reason of adding package to application is adding additional views,
+templates and static directories to application.
+
+.. important:: Right now it is concept and not a final solution.
+
+By default: ``()``
+
+RENDERERS
+---------
+
+Sequence with all custom renderers in format ``(test, func)``.
+
+By default: ``()``
+
 ROUTES
 ------
 
@@ -98,14 +120,13 @@ route to list of all ``ROUTES``.
 
 By default: ``'/static'``
 
-TEMPLATE_DIRS
--------------
+TEMPLATE_DIR
+------------
 
-Directories with Jinja templates.
+Directory with Jinja templates. If value is relpath it would be joined with app
+directory.
 
-If value in list is relpath it would be joined with app directory.
-
-By default: ``('templates', )``
+By default: ``'templates'``
 
 USE_WDB
 -------
@@ -132,8 +153,7 @@ import os
 import traceback
 
 from jinja2 import Environment, FileSystemLoader
-from routr import route
-from routr.static import static
+from routr import Endpoint, include, route
 from routr.utils import import_string, inject_args
 from webob.exc import no_escape
 from webob.request import Request
@@ -143,6 +163,8 @@ from .exceptions import (
     ImproperlyConfigured, HTTPException, HTTPServerError, NoMatchFound,
     NoRendererFound
 )
+from .static import static
+from .utils import absdir
 
 
 DEFAULT_RENDERERS = (
@@ -161,10 +183,11 @@ DEFAULT_SETTINGS = (
     ('JINJA_FILTERS', {}),
     ('JINJA_GLOBALS', {}),
     ('JINJA_OPTIONS', {}),
+    ('PACKAGES', ()),
     ('RENDERERS', ()),
     ('STATIC_DIR', 'static'),
     ('STATIC_URL', '/static'),
-    ('TEMPLATE_DIRS', ('templates', )),
+    ('TEMPLATE_DIR', 'templates'),
     ('USE_WDB', False),
     ('WDB_KWARGS', {'start_disabled': True}),
 )
@@ -273,10 +296,19 @@ def create_app(mixed=None, **kwargs):
     if not isinstance(settings.APP_DIR, unicode):
         settings.APP_DIR = settings.APP_DIR.decode('utf-8')
 
+    # Setup initial template and static directories sequences
+    settings._STATIC_DIRS = [absdir(settings.STATIC_DIR, settings.APP_DIR)]
+    settings._TEMPLATE_DIRS = [absdir(settings.TEMPLATE_DIR, settings.APP_DIR)]
+
+    # Now it's time to load all packages if any and modify settings a bit if
+    # necessary (settings.PACKAGES is not an empty sequence)
+    packages = register_packages(settings)
+
     # And finally do some validation, check that routes properly configured and
     # if yes save them in application as well as settings
     routes = get_routes(settings)
 
+    setattr(application, 'packages', packages)
     setattr(application, 'reverse', routes.reverse)
     setattr(application, 'routes', routes)
     setattr(application, 'settings', settings)
@@ -301,15 +333,10 @@ def get_routes(settings):
         raise ImproperlyConfigured('ROUTES should be a list or tuple.')
 
     # Add static view to routes
-    dirname = settings.STATIC_DIR
     routes = list(routes)
-
-    if not os.path.isabs(dirname):
-        dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
-
-    index = 1 if isinstance(routes[0], basestring) else 0
     routes.insert(
-        index, static(settings.STATIC_URL, dirname, name='static')
+        1 if isinstance(routes[0], basestring) else 0,
+        static(settings.STATIC_URL, settings._STATIC_DIRS, name='static')
     )
 
     # And finally initialize routes with wrapping to ``route`` function
@@ -329,19 +356,12 @@ def jinja_env(settings):
     """
     Prepare Jinja environment.
     """
-    # Build path template directory
-    dirnames = list(set(settings.TEMPLATE_DIRS).union({'templates'}))
-
-    for i, dirname in enumerate(dirnames):
-        if not os.path.isabs(dirname):
-            dirname = os.path.abspath(os.path.join(settings.APP_DIR, dirname))
-        dirnames[i] = dirname
-
-    # Make Jinja environment
+    # Prepare Jinja options
     options = copy.deepcopy(settings.JINJA_OPTIONS)
     options.setdefault('autoescape', jinja_autoescape)
-    options.setdefault('loader', FileSystemLoader(dirnames))
+    options.setdefault('loader', FileSystemLoader(settings._TEMPLATE_DIRS))
 
+    # And make Jinja environment
     env = Environment(**options)
 
     # Populate all filters and globals from settings
@@ -351,7 +371,7 @@ def jinja_env(settings):
     for key, value in settings.JINJA_GLOBALS.iteritems():
         env.globals[key] = value
 
-    # Do not overwrite reverse and settings globals
+    # Remove ability of overwriting reverse and settings globals
     env.globals['reverse'] = get_routes(settings).reverse
     env.globals['settings'] = settings
 
@@ -406,3 +426,81 @@ def process_renderer(settings, renderer, data):
                 raise ValueError('Renderer function has wrong args spec.')
 
     raise NoRendererFound(renderer)
+
+
+def register_packages(settings):
+    """
+    If ``settings.PACKAGES`` is not an empty list/tuple - extend routes,
+    template and static directories from package settings if any.
+    """
+    def append_settings(settings, package_settings, package_name, package_dir):
+        """
+        Append routes, template and static directories to global settings.
+        """
+        if not isinstance(settings.ROUTES, list):
+            settings.ROUTES = list(settings.ROUTES)
+
+        static_dir = getattr(package_settings,
+                             'STATIC_DIR',
+                             default_settings['STATIC_DIR'])
+
+        template_dir = getattr(package_settings,
+                               'TEMPLATE_DIR',
+                               default_settings['TEMPLATE_DIR'])
+
+        settings._STATIC_DIRS.append(absdir(static_dir, package_dir))
+        settings._TEMPLATE_DIRS.append(absdir(template_dir, package_dir))
+
+        if hasattr(package_settings, 'ROUTES'):
+            settings.ROUTES.extend(
+                safe_include(package_settings.ROUTES, package_name)
+            )
+
+    def safe_include(routes, package_name):
+        """
+        Safe include of routes from packages by wrapping them to route.
+        """
+        routes = list(routes)
+        base_pattern = routes.pop(0)
+
+        if isinstance(base_pattern, basestring):
+            base_pattern = base_pattern.rstrip('/')
+        else:
+            routes.insert(0, base_pattern)
+            base_pattern = None
+
+        for endpoint in routes:
+            if isinstance(endpoint, Endpoint) and endpoint.name:
+                endpoint.name = '{}:{}'.format(package_name, endpoint.name)
+
+                if base_pattern:
+                    endpoint.pattern.pattern = (
+                        '{}{}'.format(base_pattern, endpoint.pattern.pattern)
+                    )
+
+        return tuple(routes)
+
+    # Initial vars
+    default_settings = dict(DEFAULT_SETTINGS)
+    packages = []
+
+    # For each package, try to load it and load its settings
+    for package_name in settings.PACKAGES:
+        package = import_string(package_name)
+        package_dir = os.path.abspath(os.path.dirname(package.__file__))
+
+        # Package could be without settings too. This just means that we don't
+        # need to do any modifications with current settings
+        package_settings_module = '{}.settings'.format(package_name)
+
+        try:
+            package_settings = import_string(package_settings_module)
+        except ImportError:
+            pass
+        else:
+            args = (settings, package_settings, package_name, package_dir)
+            append_settings(*args)
+
+        packages.append(package_name)
+
+    return tuple(packages)
