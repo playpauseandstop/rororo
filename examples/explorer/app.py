@@ -29,7 +29,6 @@ def validate(app, something):
 
 # Create rororo-compatible app
 app = create_app(settings)
-# app2 = create_app(routes=settings.ROUTES)
 
 
 # Run rororo manager

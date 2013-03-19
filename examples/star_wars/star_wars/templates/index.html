@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Star Wars</title>
+  <meta charset="utf-8">
+  <link href="{{ reverse("static", "css/star_wars.css") }}" media="screen,projection,tv" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+  <h1>Star Wars</h1>
+  <hr>
+  <ul>
+    <li><a href="{{ reverse("a_new_hope:index") }}">Episode IV: A New Hope</a></li>
+    <li><a href="{{ reverse("the_empire_strikes_back:index") }}">Episode V: The Empire Strikes Back</a></li>
+    <li><a href="{{ reverse("return_of_the_jedi:index") }}">Episode VI: Return of the Jedi</a></li>
+    <li><a href="{{ reverse("the_phantom_menace:index") }}">Episdoe I: The Phantom Menace</a></li>
+    <li><a href="{{ reverse("attack_of_the_clones:index") }}">Episode II: Attack of the Clones</a></li>
+    <li><a href="{{ reverse("revenge_of_the_sith:index") }}">Episode III: Revenge of the Sith</a></li>
+  </ul>
+
+</body>
+</html>
