@@ -85,6 +85,14 @@ templates and static directories to application.
 
 By default: ``()``
 
+PEP8_OPTIONS
+------------
+
+Keyword arguments passed to ``pep8.StyleGuide`` class on initialization when
+checking PEP8 for current app and all its packages.
+
+By default: ``{'statistics': True}``
+
 RENDERERS
 ---------
 
@@ -136,8 +144,8 @@ not.
 
 By default: ``False``
 
-WDB_KWARGS
-----------
+WDB_OPTIONS
+-----------
 
 Keyword arguments passed to ``wdb.Wdb`` class init when wrapping original WSGI
 application.
@@ -164,7 +172,7 @@ from .exceptions import (
     NoRendererFound
 )
 from .static import static
-from .utils import absdir
+from .utils import absdir, force_unicode
 
 
 DEFAULT_RENDERERS = (
@@ -184,12 +192,14 @@ DEFAULT_SETTINGS = (
     ('JINJA_GLOBALS', {}),
     ('JINJA_OPTIONS', {}),
     ('PACKAGES', ()),
+    ('PEP8_OPTIONS', {'statistics': True}),
     ('RENDERERS', ()),
     ('STATIC_DIR', 'static'),
     ('STATIC_URL', '/static'),
     ('TEMPLATE_DIR', 'templates'),
+    ('USE_PEP8', False),
     ('USE_WDB', False),
-    ('WDB_KWARGS', {'start_disabled': True}),
+    ('WDB_OPTIONS', {'start_disabled': True}),
 )
 JINJA_HTML_TEMPLATES = ('.htm', '.html', '.xhtml', '.xml')
 
@@ -293,10 +303,10 @@ def create_app(mixed=None, **kwargs):
         settings.APP_DIR = dirname
 
     # Path should be an unicode
-    if not isinstance(settings.APP_DIR, unicode):
-        settings.APP_DIR = settings.APP_DIR.decode('utf-8')
+    settings.APP_DIR = force_unicode(settings.APP_DIR)
 
     # Setup initial template and static directories sequences
+    settings._PACKAGE_DIRS = []
     settings._STATIC_DIRS = [absdir(settings.STATIC_DIR, settings.APP_DIR)]
     settings._TEMPLATE_DIRS = [absdir(settings.TEMPLATE_DIR, settings.APP_DIR)]
 
@@ -498,7 +508,9 @@ def register_packages(settings):
     # For each package, try to load it and load its settings
     for package_name in settings.PACKAGES:
         package = import_string(package_name)
-        package_dir = os.path.abspath(os.path.dirname(package.__file__))
+        package_dir = force_unicode(
+            os.path.abspath(os.path.dirname(package.__file__))
+        )
 
         # Package could be without settings too. This just means that we don't
         # need to do any modifications with current settings
@@ -512,6 +524,7 @@ def register_packages(settings):
             args = (settings, package_settings, package_name, package_dir)
             append_settings(*args)
 
+        settings._PACKAGE_DIRS.append(package_dir)
         packages.append(package_name)
 
     return tuple(packages)

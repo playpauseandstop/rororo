@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import os
 import sys
@@ -18,6 +20,7 @@ from webtest import TestApp
 
 from rororo import GET, create_app, exceptions, manage
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
+from rororo.utils import absdir, force_unicode
 
 
 DEBUG = True
@@ -297,6 +300,17 @@ class TestRororo(TestCase):
 
         app = create_app(debug=True, routes=ROUTES)
         self.assertNotEqual(len(routes.routes), len(app.routes.routes))
+
+    def test_utils_absdir(self):
+        self.assertEqual(absdir('user', '/Users'), '/Users/user')
+        self.assertEqual(absdir('/Users/user', '/Users'), '/Users/user')
+
+    def test_utils_force_unicode(self):
+        self.assertEqual(force_unicode('hello'), u'hello')
+        self.assertEqual(force_unicode('привет'), u'привет')
+
+        self.assertEqual(force_unicode(u'hello'), u'hello')
+        self.assertEqual(force_unicode(u'привет'), u'привет')
 
 
 def custom_command(app):

@@ -17,3 +17,12 @@ def absdir(dirname, base):
     if os.path.isabs(dirname):
         return dirname
     return os.path.abspath(os.path.join(base, dirname))
+
+
+def force_unicode(value, encoding='utf-8', errors='ignore'):
+    """
+    Cast value to unicode representation.
+    """
+    if isinstance(value, unicode):
+        return value
+    return value.decode(encoding, errors)

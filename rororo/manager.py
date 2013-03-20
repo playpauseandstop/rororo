@@ -60,9 +60,11 @@ def manage(app, *commands):
 
     for key, value in data:
         # Only functions from current module would be available as sub-commands
-        if key.startswith('_') or key in ignore or \
-           not isinstance(value, types.FunctionType) or \
-           (value.__module__ != __name__ and not value in commands):
+        if (
+            key.startswith('_') or key in ignore or
+            not isinstance(value, types.FunctionType) or
+            (value.__module__ != __name__ and not value in commands)
+        ):
             continue
 
         # Add sub-command to main parser
@@ -78,7 +80,7 @@ def manage(app, *commands):
         defaults_start = len(args) - len(defaults)
 
         for i, arg in enumerate(args):
-            if arg == 'app':
+            if arg == 'app' or arg.startswith('_'):
                 continue
 
             kwargs = {}
@@ -136,6 +138,42 @@ def clean_pyc(app):
     subprocess.call(cmd, shell=True)
 
 
+def pep8(app, _return_report=True):
+    """
+    Run PEP8 for all Python files in app directory and all available package
+    directories.
+    """
+    # Nothing to do if PEP8 support disabled in settings
+    if not app.settings.USE_PEP8:
+        print('PEP8 checks disabled for current app. To enable define '
+              '"USE_PEP8 = True" if app settings.')
+        sys.exit(0)
+
+    # Import PEP8 style guide
+    guide_klass = import_string('pep8.StyleGuide')
+
+    # Configure PEP8 style guide
+    options = copy.deepcopy(app.settings.PEP8_OPTIONS)
+    options['paths'] = [app.settings.APP_DIR] + app.settings._PACKAGE_DIRS
+
+    # Initialize style guide and run files check
+    guide = guide_klass(**options)
+    report = guide.check_files()
+
+    # If necessary - print statistics
+    if _return_report:
+        return report
+
+    if guide.options.statistics:
+        report.print_statistics()
+
+    # If errors happened - show its number or just exit from function
+    if report.total_errors:
+        if guide.options.count:
+            print >> sys.stderr, report.total_errors
+        sys.exit(1)
+
+
 def print_settings(app):
     """
     Print application settings as key => value lines.
@@ -159,13 +197,27 @@ def run(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
 
     def run_server():
         """
-        Run simple WSGI server with or without WDB web debugger.
+        Run simple WSGI server.
+
+        Server should be with or without WDB web debugger and run PEP8
+        checkings before each run.
         """
+        if app.settings.USE_PEP8:
+            report = pep8(app, True)
+
+            if report.total_errors:
+                print >> sys.stderr, (
+                    '\nPEP8 check resulted {} error(s). Please, fix errors '
+                    'before run development server or disable PEP8 check ups '
+                    'in app settings.'.format(report.total_errors)
+                )
+                sys.exit(1)
+
         wdb_app = None
 
         if app.settings.USE_WDB:
             wdb_klass = import_string('wdb:Wdb')
-            wdb_app = wdb_klass(app, **app.settings.WDB_KWARGS)
+            wdb_app = wdb_klass(app, **app.settings.WDB_OPTIONS)
 
         server = make_server(host, int(port), wdb_app or app)
 
