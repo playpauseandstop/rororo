@@ -5,6 +5,7 @@ install:
  - "pip install --use-mirrors ."
  - "pip install --use-mirrors WebTest==1.4.3 pep8==1.4.5 wdb==0.9.3"
 script:
+ - "pep8 --statistics rororo/"
  - "python -m unittest discover rororo/"
  - "python -m unittest discover examples/explorer/"
  - "python -m unittest discover examples/star_wars/"
