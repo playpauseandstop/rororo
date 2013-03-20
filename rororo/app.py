@@ -431,7 +431,8 @@ def process_renderer(settings, renderer, data):
 def register_packages(settings):
     """
     If ``settings.PACKAGES`` is not an empty list/tuple - extend routes,
-    template and static directories from package settings if any.
+    template and static directories and jinja globals/filters from package
+    settings if any.
     """
     def append_settings(settings, package_settings, package_name, package_dir):
         """
@@ -450,6 +451,12 @@ def register_packages(settings):
 
         settings._STATIC_DIRS.append(absdir(static_dir, package_dir))
         settings._TEMPLATE_DIRS.append(absdir(template_dir, package_dir))
+
+        if hasattr(package_settings, 'JINJA_GLOBALS'):
+            settings.JINJA_GLOBALS.update(package_settings.JINJA_GLOBALS)
+
+        if hasattr(package_settings, 'JINJA_FILTERS'):
+            settings.JINJA_FILTERS.update(package_settings.JINJA_FILTERS)
 
         if hasattr(package_settings, 'ROUTES'):
             settings.ROUTES.extend(
