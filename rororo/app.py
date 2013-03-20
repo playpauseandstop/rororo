@@ -382,8 +382,12 @@ def jinja_renderer(settings, filename, data):
     """
     Render template from ``filename`` using Jinja template engine.
     """
+    if not isinstance(data, dict):
+        raise ValueError('Unable to render template without proper context. '
+                         'Passed context: {!r}'.format(data))
+
     template = jinja_env(settings).get_template(filename)
-    return Response(template.render(**(data or {})))
+    return Response(template.render(**data))
 
 
 def match_renderer(key, renderer):
