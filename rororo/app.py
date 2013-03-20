@@ -181,8 +181,9 @@ DEFAULT_RENDERERS = (
     (lambda renderer: renderer is None, lambda data: Response(data)),
     (
         lambda renderer: renderer.endswith(JINJA_HTML_TEMPLATES),
-        lambda settings, renderer, data: \
-            jinja_renderer(settings, renderer, data)
+        lambda settings, renderer, data: jinja_renderer(
+            settings, renderer, data
+        )
     )
 )
 DEFAULT_SETTINGS = (
@@ -231,9 +232,9 @@ def create_app(mixed=None, **kwargs):
             view = trace.target
 
             # If target is string - try to import function from its notation
-            view = import_string(view) \
-                   if isinstance(view, basestring) \
-                   else view
+            view = (import_string(view)
+                    if isinstance(view, basestring)
+                    else view)
 
             # Inject request into view args if necessary
             args, kwargs = trace.args, trace.kwargs
@@ -273,9 +274,9 @@ def create_app(mixed=None, **kwargs):
     # Make able to load settings from pathes, not only from previously imported
     # modules
     if mixed:
-        all_settings = import_string(mixed) \
-                       if isinstance(mixed, basestring) \
-                       else mixed
+        all_settings = (import_string(mixed)
+                        if isinstance(mixed, basestring)
+                        else mixed)
     # But also have ability to load settings from keyword arguments to easify
     # creating applications for testing
     else:

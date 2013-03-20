@@ -15,11 +15,7 @@ import sys
 import types
 
 from argparse import ArgumentParser
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 
 from routr.utils import import_string
 from wsgiref.simple_server import make_server
@@ -108,7 +104,7 @@ def manage(app, *commands):
 
     if no_args:
         old_stdout, old_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = StringIO(), StringIO()
+        sys.stdout, sys.stderr = BytesIO(), BytesIO()
 
     try:
         args = parser.parse_args(sys.argv[1:])
@@ -121,11 +117,11 @@ def manage(app, *commands):
         raise err
 
     # Run necessary function if everything ok
-    kwargs = dict([
-        (key.replace('-', '_').replace('no_', ''), value) \
-        for key, value in args._get_kwargs() \
+    kwargs = {
+        key.replace('-', '_').replace('no_', ''): value
+        for key, value in args._get_kwargs()
         if key != 'func'
-    ])
+    }
     return args.func(app, **kwargs)
 
 

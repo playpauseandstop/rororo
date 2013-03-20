@@ -5,11 +5,7 @@ import os
 import sys
 import tempfile
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-
+from io import BytesIO
 from string import Template
 from unittest import TestCase
 
@@ -52,7 +48,7 @@ RENDERERS = (
     ('custom_template', 'tests.custom_template_renderer'),
     ('wrong', Response),
 )
-ROUTES = ('',
+ROUTES = (
     GET('/', 'tests.index_view', name='index'),
     GET('/json', 'tests.json_view', name='json', renderer='json'),
     GET('/json/custom', 'tests.json_view', renderer='custom_json'),
@@ -174,7 +170,7 @@ class TestRororo(TestCase):
         self.old_argv = sys.argv
         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
 
-        stdout, stderr = StringIO(), StringIO()
+        stdout, stderr = BytesIO(), BytesIO()
         sys.argv = [sys.argv[0]]
         sys.stdout, sys.stderr = stdout, stderr
 
