@@ -12,6 +12,9 @@ PACKAGES = (
 )
 
 # Available routes
-ROUTES = ('',
+ROUTES = (
     GET('/', 'star_wars.views.index', name='index', renderer='index.html'),
 )
+
+# Enable PEP8 checks
+USE_PEP8 = True

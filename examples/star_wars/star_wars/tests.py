@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from rororo.manager import pep8
 from webtest import TestApp
 
 from .app import app
@@ -89,3 +90,7 @@ class TestStarWars(TestCase):
         self.assertIn(
             '<h2>Episode VI: Return of the Jedi</h2>', response.ubody
         )
+
+    def test_pep8(self):
+        report = pep8(app, True)
+        self.assertEqual(report.total_errors, 0)
