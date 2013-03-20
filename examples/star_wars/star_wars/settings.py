@@ -1,9 +1,6 @@
 from rororo import GET
 
 
-# Debug settings
-DEBUG = True
-
 # Available packages
 PACKAGES = (
     'a_new_hope',
