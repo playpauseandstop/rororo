@@ -1,4 +1,5 @@
 def index():
     """
-    Index view for Episode IV.
+    Episode IV: A New Hope
     """
+    return {}
