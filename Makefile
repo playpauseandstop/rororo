@@ -19,7 +19,7 @@ TEST_ARGS ?=
 bootstrap:
 	[ ! -d "$(ENV)/" ] && virtualenv --distribute $(ENV) || :
 	$(ENV)/bin/pip install --download-cache=$(ENV)/src/ --use-mirrors .
-	$(ENV)/bin/pip install --download-cache=$(ENV)/src/ --use-mirrors WebTest==1.4.3 coverage==3.6 wdb==0.9.3
+	$(ENV)/bin/pip install --download-cache=$(ENV)/src/ --use-mirrors WebTest==1.4.3 coverage==3.6 pep8==1.4.5 wdb==0.9.3
 
 clean:
 	find . -name "*.pyc" -delete
