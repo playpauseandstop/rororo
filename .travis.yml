@@ -2,9 +2,10 @@ language: python
 python:
  - "2.7"
 install:
- - "python setup.py install"
+ - "pip install --use-mirrors ."
  - "pip install --use-mirrors WebTest==1.4.3"
  - "pip install --use-mirrors wdb==0.9.3"
 script:
  - "python -m unittest discover rororo/"
  - "python -m unittest discover examples/explorer/"
+ - "python -m unittest discover examples/star_wars/"
