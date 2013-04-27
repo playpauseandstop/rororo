@@ -34,13 +34,13 @@ tool if you know what I mean. Prove?
 
     In [1]: from rororo import GET, create_app
 
-    In [2]: from rororo.manager import run
+    In [2]: from rororo.manager import runserver
 
     In [3]: view = lambda: 'Hello, world!'
 
-    In [4]: app = create_app(routes=('', GET('/', view)))
+    In [4]: app = create_app(routes=(GET('/', view), ))
 
-    In [5]: run(app)
+    In [5]: runserver(app, autoreload=False)
     Starting server at http://0.0.0.0:8000/
 
 More?

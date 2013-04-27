@@ -180,7 +180,7 @@ def print_settings(app):
         print('{} = {!r}'.format(attr, getattr(app.settings, attr)))
 
 
-def run(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
+def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
     """
     Run Python's standard simple WSGI server with ability to autoreload on file
     changes.
