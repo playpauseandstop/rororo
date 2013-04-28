@@ -1,8 +1,8 @@
 *.egg
+*.egg-info
 *.pyc
 *.pyo
 
 .coverage
 
-env/
-rororo.egg-info/
+env*/
