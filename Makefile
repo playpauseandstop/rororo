@@ -8,12 +8,10 @@ VENV = $(shell echo $(VIRTUAL_ENV))
 ifneq ($(VENV),)
 	COVERAGE = coverage
 	PEP8 = pep8
-	PIP = pip
 	PYTHON = python -W ignore::UserWarning
 else
 	COVERAGE = $(ENV)/bin/coverage
 	PEP8 = $(ENV)/bin/pep8
-	PIP = $(ENV)/bin/pip
 	PYTHON = $(ENV)/bin/python -W ignore::UserWarning
 endif
 

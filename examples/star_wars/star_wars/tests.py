@@ -1,4 +1,7 @@
-from unittest import TestCase
+try:
+    from unittest2 import TestCase
+except ImportError:
+    from unittest import TestCase
 
 from rororo.manager import pep8
 from webtest import TestApp
