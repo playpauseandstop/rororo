@@ -8,27 +8,37 @@ VENV = $(shell echo $(VIRTUAL_ENV))
 ifneq ($(VENV),)
 	COVERAGE = coverage
 	PEP8 = pep8
+	PIP = pip
 	PYTHON = python -W ignore::UserWarning
 else
 	COVERAGE = $(ENV)/bin/coverage
 	PEP8 = $(ENV)/bin/pep8
+	PIP = $(ENV)/bin/pip
 	PYTHON = $(ENV)/bin/python -W ignore::UserWarning
+endif
+
+ifeq ($(ENV),env3)
+	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 pep8==1.4.5
+	VIRTUALENV = python3 -m virtualenv --distribute
+else
+	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 pep8==1.4.5 wdb==0.9.3
+	VIRTUALENV = python -m virtualenv --distribute
 endif
 
 COVERAGE_DIR ?= /tmp/$(PROJECT)-coverage
 TEST_ARGS ?=
 
 bootstrap:
-	[ ! -d "$(ENV)/" ] && virtualenv --distribute $(ENV) || :
-	$(ENV)/bin/pip install --download-cache=$(ENV)/src/ --use-mirrors .
-	$(ENV)/bin/pip install --download-cache=$(ENV)/src/ --use-mirrors WebTest==1.4.3 coverage==3.6 pep8==1.4.5 wdb==0.9.3
+	[ ! -d "$(ENV)/" ] && $(VIRTUALENV) $(ENV) || :
+	source $(ENV)/bin/activate && python setup.py install
+	source $(ENV)/bin/activate && pip install --download-cache=~/.pip/src/ --use-mirrors $(TEST_REQUIREMENTS)
 
 clean:
 	find . -name "*.pyc" -delete
 	-find . -name "*.egg*" -depth 1 -exec rm -rf {} \;
 
 distclean: clean
-	-rm -rf build/ dist/ $(ENV)/
+	-rm -rf build/ dist/ $(ENV)*/
 
 explorer:
 	$(PYTHON) examples/explorer/app.py $(COMMAND)
