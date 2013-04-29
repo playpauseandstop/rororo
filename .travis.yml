@@ -7,7 +7,7 @@ python:
  - "pypy"
 install:
  - "python setup.py install"
- - "pip install --use-mirrors WebTest>=1.4.3 pep8==1.4.5 unittest2==0.5.1 wdb==0.9.3"
+ - "pip install --use-mirrors 'WebTest>=1.4.3' pep8==1.4.5 unittest2==0.5.1 wdb==0.9.3"
 script:
  - "pep8 --statistics rororo/"
  - "unit2 discover -s rororo/"
