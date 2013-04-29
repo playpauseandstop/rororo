@@ -9,6 +9,8 @@ Common utilities to use in ``rororo`` and other projects.
 
 import os
 
+import six
+
 
 def absdir(dirname, base):
     """
@@ -23,6 +25,6 @@ def force_unicode(value, encoding='utf-8', errors='ignore'):
     """
     Cast value to unicode representation.
     """
-    if isinstance(value, unicode):
+    if isinstance(value, six.text_type):
         return value
     return value.decode(encoding, errors)

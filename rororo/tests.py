@@ -5,9 +5,10 @@ import os
 import sys
 import tempfile
 
-from io import BytesIO
 from string import Template
 from unittest import TestCase
+
+import six
 
 from jinja2.utils import escape
 from routr import route
@@ -91,7 +92,8 @@ class TestRororo(TestCase):
 
     def test_create_app_default_settings(self):
         app = create_app(routes=ROUTES)
-        self.assertEqual(app.settings.APP_DIR, os.getcwdu())
+        self.assertEqual(app.settings.APP_DIR,
+                         os.getcwdu() if not six.PY3 else os.getcwd())
         self.assertFalse(app.settings.DEBUG)
         self.assertEqual(app.settings.JINJA_GLOBALS, {})
         self.assertEqual(app.settings.JINJA_FILTERS, {})
@@ -170,7 +172,7 @@ class TestRororo(TestCase):
         self.old_argv = sys.argv
         self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
 
-        stdout, stderr = BytesIO(), BytesIO()
+        stdout, stderr = six.StringIO(), six.StringIO()
         sys.argv = [sys.argv[0]]
         sys.stdout, sys.stderr = stdout, stderr
 

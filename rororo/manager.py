@@ -9,18 +9,19 @@ Support of custom management commands for rororo framework.
 
 import copy
 import inspect
+import io
 import operator
 import subprocess
 import sys
 import types
 
 from argparse import ArgumentParser
-from io import BytesIO
-
-from routr.utils import import_string
 from wsgiref.simple_server import make_server
 
 import server_reloader
+import six
+
+from routr.utils import import_string
 
 
 DEFAULT_HOST = '0.0.0.0'
@@ -46,11 +47,11 @@ def manage(app, *commands):
     )
 
     # Find all available management commands and add they as parser sub-command
-    data = copy.copy(globals().items())
+    data = list(copy.copy(globals()).items())
     ignore = ('manage', )
 
     for func in commands:
-        data.append((func.func_name, func))
+        data.append((func.func_name if not six.PY3 else func.__name__, func))
 
     data = sorted(data, key=operator.itemgetter(0))
 
@@ -102,26 +103,30 @@ def manage(app, *commands):
     # Parse arguments from command line
     no_args = len(sys.argv) == 1
 
-    if no_args:
+    if not six.PY3 and no_args:
         old_stdout, old_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = BytesIO(), BytesIO()
+        sys.stdout, sys.stderr = six.StringIO(), six.StringIO()
 
     try:
         args = parser.parse_args(sys.argv[1:])
     except SystemExit as err:
         if err.code:
-            if no_args:
+            if not six.PY3 and no_args:
                 sys.stdout, sys.stderr = old_stdout, old_stderr
                 parser.print_help()
             sys.exit(err.code)
         raise err
+    else:
+        if six.PY3 and no_args:
+            parser.print_help()
+            sys.exit(2)
 
     # Run necessary function if everything ok
-    kwargs = {
-        key.replace('-', '_').replace('no_', ''): value
+    kwargs = dict([
+        (key.replace('-', '_').replace('no_', ''), value)
         for key, value in args._get_kwargs()
         if key != 'func'
-    }
+    ])
     return args.func(app, **kwargs)
 
 

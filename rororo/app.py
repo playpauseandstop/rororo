@@ -160,6 +160,8 @@ import operator
 import os
 import traceback
 
+import six
+
 from jinja2 import Environment, FileSystemLoader
 from routr import Endpoint, include, route
 from routr.utils import import_string, inject_args
@@ -233,7 +235,7 @@ def create_app(mixed=None, **kwargs):
 
             # If target is string - try to import function from its notation
             view = (import_string(view)
-                    if isinstance(view, basestring)
+                    if isinstance(view, six.string_types)
                     else view)
 
             # Inject request into view args if necessary
@@ -275,7 +277,7 @@ def create_app(mixed=None, **kwargs):
     # modules
     if mixed:
         all_settings = (import_string(mixed)
-                        if isinstance(mixed, basestring)
+                        if isinstance(mixed, six.string_types)
                         else mixed)
     # But also have ability to load settings from keyword arguments to easify
     # creating applications for testing
@@ -299,7 +301,7 @@ def create_app(mixed=None, **kwargs):
         if hasattr(all_settings, '__file__'):
             dirname = os.path.abspath(os.path.dirname(all_settings.__file__))
         else:
-            dirname = os.getcwdu()
+            dirname = os.getcwdu() if not six.PY3 else os.getcwd()
 
         settings.APP_DIR = dirname
 
@@ -346,7 +348,7 @@ def get_routes(settings):
     # Add static view to routes
     routes = list(routes)
     routes.insert(
-        1 if isinstance(routes[0], basestring) else 0,
+        1 if isinstance(routes[0], six.string_types) else 0,
         static(settings.STATIC_URL, settings._STATIC_DIRS, name='static')
     )
 
@@ -376,10 +378,10 @@ def jinja_env(settings):
     env = Environment(**options)
 
     # Populate all filters and globals from settings
-    for key, value in settings.JINJA_FILTERS.iteritems():
+    for key, value in six.iteritems(settings.JINJA_FILTERS):
         env.filters[key] = value
 
-    for key, value in settings.JINJA_GLOBALS.iteritems():
+    for key, value in six.iteritems(settings.JINJA_GLOBALS):
         env.globals[key] = value
 
     # Remove ability of overwriting reverse and settings globals
@@ -421,7 +423,7 @@ def process_renderer(settings, renderer, data):
         if match_renderer(key, renderer):
             is_class = False
 
-            if isinstance(mixed, basestring):
+            if isinstance(mixed, six.string_types):
                 func = import_string(mixed)
             elif inspect.isclass(mixed):
                 func = mixed.__init__
@@ -485,7 +487,7 @@ def register_packages(settings):
         routes = list(routes)
         base_pattern = routes.pop(0)
 
-        if isinstance(base_pattern, basestring):
+        if isinstance(base_pattern, six.string_types):
             base_pattern = base_pattern.rstrip('/')
         else:
             routes.insert(0, base_pattern)
