@@ -13,9 +13,13 @@ is a file - get file content, if path does not exist - show 404 error page.
 import operator
 import os
 
-from urllib2 import quote
+try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib2 import quote
 
 from rororo.exceptions import HTTPNotFound
+from rororo.utils import force_unicode
 
 import settings
 
@@ -29,13 +33,13 @@ def explorer(path):
     if ``path`` not exists - raise ``HTTPNotFound`` exception.
     """
     error = u'Does not exist: {}'
-    raw_path = path.decode('utf-8') if isinstance(path, str) else path
+    raw_path = force_unicode(path)
 
     if path.startswith('..') or path.startswith(os.sep):
         raise HTTPNotFound(error.format(path))
 
     path = os.path.join(settings.ROOT_DIR, os.sep.join(path.split('/')))
-    path = path.decode('utf-8') if isinstance(path, str) else path
+    path = force_unicode(path)
 
     if os.path.isdir(path):
         children = []
@@ -66,8 +70,8 @@ def explorer(path):
         }
 
         if raw_path:
-            parts = raw_path.split(u'/')
-            context.update(parent=quote(u'/'.join(parts[:-1])))
+            parts = raw_path.split('/')
+            context.update(parent=quote('/'.join(parts[:-1])))
 
         return context
     elif os.path.isfile(path):

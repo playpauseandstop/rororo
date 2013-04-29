@@ -1,11 +1,13 @@
 import os
 
+import six
+
 from rororo import GET
 
 
 # Debug settings
 DEBUG = True
-USE_WDB = True
+USE_WDB = not six.PY3
 
 # Explorer settings
 ROOT_DIR = os.path.expanduser('~')

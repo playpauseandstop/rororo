@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+import six
+
 from rororo.exceptions import HTTPNotFound
 from webtest import TestApp
 
@@ -23,11 +25,16 @@ class TestWebTest(TestCase):
         self.client = TestApp(app)
 
     def test_does_not_exist(self):
-        self.assertRaises(HTTPNotFound, self.client.get, '/does_not_exist.exe')
+        if six.PY3:
+            self.client.get('/does_not_exist.exe', status=404)
+        else:
+            self.assertRaises(HTTPNotFound,
+                              self.client.get,
+                              '/does_not_exist.exe')
 
     def test_index(self):
         response = self.client.get('/', status=200)
-        self.assertIn('<title>File Explorer</title>', response.body)
+        self.assertIn('<title>File Explorer</title>', response.ubody)
 
 
 class TestWebTestWithoutWdb(TestCase):
