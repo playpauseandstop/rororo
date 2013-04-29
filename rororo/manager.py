@@ -90,12 +90,12 @@ def manage(app, *commands):
                         'store_true' if not default else 'store_false'
 
                     if default:
-                        arg = 'no-{}'.format(arg)
+                        arg = 'no-{0}'.format(arg)
 
-                kwargs['help'] = 'By default: {}'.format(default)
+                kwargs['help'] = 'By default: {0}'.format(default)
 
             arg = arg.replace('_', '-')
-            subparser.add_argument('--{}'.format(arg), **kwargs)
+            subparser.add_argument('--{0}'.format(arg), **kwargs)
 
         # Run function
         subparser.set_defaults(func=value)
@@ -134,7 +134,7 @@ def clean_pyc(app):
     """
     Remove all *.pyc files which contains in APP_DIR.
     """
-    cmd = 'find "{}" -name "*.pyc" -exec rm -rf {{}} \;'.\
+    cmd = 'find "{0}" -name "*.pyc" -exec rm -rf {{}} \;'.\
           format(app.settings.APP_DIR)
     subprocess.call(cmd, shell=True)
 
@@ -182,7 +182,7 @@ def print_settings(app):
     for attr in dir(app.settings):
         if attr.startswith('_'):
             continue
-        print('{} = {!r}'.format(attr, getattr(app.settings, attr)))
+        print('{0} = {1!r}'.format(attr, getattr(app.settings, attr)))
 
 
 def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
@@ -208,7 +208,7 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
 
             if report.total_errors:
                 print >> sys.stderr, (
-                    '\nPEP8 check resulted {} error(s). Please, fix errors '
+                    '\nPEP8 check resulted {0} error(s). Please, fix errors '
                     'before run development server or disable PEP8 check ups '
                     'in app settings.'.format(report.total_errors)
                 )
@@ -223,7 +223,7 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
         server = make_server(host, int(port), wdb_app or app)
 
         try:
-            print('Starting server at http://{}:{}/'.format(host, port))
+            print('Starting server at http://{0}:{1}/'.format(host, port))
             server.serve_forever()
         except KeyboardInterrupt:
             print

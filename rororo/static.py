@@ -50,6 +50,6 @@ def static(prefix, dirnames, **kwargs):
     support of multiple static directories.
     """
     kwargs['static_view'] = True
-    return GET('{}/{{path:path}}'.format(prefix.rstrip('/')),
+    return GET('{0}/{{path:path}}'.format(prefix.rstrip('/')),
                make_static_view(dirnames),
                **kwargs)

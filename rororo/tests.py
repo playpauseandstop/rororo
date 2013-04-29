@@ -162,9 +162,11 @@ class TestRororo(TestCase):
         self.assertIn('APP_DIR: {}'.format(dirname), response.text)
         self.assertIn('DEBUG: True', response.text)
         self.assertIn('JINJA_OPTIONS: {}', response.text)
-        self.assertIn('RENDERERS: {}'.format(escape(RENDERERS)), response.text)
         self.assertIn(
-            'TEMPLATE_DIR: {}'.format(escape(TEMPLATE_DIR)), response.text
+            'RENDERERS: {0}'.format(escape(RENDERERS)), response.text
+        )
+        self.assertIn(
+            'TEMPLATE_DIR: {0}'.format(escape(TEMPLATE_DIR)), response.text
         )
 
         new_app = TestApp(create_app(routes=ROUTES, template_dir=TEMPLATE_DIR))
@@ -296,7 +298,7 @@ class TestRororo(TestCase):
 
     def test_static(self):
         app = TestApp(create_app(__name__))
-        response = app.get('/static/{}'.format(TEMPLATE_NAME), status=200)
+        response = app.get('/static/{0}'.format(TEMPLATE_NAME), status=200)
         self.assertEqual(response.text, TEMPLATE)
 
     def test_static_routes(self):

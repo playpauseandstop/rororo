@@ -495,11 +495,11 @@ def register_packages(settings):
 
         for endpoint in routes:
             if isinstance(endpoint, Endpoint) and endpoint.name:
-                endpoint.name = '{}:{}'.format(package_name, endpoint.name)
+                endpoint.name = ':'.join((package_name, endpoint.name))
 
                 if base_pattern:
                     endpoint.pattern.pattern = (
-                        '{}{}'.format(base_pattern, endpoint.pattern.pattern)
+                        ''.join((base_pattern, endpoint.pattern.pattern))
                     )
 
         return tuple(routes)
@@ -517,7 +517,7 @@ def register_packages(settings):
 
         # Package could be without settings too. This just means that we don't
         # need to do any modifications with current settings
-        package_settings_module = '{}.settings'.format(package_name)
+        package_settings_module = '{0}.settings'.format(package_name)
 
         try:
             package_settings = import_string(package_settings_module)
