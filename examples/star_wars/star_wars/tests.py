@@ -18,7 +18,7 @@ class TestStarWars(TestCase):
         self.urls = {}
 
         for package in app.packages:
-            self.urls[package] = app.reverse('{}:index'.format(package))
+            self.urls[package] = app.reverse('{0}:index'.format(package))
 
     def test_all_episodes(self):
         response = self.app.get(self.index_url, status=200)
@@ -34,13 +34,13 @@ class TestStarWars(TestCase):
         self.app.get(url, status=200)
 
         for package in app.packages:
-            url = app.reverse('static', 'css/{}.css'.format(package))
+            url = app.reverse('static', 'css/{0}.css'.format(package))
             self.app.get(url, status=200)
 
     def test_episode_i(self):
         response = self.app.get(self.urls['the_phantom_menace'], status=200)
         self.assertIn(
-            '<h1><a href="{}">Star Wars</a></h1>'.format(self.index_url),
+            '<h1><a href="{0}">Star Wars</a></h1>'.format(self.index_url),
             response.ubody
         )
         self.assertIn('<h2>Episode I: The Phantom Menace</h2>', response.ubody)
@@ -48,7 +48,7 @@ class TestStarWars(TestCase):
     def test_episode_ii(self):
         response = self.app.get(self.urls['attack_of_the_clones'], status=200)
         self.assertIn(
-            '<h1><a href="{}">Star Wars</a></h1>'.format(self.index_url),
+            '<h1><a href="{0}">Star Wars</a></h1>'.format(self.index_url),
             response.ubody
         )
         self.assertIn(
@@ -58,7 +58,7 @@ class TestStarWars(TestCase):
     def test_episode_iii(self):
         response = self.app.get(self.urls['revenge_of_the_sith'], status=200)
         self.assertIn(
-            '<h1><a href="{}">Star Wars</a></h1>'.format(self.index_url),
+            '<h1><a href="{0}">Star Wars</a></h1>'.format(self.index_url),
             response.ubody
         )
         self.assertIn(
@@ -68,7 +68,7 @@ class TestStarWars(TestCase):
     def test_episode_iv(self):
         response = self.app.get(self.urls['a_new_hope'], status=200)
         self.assertIn(
-            '<h1><a href="{}">Star Wars</a></h1>'.format(self.index_url),
+            '<h1><a href="{0}">Star Wars</a></h1>'.format(self.index_url),
             response.ubody
         )
         self.assertIn('<h2>Episode IV: A New Hope</h2>', response.ubody)
@@ -77,7 +77,7 @@ class TestStarWars(TestCase):
         response = self.app.get(self.urls['the_empire_strikes_back'],
                                 status=200)
         self.assertIn(
-            '<h1><a href="{}">Star Wars</a></h1>'.format(self.index_url),
+            '<h1><a href="{0}">Star Wars</a></h1>'.format(self.index_url),
             response.ubody
         )
         self.assertIn(
@@ -87,7 +87,7 @@ class TestStarWars(TestCase):
     def test_episode_vi(self):
         response = self.app.get(self.urls['return_of_the_jedi'], status=200)
         self.assertIn(
-            '<h1><a href="{}">Star Wars</a></h1>'.format(self.index_url),
+            '<h1><a href="{0}">Star Wars</a></h1>'.format(self.index_url),
             response.ubody
         )
         self.assertIn(

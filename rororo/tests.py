@@ -159,7 +159,7 @@ class TestRororo(TestCase):
         self.assertIn('<a href="/lambda">', response.text)
         self.assertIn('<a href="/server-error-1">', response.text)
 
-        self.assertIn('APP_DIR: {}'.format(dirname), response.text)
+        self.assertIn('APP_DIR: {0}'.format(dirname), response.text)
         self.assertIn('DEBUG: True', response.text)
         self.assertIn('JINJA_OPTIONS: {}', response.text)
         self.assertIn(

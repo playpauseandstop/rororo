@@ -32,7 +32,7 @@ def explorer(path):
     directories, if ``path`` is a file - return response with file content, but
     if ``path`` not exists - raise ``HTTPNotFound`` exception.
     """
-    error = u'Does not exist: {}'
+    error = force_unicode('Does not exist: {0}')
     raw_path = force_unicode(path)
 
     if path.startswith('..') or path.startswith(os.sep):
