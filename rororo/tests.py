@@ -49,23 +49,27 @@ TEMPLATE_WITH_GLOBALS = """<h1>Hello, world!</h1>
 """
 
 RENDERERS = (
-    ('custom_json', 'tests.custom_json_renderer'),
-    ('custom_template', 'tests.custom_template_renderer'),
+    ('custom_json', 'rororo.tests.custom_json_renderer'),
+    ('custom_template', 'rororo.tests.custom_template_renderer'),
     ('wrong', Response),
 )
 ROUTES = (
-    GET('/', 'tests.index_view', name='index'),
-    GET('/json', 'tests.json_view', name='json', renderer='json'),
-    GET('/json/custom', 'tests.json_view', renderer='custom_json'),
+    GET('/', 'rororo.tests.index_view', name='index'),
+    GET('/json', 'rororo.tests.json_view', name='json', renderer='json'),
+    GET('/json/custom', 'rororo.tests.json_view', renderer='custom_json'),
     GET('/lambda', lambda: 'Hello, world!', name='lambda', renderer='text'),
-    GET('/server-error-1', 'tests.server_error_view', name='server_error'),
-    GET('/server-error-2', 'tests.index_view', renderer='error'),
-    GET('/server-error-3', 'tests.index_view', renderer='wrong'),
+    GET('/server-error-1',
+        'rororo.tests.server_error_view',
+        name='server_error'),
+    GET('/server-error-2', 'rororo.tests.index_view', renderer='error'),
+    GET('/server-error-3', 'rororo.tests.index_view', renderer='wrong'),
     GET('/template',
-        'tests.template_view',
+        'rororo.tests.template_view',
         name='template',
         renderer=TEMPLATE_NAME),
-    GET('/template/custom', 'tests.template_view', renderer='custom_template'),
+    GET('/template/custom',
+        'rororo.tests.template_view',
+        renderer='custom_template'),
 )
 
 

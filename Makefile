@@ -7,19 +7,21 @@ VENV = $(shell echo $(VIRTUAL_ENV))
 
 ifneq ($(VENV),)
 	COVERAGE = coverage
+	NOSETESTS = nosetests
 	PEP8 = pep8
 	PYTHON = python -W ignore::UserWarning
 else
 	COVERAGE = $(ENV)/bin/coverage
+	NOSETESTS = $(ENV)/bin/nosetests
 	PEP8 = $(ENV)/bin/pep8
 	PYTHON = $(ENV)/bin/python -W ignore::UserWarning
 endif
 
 ifeq ($(ENV),env3)
-	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 pep8==1.4.5
+	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5
 	VIRTUALENV = python3 -m virtualenv --distribute
 else
-	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 pep8==1.4.5 wdb==0.9.3
+	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5 wdb==0.9.3
 	VIRTUALENV = python -m virtualenv --distribute
 endif
 
@@ -53,3 +55,8 @@ test: bootstrap clean pep8
 	$(COVERAGE) run -a --branch -m unittest discover $(TEST_ARGS) -s examples/star_wars/
 	$(COVERAGE) report -m --include=$(PROJECT)/*.py --omit=$(PROJECT)/tests.py
 	$(COVERAGE) html -d $(COVERAGE_DIR) --include=$(PROJECT)/*.py --omit=$(PROJECT)/tests.py
+
+travis: bootstrap clean pep8
+	$(NOSETESTS) $(TEST_ARGS) -w $(PROJECT)/
+	$(NOSETESTS) $(TEST_ARGS) -w examples/explorer/
+	$(NOSETESTS) $(TEST_ARGS) -w examples/star_wars/

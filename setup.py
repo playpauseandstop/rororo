@@ -25,10 +25,11 @@ setup(
         'Jinja2>=2.6',
         'WebOb>=1.2.3',
         'argparse==1.2.1' if IS_PY26 else None,
-        'routr>=0.7.0',
+        'routr>=0.7.1',
         'routr-schema>=0.1',
         'schemify>=0.1',
         'server-reloader>=0.1.2',
+        'unittest2==0.5.1' if IS_PY26 else None,
     ])),
     platforms='any',
     classifiers=[
