@@ -40,6 +40,7 @@ def explorer(path):
 
     path = os.path.join(settings.ROOT_DIR, os.sep.join(path.split('/')))
     path = force_unicode(path)
+    sep = force_unicode('/')
 
     if os.path.isdir(path):
         children = []
@@ -50,7 +51,7 @@ def explorer(path):
                 continue
 
             item_path = os.path.join(path, item)
-            item_url = u'/'.join((raw_path, item)) if raw_path else item
+            item_url = sep.join((raw_path, item)) if raw_path else item
 
             child = {
                 'name': item,
