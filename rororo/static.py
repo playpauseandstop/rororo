@@ -13,6 +13,8 @@ from routr import GET
 from routr.static import _ForceResponse
 from webob.static import FileApp
 
+from .schema import defaults
+
 
 def make_static_view(dirnames):
     """
@@ -42,7 +44,7 @@ def make_static_view(dirnames):
     return static_view
 
 
-def static(prefix, dirnames, **kwargs):
+def static(prefix, dirnames=None, **kwargs):
     """
     Route for serving static assets.
 
@@ -50,6 +52,14 @@ def static(prefix, dirnames, **kwargs):
     support of multiple static directories.
     """
     kwargs['static_view'] = True
+    path = kwargs.pop('path', None)
+
+    if path:
+        return GET(prefix,
+                   defaults(path=path),
+                   make_static_view(dirnames),
+                   **kwargs)
+
     return GET('{0}/{{path:path}}'.format(prefix.rstrip('/')),
                make_static_view(dirnames),
                **kwargs)
