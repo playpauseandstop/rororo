@@ -314,7 +314,7 @@ class TestRororo(TestCase):
         self.assertEqual(absdir('/Users/user', '/Users'), '/Users/user')
 
     def test_utils_force_unicode(self):
-        u = str if sys.system_info[:2] == (3, 2) else unicode
+        u = str if six.PY3 else lambda value: unicode(value, 'utf-8')
 
         self.assertEqual(force_unicode('hello'), u('hello'))
         self.assertEqual(force_unicode('привет'), u('привет'))
