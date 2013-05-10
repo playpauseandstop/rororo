@@ -28,12 +28,7 @@ class TestWebTest(TestCase):
         self.client = TestApp(app)
 
     def test_does_not_exist(self):
-        if six.PY3:
-            self.client.get('/does_not_exist.exe', status=404)
-        else:
-            self.assertRaises(HTTPNotFound,
-                              self.client.get,
-                              '/does_not_exist.exe')
+        self.client.get('/does_not_exist.exe', status=404)
 
     def test_index(self):
         response = self.client.get('/', status=200)

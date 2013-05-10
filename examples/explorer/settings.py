@@ -3,8 +3,11 @@ import sys
 
 import six
 
-from rororo import GET
+from rororo import GET, static
 
+
+DIRNAME = os.path.abspath(os.path.dirname(__file__))
+rel = lambda *parts: os.path.abspath(os.path.join(DIRNAME, *parts))
 
 # Debug settings
 DEBUG = True
@@ -15,7 +18,8 @@ ROOT_DIR = os.path.expanduser('~')
 SHOW_HIDDEN_ITEMS = True
 
 # List of available routes
-ROUTES = ('',
+ROUTES = (
+    static('favicon.ico', rel('static'), path='favicon.ico'),
     GET('/{path:path}', 'views.explorer', name='explorer',
         renderer='explorer.html'),
 )
