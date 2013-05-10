@@ -3,12 +3,14 @@ try:
 except ImportError:
     from unittest import TestCase
 
+import sys
+
 import six
 
 from rororo.exceptions import HTTPNotFound
 from webtest import TestApp
 
-from app import app
+from app import app, settings
 from views import explorer
 
 
@@ -28,7 +30,17 @@ class TestWebTest(TestCase):
         self.client = TestApp(app)
 
     def test_does_not_exist(self):
-        self.client.get('/does_not_exist.exe', status=404)
+        if sys.version[:2] == (2, 6):
+            self.assertRaises(HTTPNotFound,
+                              self.client.get,
+                              '/does_not_exist.exe')
+        else:
+            self.client.get('/does_not_exist.exe', status=404)
+
+    def test_favicon(self):
+        favicon = open(settings.rel('static', 'favicon.ico')).read()
+        response = self.client.get('/favicon.ico', status=200)
+        self.assertEqual(response.body, favicon)
 
     def test_index(self):
         response = self.client.get('/', status=200)
