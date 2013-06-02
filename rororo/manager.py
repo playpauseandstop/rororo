@@ -9,7 +9,6 @@ Support of custom management commands for rororo framework.
 
 import copy
 import inspect
-import io
 import operator
 import subprocess
 import sys

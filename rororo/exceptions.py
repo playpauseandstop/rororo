@@ -10,7 +10,6 @@ All exceptions from WebOb, routr and rororo in one place.
 from string import Template
 
 from routr import exc as routr_exceptions
-from schemify import ValidationError
 from webob import exc as webob_exceptions
 
 

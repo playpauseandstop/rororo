@@ -163,9 +163,8 @@ import traceback
 import six
 
 from jinja2 import Environment, FileSystemLoader
-from routr import Endpoint, include, route
+from routr import Endpoint, route
 from routr.utils import import_string, inject_args
-from webob.exc import no_escape
 from webob.request import Request
 from webob.response import Response
 
