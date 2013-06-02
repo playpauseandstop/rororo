@@ -30,8 +30,7 @@ TEST_ARGS ?=
 
 bootstrap:
 	[ ! -d "$(ENV)/" ] && $(VIRTUALENV) $(ENV) || :
-	source $(ENV)/bin/activate && python setup.py install
-	source $(ENV)/bin/activate && pip install --download-cache=~/.pip/src/ --use-mirrors $(TEST_REQUIREMENTS)
+	source $(ENV)/bin/activate && pip install . $(TEST_REQUIREMENTS)
 
 clean:
 	find . -name "*.pyc" -delete
