@@ -1,9 +1,10 @@
-.PHONY: clean test
+.PHONY: bootstrap clean distclean pep8 star_wars test travis
 
 PROJECT = rororo
 
 ENV ?= env
 VENV = $(shell echo $(VIRTUAL_ENV))
+VERSION ?= 2.7
 
 ifneq ($(VENV),)
 	COVERAGE = coverage
@@ -17,26 +18,25 @@ else
 	PYTHON = $(ENV)/bin/python -W ignore::UserWarning
 endif
 
-ifeq ($(ENV),env3)
+ifeq ($(VERSION),3.3)
 	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5
-	VIRTUALENV = python3 -m virtualenv --distribute
 else
 	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5 wdb==0.9.3
-	VIRTUALENV = python -m virtualenv --distribute
 endif
 
 COVERAGE_DIR ?= /tmp/$(PROJECT)-coverage
-TEST_ARGS ?=
+TEST_ARGS ?= -cb
 
 bootstrap:
-	[ ! -d "$(ENV)/" ] && $(VIRTUALENV) $(ENV) || :
-	source $(ENV)/bin/activate && pip install . $(TEST_REQUIREMENTS)
+	[ ! -d "$(ENV)/" ] && virtualenv-$(VERSION) --distribute "$(ENV)" || :
+	$(ENV)/bin/pip install -U -e .
+	$(ENV)/bin/pip install $(TEST_REQUIREMENTS)
 
 clean:
 	find . -name "*.pyc" -delete
-	-find . -name "*.egg*" -depth 1 -exec rm -rf {} \;
 
 distclean: clean
+	-find . -name "*.egg*" -depth 1 -exec rm -rf {} \;
 	-rm -rf build/ dist/ $(ENV)*/
 
 explorer:
