@@ -7,6 +7,8 @@ Support of custom management commands for rororo framework.
 
 """
 
+from __future__ import print_function
+
 import copy
 import inspect
 import operator
@@ -18,9 +20,10 @@ from argparse import ArgumentParser
 from wsgiref.simple_server import make_server
 
 import server_reloader
-import six
 
 from routr.utils import import_string
+
+from . import compat
 
 
 DEFAULT_HOST = '0.0.0.0'
@@ -50,7 +53,7 @@ def manage(app, *commands):
     ignore = ('manage', )
 
     for func in commands:
-        data.append((func.func_name if not six.PY3 else func.__name__, func))
+        data.append((compat.func_name(func), func))
 
     data = sorted(data, key=operator.itemgetter(0))
 
@@ -91,7 +94,7 @@ def manage(app, *commands):
                     if default:
                         arg = 'no-{0}'.format(arg)
 
-                kwargs['help'] = 'By default: {0}'.format(default)
+                kwargs['help'] = 'By default: {0}'.format(not default)
 
             arg = arg.replace('_', '-')
             subparser.add_argument('--{0}'.format(arg), **kwargs)
@@ -99,26 +102,13 @@ def manage(app, *commands):
         # Run function
         subparser.set_defaults(func=value)
 
+    # If no arguments, just show help and exit
+    if len(sys.argv) == 1:
+        parser.print_help()
+        return
+
     # Parse arguments from command line
-    no_args = len(sys.argv) == 1
-
-    if not six.PY3 and no_args:
-        old_stdout, old_stderr = sys.stdout, sys.stderr
-        sys.stdout, sys.stderr = six.StringIO(), six.StringIO()
-
-    try:
-        args = parser.parse_args(sys.argv[1:])
-    except SystemExit as err:
-        if err.code:
-            if not six.PY3 and no_args:
-                sys.stdout, sys.stderr = old_stdout, old_stderr
-                parser.print_help()
-            sys.exit(err.code)
-        raise err
-    else:
-        if six.PY3 and no_args:
-            parser.print_help()
-            sys.exit(2)
+    args = parser.parse_args(sys.argv[1:])
 
     # Run necessary function if everything ok
     kwargs = dict([
@@ -147,7 +137,7 @@ def pep8(app, _return_report=True):
     if not app.settings.USE_PEP8:
         print('PEP8 checks disabled for current app. To enable define '
               '"USE_PEP8 = True" if app settings.')
-        sys.exit(0)
+        return False
 
     # Import PEP8 style guide
     guide_klass = import_string('pep8.StyleGuide')
@@ -160,28 +150,32 @@ def pep8(app, _return_report=True):
     guide = guide_klass(**options)
     report = guide.check_files()
 
-    # If necessary - print statistics
+    # Return report without any printing to stdout
     if _return_report:
         return report
 
+    # If necessary - print statistics
     if guide.options.statistics:
         report.print_statistics()
 
     # If errors happened - show its number or just exit from function
     if report.total_errors:
         if guide.options.count:
-            print >> sys.stderr, report.total_errors
-        sys.exit(1)
+            print(report.total_errors, file=sys.stderr)
+        return False
+
+    return True
 
 
 def print_settings(app):
     """
-    Print application settings as key => value lines.
+    Print application settings as "key=value" lines.
     """
     for attr in dir(app.settings):
         if attr.startswith('_'):
             continue
-        print('{0} = {1!r}'.format(attr, getattr(app.settings, attr)))
+        print('{0}={1!r}'.format(attr, getattr(app.settings, attr)))
+    return True
 
 
 def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
@@ -189,6 +183,12 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
     Run Python's standard simple WSGI server with ability to autoreload on file
     changes.
     """
+    def before_exit():
+        """
+        Show message before exit by KeyboardInterrupt.
+        """
+        print('\nOK! OK! Exiting...')
+
     def before_reload():
         """
         Show message before server reloaded.
@@ -206,10 +206,11 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
             report = pep8(app, True)
 
             if report.total_errors:
-                print >> sys.stderr, (
+                print(
                     '\nPEP8 check resulted {0} error(s). Please, fix errors '
                     'before run development server or disable PEP8 check ups '
-                    'in app settings.'.format(report.total_errors)
+                    'in app settings.'.format(report.total_errors),
+                    file=sys.stderr
                 )
                 sys.exit(1)
 
@@ -221,16 +222,20 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
 
         server = make_server(host, int(port), wdb_app or app)
 
-        try:
-            print('Starting server at http://{0}:{1}/'.format(host, port))
-            server.serve_forever()
-        except KeyboardInterrupt:
-            print
+        print('Starting server at http://{0}:{1}/'.format(host, port))
+        server.serve_forever()
 
     if autoreload:
-        server_reloader.main(run_server, before_reload=before_reload)
+        server_reloader.main(run_server,
+                             before_exit=before_exit,
+                             before_reload=before_reload)
     else:
-        run_server()
+        try:
+            run_server()
+        except KeyboardInterrupt:
+            before_exit()
+
+    return False
 
 
 def test(app, tests=None):

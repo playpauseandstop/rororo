@@ -12,14 +12,12 @@ try:
 except ImportError:
     from unittest import TestCase
 
-import six
-
 from jinja2.utils import escape
 from routr import route
 from webob.response import Response
 from webtest import TestApp
 
-from rororo import GET, create_app, exceptions, manage
+from rororo import GET, compat, create_app, exceptions, manage
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
 from rororo.utils import absdir, force_unicode
 
@@ -88,12 +86,6 @@ class TestRororo(TestCase):
         if hasattr(self, 'old_argv'):
             sys.argv = self.old_argv
 
-        if hasattr(self, 'old_stdout'):
-            sys.stdout = self.old_stdout
-
-        if hasattr(self, 'old_stderr'):
-            sys.stderr = self.old_stderr
-
     def test_create_app(self):
         app = create_app(__name__)
         self.assertTrue(callable(app), repr(app))
@@ -101,7 +93,7 @@ class TestRororo(TestCase):
     def test_create_app_default_settings(self):
         app = create_app(routes=ROUTES)
         self.assertEqual(app.settings.APP_DIR,
-                         os.getcwdu() if not six.PY3 else os.getcwd())
+                         os.getcwdu() if not compat.IS_PY3 else os.getcwd())
         self.assertFalse(app.settings.DEBUG)
         self.assertEqual(app.settings.JINJA_GLOBALS, {})
         self.assertEqual(app.settings.JINJA_FILTERS, {})
@@ -180,11 +172,7 @@ class TestRororo(TestCase):
 
     def test_manage(self):
         self.old_argv = sys.argv
-        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-
-        stdout, stderr = six.StringIO(), six.StringIO()
         sys.argv = [sys.argv[0]]
-        sys.stdout, sys.stderr = stdout, stderr
 
         # Run manager without arguments
         app = create_app(__name__)
@@ -314,13 +302,11 @@ class TestRororo(TestCase):
         self.assertEqual(absdir('/Users/user', '/Users'), '/Users/user')
 
     def test_utils_force_unicode(self):
-        u = str if six.PY3 else lambda value: unicode(value, 'utf-8')
+        self.assertEqual(force_unicode('hello'), compat.u('hello'))
+        self.assertEqual(force_unicode('привет'), compat.u('привет'))
 
-        self.assertEqual(force_unicode('hello'), u('hello'))
-        self.assertEqual(force_unicode('привет'), u('привет'))
-
-        self.assertEqual(force_unicode(u('hello')), u('hello'))
-        self.assertEqual(force_unicode(u('привет')), u('привет'))
+        self.assertEqual(force_unicode(compat.u('hello')), compat.u('hello'))
+        self.assertEqual(force_unicode(compat.u('привет')), compat.u('привет'))
 
 
 def custom_command(app):
