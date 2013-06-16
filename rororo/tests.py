@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import io
 import json
 import os
 import sys
@@ -86,6 +87,9 @@ class TestRororo(TestCase):
         if hasattr(self, 'old_argv'):
             sys.argv = self.old_argv
 
+        if hasattr(self, 'old_stderr'):
+            sys.stderr = self.old_stderr
+
     def test_create_app(self):
         app = create_app(__name__)
         self.assertTrue(callable(app), repr(app))
@@ -171,8 +175,11 @@ class TestRororo(TestCase):
         self.assertNotIn('RENDERERS: ()', response.text)
 
     def test_manage(self):
+        self.old_stderr = sys.stderr
         self.old_argv = sys.argv
+
         sys.argv = [sys.argv[0]]
+        sys.stderr = io.StringIO() if compat.IS_PY3 else io.BytesIO()
 
         # Run manager without arguments
         app = create_app(__name__)

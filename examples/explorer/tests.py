@@ -6,7 +6,7 @@ except ImportError:
 import io
 import sys
 
-from rororo import manage
+from rororo import compat, manage
 from rororo.exceptions import HTTPNotFound
 from webtest import TestApp
 
@@ -24,7 +24,7 @@ class TestCustomCommands(TestCase):
         self.old_stdout = sys.stdout
         self.old_argv = sys.argv
 
-        sys.stdout = io.BytesIO()
+        sys.stdout = io.StringIO() if compat.IS_PY3 else io.BytesIO()
         sys.argv = [sys.argv[0], '--help']
 
         self.assertRaises(SystemExit, manager, app)
@@ -34,7 +34,7 @@ class TestCustomCommands(TestCase):
         self.assertIn('hello', content)
         self.assertIn('validate', content)
 
-        sys.stdout = io.BytesIO()
+        sys.stdout = io.StringIO() if compat.IS_PY3 else io.BytesIO()
 
         self.assertRaises(SystemExit, manage, app)
 
