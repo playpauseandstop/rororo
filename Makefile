@@ -4,7 +4,6 @@ PROJECT = rororo
 
 ENV ?= env
 VENV = $(shell echo $(VIRTUAL_ENV))
-VERSION ?= 2.7
 
 ifneq ($(VENV),)
 	COVERAGE = coverage
@@ -18,19 +17,13 @@ else
 	PYTHON = $(ENV)/bin/python -W ignore::UserWarning
 endif
 
-ifeq ($(VERSION),3.3)
-	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5
-else
-	TEST_REQUIREMENTS = "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5 wdb==0.9.3
-endif
-
 COVERAGE_DIR ?= /tmp/$(PROJECT)-coverage
-TEST_ARGS ?= -cb
+TEST_ARGS ?= -xv
 
 bootstrap:
-	[ ! -d "$(ENV)/" ] && virtualenv-$(VERSION) --distribute "$(ENV)" || :
+	[ ! -d "$(ENV)/" ] && python -m virtualenv --distribute "$(ENV)" || :
 	$(ENV)/bin/pip install -U -e .
-	$(ENV)/bin/pip install $(TEST_REQUIREMENTS)
+	$(ENV)/bin/pip install "WebTest>=1.4.3" coverage==3.6 nose==1.3.0 pep8==1.4.5
 
 clean:
 	find . -name "*.pyc" -delete
@@ -48,14 +41,9 @@ pep8:
 star_wars:
 	$(PYTHON) examples/star_wars/manage.py $(COMMAND)
 
-test: bootstrap clean pep8
-	$(COVERAGE) run --branch -m unittest discover $(TEST_ARGS) -s $(PROJECT)/
-	$(COVERAGE) run -a --branch -m unittest discover $(TEST_ARGS) -s examples/explorer/
-	$(COVERAGE) run -a --branch -m unittest discover $(TEST_ARGS) -s examples/star_wars/
+test: bootstrap pep8 clean
+	$(COVERAGE) run --branch $(NOSETESTS) $(TEST_ARGS) -w $(PROJECT)/
+	$(COVERAGE) run -a --branch $(NOSETESTS) $(TEST_ARGS) -w examples/explorer/
+	$(COVERAGE) run -a --branch $(NOSETESTS) $(TEST_ARGS) -w examples/star_wars/
 	$(COVERAGE) report -m --include=$(PROJECT)/*.py --omit=$(PROJECT)/tests.py
 	$(COVERAGE) html -d $(COVERAGE_DIR) --include=$(PROJECT)/*.py --omit=$(PROJECT)/tests.py
-
-travis: bootstrap clean pep8
-	$(NOSETESTS) $(TEST_ARGS) -w $(PROJECT)/
-	$(NOSETESTS) $(TEST_ARGS) -w examples/explorer/
-	$(NOSETESTS) $(TEST_ARGS) -w examples/star_wars/

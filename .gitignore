@@ -5,6 +5,7 @@
 
 .coverage
 
+.tox/
 build/
 dist/
 env*/
