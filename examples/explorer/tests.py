@@ -3,15 +3,45 @@ try:
 except ImportError:
     from unittest import TestCase
 
+import io
 import sys
 
-import six
-
+from rororo import manage
 from rororo.exceptions import HTTPNotFound
 from webtest import TestApp
 
-from app import app, settings
+from app import app, manager, settings
 from views import explorer
+
+
+class TestCustomCommands(TestCase):
+
+    def tearDown(self):
+        sys.argv = self.old_argv
+        sys.stdout = self.old_stdout
+
+    def test_hello(self):
+        self.old_stdout = sys.stdout
+        self.old_argv = sys.argv
+
+        sys.stdout = io.BytesIO()
+        sys.argv = [sys.argv[0], '--help']
+
+        self.assertRaises(SystemExit, manager, app)
+
+        sys.stdout.seek(0)
+        content = sys.stdout.read()
+        self.assertIn('hello', content)
+        self.assertIn('validate', content)
+
+        sys.stdout = io.BytesIO()
+
+        self.assertRaises(SystemExit, manage, app)
+
+        sys.stdout.seek(0)
+        content = sys.stdout.read()
+        self.assertNotIn('hello', content)
+        self.assertNotIn('validate', content)
 
 
 class TestViews(TestCase):

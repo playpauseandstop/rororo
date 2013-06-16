@@ -7,10 +7,15 @@ Main Explorer application and custom validate management command.
 
 """
 
+from __future__ import print_function
+
 import os
+import sys
 
 from rororo import create_app, manage
+from rororo.utils import get_commands
 
+import commands
 import settings
 
 
@@ -20,8 +25,8 @@ def validate(app, something):
     Validate settings values.
     """
     if not os.path.isdir(settings.ROOT_DIR):
-        print >> sys.stderr, 'Root directory not found at {!r}'.\
-                             format(settings.ROOT_DIR)
+        print('Root directory not found at {0!r}'.format(settings.ROOT_DIR),
+              file=sys.stderr)
         sys.exit(1)
 
     print('All OK!')
@@ -30,7 +35,10 @@ def validate(app, something):
 # Create rororo-compatible app
 app = create_app(settings)
 
+# Define rororo manager
+manager = lambda app: manage(app, validate, *get_commands(commands))
 
-# Run rororo manager
+
+# Run rororo manage if necessary
 if __name__ == '__main__':
-    manage(app, validate)
+    manager(app)
