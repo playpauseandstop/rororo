@@ -24,6 +24,7 @@ import server_reloader
 from routr.utils import import_string
 
 from . import compat
+from .utils import get_commands
 
 
 DEFAULT_HOST = '0.0.0.0'
@@ -49,6 +50,7 @@ def manage(app, *commands):
     )
 
     # Find all available management commands and add they as parser sub-command
+    commands = get_commands(commands)
     data = list(copy.copy(globals()).items())
     ignore = ('manage', )
 

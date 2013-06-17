@@ -13,7 +13,6 @@ import os
 import sys
 
 from rororo import create_app, manage
-from rororo.utils import get_commands
 
 import commands
 import settings
@@ -36,7 +35,7 @@ def validate(app, something):
 app = create_app(settings)
 
 # Define rororo manager
-manager = lambda app: manage(app, validate, *get_commands(commands))
+manager = lambda app: manage(app, commands, validate)
 
 
 # Run rororo manage if necessary
