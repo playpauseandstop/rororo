@@ -20,7 +20,7 @@ from webtest import TestApp
 
 from rororo import GET, compat, create_app, exceptions, manage
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
-from rororo.utils import absdir, force_unicode
+from rororo.utils import absdir, dict_combine, force_unicode, import_settings
 
 
 DEBUG = True
@@ -304,16 +304,83 @@ class TestRororo(TestCase):
         app = create_app(debug=True, routes=ROUTES)
         self.assertNotEqual(len(routes.routes), len(app.routes.routes))
 
-    def test_utils_absdir(self):
+
+class TestRororoUtils(TestCase):
+
+    def test_absdir(self):
         self.assertEqual(absdir('user', '/Users'), '/Users/user')
         self.assertEqual(absdir('/Users/user', '/Users'), '/Users/user')
 
-    def test_utils_force_unicode(self):
+    def test_dict_combine(self):
+        self.assertEqual(dict_combine({}, {}), {})
+
+        base = {'a': 1}
+        extra = {'b': 2}
+        combined = {'a': 1, 'b': 2}
+        self.assertEqual(dict_combine(base, extra), combined)
+
+        base['b'] = 3
+        self.assertEqual(dict_combine(base, extra), combined)
+
+        base['c'] = [1, 2]
+        extra['c'] = 3
+        self.assertRaises(AssertionError, dict_combine, base, extra)
+
+        extra['c'] = [3]
+        combined['c'] = [1, 2, 3]
+        self.assertEqual(dict_combine(base, extra), combined)
+
+        base['d'] = (1, 2)
+        extra['d'] = 3
+        self.assertRaises(AssertionError, dict_combine, base, extra)
+
+        extra['d'] = (3, )
+        combined['d'] = (1, 2, 3)
+        self.assertEqual(dict_combine(base, extra), combined)
+
+        base['e'] = set([1, 2])
+        extra['e'] = 3
+        self.assertRaises(AssertionError, dict_combine, base, extra)
+
+        extra['e'] = set([3])
+        combined['e'] = set([1, 2, 3])
+        self.assertEqual(dict_combine(base, extra), combined)
+
+        base['f'] = {'a': 1}
+        extra['f'] = [2]
+        self.assertRaises(AssertionError, dict_combine, base, extra)
+
+        extra['f'] = {'b': 2}
+        combined['f'] = {'a': 1, 'b': 2}
+        self.assertEqual(dict_combine(base, extra), combined)
+
+    def test_force_unicode(self):
         self.assertEqual(force_unicode('hello'), compat.u('hello'))
         self.assertEqual(force_unicode('привет'), compat.u('привет'))
 
         self.assertEqual(force_unicode(compat.u('hello')), compat.u('hello'))
         self.assertEqual(force_unicode(compat.u('привет')), compat.u('привет'))
+
+    def test_import_settings(self):
+        data = {}
+        import_settings('rororo.manager', data)
+
+        self.assertEqual(len(data), 2)
+        self.assertIn('DEFAULT_HOST', data)
+        self.assertIn('DEFAULT_PORT', data)
+        self.assertNotIn('manage', data)
+        old_data = data
+
+        self.assertRaises(ImportError,
+                          import_settings,
+                          'rororo.does_not_exist',
+                          data)
+        self.assertEqual(data, old_data)
+
+    def test_import_settings_fail_silently(self):
+        data = {}
+        import_settings('rororo.does_not_exist', data, True)
+        self.assertEqual(data, {})
 
 
 def custom_command(app):

@@ -7,8 +7,11 @@ Common utilities to use in ``rororo`` and other projects.
 
 """
 
+import copy
 import os
 import types
+
+from routr.utils import import_string
 
 from . import compat
 
@@ -20,6 +23,33 @@ def absdir(dirname, base):
     if os.path.isabs(dirname):
         return dirname
     return os.path.abspath(os.path.join(base, dirname))
+
+
+def dict_combine(first, second):
+    """
+    Combine two dicts, but without affects to original dicts.
+    """
+    copied = copy.deepcopy(first)
+
+    for key, value in compat.iteritems(second):
+        exists = key in copied
+
+        if exists and isinstance(copied[key], dict):
+            assert isinstance(value, dict)
+            copied[key] = dict_combine(copied[key], value)
+        elif exists and isinstance(copied[key], list):
+            assert isinstance(value, list)
+            copied[key] = copied[key] + value
+        elif exists and isinstance(copied[key], set):
+            assert isinstance(value, set)
+            copied[key] = copied[key] ^ value
+        elif exists and isinstance(copied[key], tuple):
+            assert isinstance(value, tuple)
+            copied[key] = copied[key] + value
+        else:
+            copied[key] = value
+
+    return copied
 
 
 def force_unicode(value, encoding='utf-8', errors='ignore'):
@@ -54,3 +84,26 @@ def get_commands(commands):
                          if not callable(item)
                          else [item])
     return [cmd for command in commands for cmd in safe(command)]
+
+
+def import_settings(settings, context, fail_silently=False):
+    """
+    Import all possible settings from ``settings`` module and place them to
+    ``context`` dict..
+
+    If settings module doesn't exist, ``ImportError`` would be raised, but you
+    should supress this approach by passing ``fail_silently=True``.
+    """
+    try:
+        module = import_string(settings)
+    except ImportError:
+        if fail_silently:
+            return False
+        raise
+
+    for attr in dir(module):
+        if not attr.isupper() or attr.startswith('_'):
+            continue
+        context[attr] = getattr(module, attr)
+
+    return True
