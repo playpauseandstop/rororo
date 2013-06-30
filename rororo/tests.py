@@ -354,6 +354,14 @@ class TestRororoUtils(TestCase):
         combined['f'] = {'a': 1, 'b': 2}
         self.assertEqual(dict_combine(base, extra), combined)
 
+    def test_dict_combine_copy(self):
+        base = {'a': 1}
+        extra = {'b': 2}
+        combined = {'a': 1, 'b': 2}
+
+        self.assertEqual(dict_combine(base, extra, False), combined)
+        self.assertEqual(base, combined)
+
     def test_force_unicode(self):
         self.assertEqual(force_unicode('hello'), compat.u('hello'))
         self.assertEqual(force_unicode('привет'), compat.u('привет'))

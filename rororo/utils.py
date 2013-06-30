@@ -25,11 +25,11 @@ def absdir(dirname, base):
     return os.path.abspath(os.path.join(base, dirname))
 
 
-def dict_combine(first, second):
+def dict_combine(first, second, do_copy=True):
     """
     Combine two dicts, but without affects to original dicts.
     """
-    copied = copy.deepcopy(first)
+    copied = copy.deepcopy(first) if do_copy else first
 
     for key, value in compat.iteritems(second):
         exists = key in copied
