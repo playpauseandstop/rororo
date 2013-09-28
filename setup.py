@@ -30,6 +30,7 @@ setup(
         'Jinja2>=2.7',
         'WebOb>=1.2.3',
         'argparse==1.2.1' if sys.version_info[:2] < (2, 7) else None,
+        'logutils==0.3.3' if sys.version_info[:2] < (2, 7) else None,
         'routr>=0.7.1',
         'routr-schema>=0.1',
         'schemify>=0.1',

@@ -12,6 +12,12 @@ import sys
 
 from functools import partial
 
+# Dictionary config available only for Python 2.7+
+try:
+    from logging.config import dictConfig as logging_config
+except ImportError:
+    from logutils.dictconfig import dictConfig as logging_config
+
 
 # Are we working on Python 3 or not?
 IS_PY3 = sys.version_info[0] == 3

@@ -12,8 +12,6 @@ import os
 import time
 import types
 
-from logging.config import dictConfig as logging_config
-
 from routr.utils import import_string
 
 from . import compat
@@ -120,7 +118,7 @@ def setup_logging(base, local=None):
     config = dict_combine(base, local) if local else base
 
     if config:
-        logging_config(config)
+        compat.logging_config(config)
 
 
 def setup_timezone(timezone):
