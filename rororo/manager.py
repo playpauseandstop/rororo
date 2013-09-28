@@ -107,7 +107,7 @@ def manage(app, *commands):
     # If no arguments, just show help and exit
     if len(sys.argv) == 1:
         parser.print_help()
-        return
+        return False
 
     # Parse arguments from command line
     args = parser.parse_args(sys.argv[1:])
