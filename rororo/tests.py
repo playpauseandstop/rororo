@@ -112,8 +112,6 @@ class TestRororo(TestCase):
         self.assertEqual(app.settings.TEMPLATE_DIR, 'templates')
         self.assertEqual(app.settings.TIME_ZONE, os.environ.get('TZ'))
         self.assertFalse(app.settings.USE_PEP8)
-        self.assertFalse(app.settings.USE_WDB)
-        self.assertEqual(app.settings.WDB_OPTIONS, {'start_disabled': True})
 
     def test_create_app_improperly_configured(self):
         self.assertRaises(ImproperlyConfigured, create_app)

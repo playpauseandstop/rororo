@@ -165,22 +165,6 @@ Standart UNIX timezone to use in application.
 
 By default: ``os.environ.get('TZ')``
 
-USE_WDB
--------
-
-Wrap WSGI application in `WDB web-debugger <https://github.com/Kozea/wdb>`_ or
-not.
-
-By default: ``False``
-
-WDB_OPTIONS
------------
-
-Keyword arguments passed to ``wdb.Wdb`` class init when wrapping original WSGI
-application.
-
-By default: ``{'start_disabled': True}``
-
 """
 
 import copy
@@ -233,10 +217,32 @@ DEFAULT_SETTINGS = (
     ('TEMPLATE_DIR', 'templates'),
     ('TIME_ZONE', os.environ.get('TZ')),
     ('USE_PEP8', False),
-    ('USE_WDB', False),
-    ('WDB_OPTIONS', {'start_disabled': True}),
 )
 JINJA_HTML_TEMPLATES = ('.htm', '.html', '.xhtml', '.xml')
+
+
+class Rororo(object):
+    """
+    Simple class which gives ability to wrap original WSGI application in
+    WSGI middlewares.
+    """
+    __slots__ = ('packages', 'reverse', 'routes', 'settings', 'wsgi_app')
+
+    def __init__(self, application, settings, packages, routes):
+        """
+        Initialize WSGI-compatible app with extra info.
+        """
+        self.packages = packages
+        self.reverse = routes.reverse
+        self.routes = routes
+        self.settings = settings
+        self.wsgi_app = application
+
+    def __call__(self, environ, start_response):
+        """
+        Shortcut for ``wsgi_app``.
+        """
+        return self.wsgi_app(environ, start_response)
 
 
 def create_app(mixed=None, **kwargs):
@@ -284,10 +290,6 @@ def create_app(mixed=None, **kwargs):
                 response = process_renderer(settings, renderer, response)
         # Process exceptions
         except Exception as err:
-            # If WDB web debugger used - raise original exception
-            if settings.USE_WDB:
-                raise
-
             # No route found in list of available ones
             if isinstance(err, NoMatchFound):
                 response = err.response
@@ -357,13 +359,8 @@ def create_app(mixed=None, **kwargs):
     # if yes save them in application as well as settings
     routes = get_routes(settings)
 
-    setattr(application, 'packages', packages)
-    setattr(application, 'reverse', routes.reverse)
-    setattr(application, 'routes', routes)
-    setattr(application, 'settings', settings)
-
-    # Return valid WSGI application
-    return application
+    # Make and return suitable WSGI application
+    return Rororo(application, settings, packages, routes)
 
 
 def get_routes(settings):

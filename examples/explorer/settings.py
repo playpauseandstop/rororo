@@ -11,7 +11,6 @@ rel = lambda *parts: os.path.abspath(os.path.join(DIRNAME, *parts))
 
 # Debug settings
 DEBUG = True
-USE_WDB = not six.PY3 and not sys.version_info[:2] == (2, 7)
 
 # Explorer settings
 ROOT_DIR = os.path.expanduser('~')

@@ -23,7 +23,8 @@ TEST_ARGS ?= -xv
 bootstrap:
 	[ ! -d "$(ENV)/" ] && python -m virtualenv --distribute "$(ENV)" || :
 	$(ENV)/bin/pip install -U -e .
-	$(ENV)/bin/pip install "WebTest>=1.4.3" coverage==3.6 flake8==2.0 nose==1.3.0 pep8==1.4.6 pyflakes==0.7.3 redis==2.8.0
+	$(ENV)/bin/pip install "WebTest>=1.4.3" coverage==3.6 flake8==2.0 \
+	nose==1.3.0 pep8==1.4.6 pyflakes==0.7.3 redis==2.8.0
 
 clean:
 	find . -name "*.pyc" -delete

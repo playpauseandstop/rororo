@@ -195,7 +195,7 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
         """
         Show message before server reloaded.
         """
-        print('Reloading server...\n')
+        print('Reloading server...')
 
     def run_server():
         """
@@ -216,14 +216,7 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
                 )
                 sys.exit(1)
 
-        wdb_app = None
-
-        if app.settings.USE_WDB:
-            wdb_klass = import_string('wdb:Wdb')
-            wdb_app = wdb_klass(app, **app.settings.WDB_OPTIONS)
-
-        server = make_server(host, int(port), wdb_app or app)
-
+        server = make_server(host, int(port), app)
         print('Starting server at http://{0}:{1}/'.format(host, port))
         server.serve_forever()
 
