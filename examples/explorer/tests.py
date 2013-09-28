@@ -60,12 +60,7 @@ class TestWebTest(TestCase):
         self.client = TestApp(app)
 
     def test_does_not_exist(self):
-        if sys.version_info[:2] == (2, 6):
-            self.assertRaises(HTTPNotFound,
-                              self.client.get,
-                              '/does_not_exist.exe')
-        else:
-            self.client.get('/does_not_exist.exe', status=404)
+        self.client.get('/does_not_exist.exe', status=404)
 
     def test_favicon(self):
         favicon = open(settings.rel('static', 'favicon.ico'), 'rb').read()
