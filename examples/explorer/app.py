@@ -12,7 +12,8 @@ from __future__ import print_function
 import os
 import sys
 
-from rororo import create_app, manage
+from rororo.app import create_app
+from rororo.manager import manage
 
 import commands
 import settings
@@ -31,10 +32,8 @@ def validate(app, something):
     print('All OK!')
 
 
-# Create rororo-compatible app
+# Create rororo-compatible app and manager
 app = create_app(settings)
-
-# Define rororo manager
 manager = lambda app: manage(app, commands, validate)
 
 
