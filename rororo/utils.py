@@ -9,7 +9,10 @@ Common utilities to use in ``rororo`` and other projects.
 
 import copy
 import os
+import time
 import types
+
+from logging.config import dictConfig as logging_config
 
 from routr.utils import import_string
 
@@ -107,3 +110,29 @@ def import_settings(settings, context, fail_silently=False):
         context[attr] = getattr(module, attr)
 
     return True
+
+
+def setup_logging(base, local=None):
+    """
+    Combine base and local logging dicts if possible and setup logging using
+    ``dictConfig`` method.
+    """
+    config = dict_combine(base, local) if local else base
+
+    if config:
+        logging_config(config)
+
+
+def setup_timezone(timezone):
+    """
+    Setup timezone if possible.
+    """
+    if timezone and hasattr(time, 'tzset'):
+        tz_root = '/usr/share/zoneinfo'
+        tz_filename = os.path.join(tz_root, *(timezone.split('/')))
+
+        if os.path.exists(tz_root) and not os.path.exists(tz_filename):
+            raise ValueError('Incorrect timezone value: {0}'.format(timezone))
+
+        os.environ['TZ'] = timezone
+        time.tzset()

@@ -23,3 +23,6 @@ ROUTES = (
     GET('/{path:path}', 'views.explorer', name='explorer',
         renderer='explorer.html'),
 )
+
+# Time zone settings
+TIME_ZONE = 'UTC'

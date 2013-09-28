@@ -70,6 +70,21 @@ Options to initialize Jinja2 environment.
 
 By default: ``{}``
 
+LOCAL_LOGGING
+-------------
+
+Local logging settings to customize original (base) logging settings.
+
+By default: ``None``
+
+LOGGING
+-------
+
+Base logging settings which later would be passed to
+``logging.config.dictConfig`` method.
+
+By default: ``{}``
+
 PACKAGES
 --------
 
@@ -143,6 +158,13 @@ directory.
 
 By default: ``'templates'``
 
+TIME_ZONE
+---------
+
+Standart UNIX timezone to use in application.
+
+By default: ``os.environ.get('TZ')``
+
 USE_WDB
 -------
 
@@ -180,7 +202,7 @@ from .exceptions import (
     NoRendererFound
 )
 from .static import static
-from .utils import absdir, force_unicode
+from .utils import absdir, force_unicode, setup_logging, setup_timezone
 
 
 DEFAULT_RENDERERS = (
@@ -200,6 +222,8 @@ DEFAULT_SETTINGS = (
     ('JINJA_FILTERS', {}),
     ('JINJA_GLOBALS', {}),
     ('JINJA_OPTIONS', {}),
+    ('LOCAL_LOGGING', None),
+    ('LOGGING', {}),
     ('PACKAGES', ()),
     ('PEP8_CLASS', 'pep8.StyleGuide'),
     ('PEP8_OPTIONS', {'statistics': True}),
@@ -207,6 +231,7 @@ DEFAULT_SETTINGS = (
     ('STATIC_DIR', 'static'),
     ('STATIC_URL', '/static'),
     ('TEMPLATE_DIR', 'templates'),
+    ('TIME_ZONE', os.environ.get('TZ')),
     ('USE_PEP8', False),
     ('USE_WDB', False),
     ('WDB_OPTIONS', {'start_disabled': True}),
@@ -319,6 +344,10 @@ def create_app(mixed=None, **kwargs):
     settings._PACKAGE_DIRS = []
     settings._STATIC_DIRS = [absdir(settings.STATIC_DIR, settings.APP_DIR)]
     settings._TEMPLATE_DIRS = [absdir(settings.TEMPLATE_DIR, settings.APP_DIR)]
+
+    # Also setup logging and timezone for application
+    setup_logging(settings.LOGGING, settings.LOCAL_LOGGING)
+    setup_timezone(settings.TIME_ZONE)
 
     # Now it's time to load all packages if any and modify settings a bit if
     # necessary (settings.PACKAGES is not an empty sequence)

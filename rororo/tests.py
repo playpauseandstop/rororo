@@ -102,10 +102,18 @@ class TestRororo(TestCase):
         self.assertEqual(app.settings.JINJA_GLOBALS, {})
         self.assertEqual(app.settings.JINJA_FILTERS, {})
         self.assertEqual(app.settings.JINJA_OPTIONS, {})
+        self.assertIsNone(app.settings.LOCAL_LOGGING)
+        self.assertEqual(app.settings.LOGGING, {})
         self.assertEqual(app.settings.PACKAGES, ())
+        self.assertEqual(app.settings.PEP8_CLASS, 'pep8.StyleGuide')
+        self.assertEqual(app.settings.PEP8_OPTIONS, {'statistics': True})
         self.assertEqual(app.settings.RENDERERS, ())
         self.assertEqual(app.settings.STATIC_DIR, 'static')
         self.assertEqual(app.settings.TEMPLATE_DIR, 'templates')
+        self.assertEqual(app.settings.TIME_ZONE, os.environ.get('TZ'))
+        self.assertFalse(app.settings.USE_PEP8)
+        self.assertFalse(app.settings.USE_WDB)
+        self.assertEqual(app.settings.WDB_OPTIONS, {'start_disabled': True})
 
     def test_create_app_improperly_configured(self):
         self.assertRaises(ImproperlyConfigured, create_app)
