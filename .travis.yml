@@ -10,9 +10,10 @@ python:
  - "pypy"
 install:
  - "python setup.py install"
- - "pip install --use-mirrors 'WebTest>=1.4.3' nose==1.3.0 pep8==1.4.5 wdb==0.9.3"
+ - "pip install 'WebTest>=1.4.3' flake8==2.0 nose==1.3.0 pep8==1.4.6 redis==2.8.0 wdb==0.9.3"
 script:
  - "pep8 --statistics rororo/"
  - "nosetests -w rororo/"
+ - "nosetests -w examples/commentor/"
  - "nosetests -w examples/explorer/"
  - "nosetests -w examples/star_wars/"
