@@ -41,12 +41,14 @@ explorer:
 
 pep8:
 	$(PEP8) --statistics $(PROJECT)/
+	$(PEP8) --statistics examples/
 
 star_wars:
 	$(PYTHON) examples/star_wars/manage.py $(COMMAND)
 
 test: bootstrap pep8 clean
 	$(COVERAGE) run --branch $(NOSETESTS) $(TEST_ARGS) -w $(PROJECT)/
+	$(COVERAGE) run -a --branch $(NOSETESTS) $(TEST_ARGS) -w examples/commentor/
 	$(COVERAGE) run -a --branch $(NOSETESTS) $(TEST_ARGS) -w examples/explorer/
 	$(COVERAGE) run -a --branch $(NOSETESTS) $(TEST_ARGS) -w examples/star_wars/
 	$(COVERAGE) report -m --include=$(PROJECT)/*.py --omit=$(PROJECT)/tests.py
