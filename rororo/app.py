@@ -85,10 +85,17 @@ templates and static directories to application.
 
 By default: ``()``
 
+PEP8_CLASS
+----------
+
+Path to PEP8 style guide class.
+
+By default: ``pep8.StyleGuide``
+
 PEP8_OPTIONS
 ------------
 
-Keyword arguments passed to ``pep8.StyleGuide`` class on initialization when
+Keyword arguments passed to PEP8 style guide class on initialization when
 checking PEP8 for current app and all its packages.
 
 By default: ``{'statistics': True}``
@@ -194,6 +201,7 @@ DEFAULT_SETTINGS = (
     ('JINJA_GLOBALS', {}),
     ('JINJA_OPTIONS', {}),
     ('PACKAGES', ()),
+    ('PEP8_CLASS', 'pep8.StyleGuide'),
     ('PEP8_OPTIONS', {'statistics': True}),
     ('RENDERERS', ()),
     ('STATIC_DIR', 'static'),

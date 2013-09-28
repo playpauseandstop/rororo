@@ -130,7 +130,7 @@ def clean_pyc(app):
     subprocess.call(cmd, shell=True)
 
 
-def pep8(app, _return_report=True):
+def pep8(app, _return_report=False):
     """
     Run PEP8 for all Python files in app directory and all available package
     directories.
@@ -142,14 +142,14 @@ def pep8(app, _return_report=True):
         return False
 
     # Import PEP8 style guide
-    guide_klass = import_string('pep8.StyleGuide')
+    guide_class = import_string(app.settings.PEP8_CLASS)
 
     # Configure PEP8 style guide
     options = copy.deepcopy(app.settings.PEP8_OPTIONS)
     options['paths'] = [app.settings.APP_DIR] + app.settings._PACKAGE_DIRS
 
     # Initialize style guide and run files check
-    guide = guide_klass(**options)
+    guide = guide_class(**options)
     report = guide.check_files()
 
     # Return report without any printing to stdout
@@ -209,7 +209,7 @@ def runserver(app, host=DEFAULT_HOST, port=DEFAULT_PORT, autoreload=True):
 
             if report.total_errors:
                 print(
-                    '\nPEP8 check resulted {0} error(s). Please, fix errors '
+                    'PEP8 check resulted {0} error(s). Please, fix errors '
                     'before run development server or disable PEP8 check ups '
                     'in app settings.'.format(report.total_errors),
                     file=sys.stderr
