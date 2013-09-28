@@ -20,7 +20,9 @@ from webtest import TestApp
 
 from rororo import GET, compat, create_app, exceptions, manage
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
-from rororo.utils import absdir, dict_combine, force_unicode, import_settings
+from rororo.utils import (
+    absdir, dict_combine, force_unicode, import_settings, make_debug
+)
 
 
 DEBUG = True
@@ -395,6 +397,18 @@ class TestRororoUtils(TestCase):
         data = {}
         import_settings('rororo.does_not_exist', data, True)
         self.assertEqual(data, {})
+
+    def test_make_debug(self):
+        debug = make_debug()
+        debug('Message', 'hidden')
+
+    def test_make_debug_enabled(self):
+        debug = make_debug(True)
+        debug('Message', 'visible')
+
+    def test_make_debug_extra(self):
+        debug = make_debug(extra={'message_type': 'test'})
+        debug('Message with type: {message_type}', 'hidden')
 
 
 def custom_command(app):

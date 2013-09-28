@@ -8,6 +8,7 @@ Common utilities to use in ``rororo`` and other projects.
 """
 
 import copy
+import logging
 import os
 import time
 import types
@@ -108,6 +109,37 @@ def import_settings(settings, context, fail_silently=False):
         context[attr] = getattr(module, attr)
 
     return True
+
+
+def make_debug(enabled=False, extra=None, level=None, instance=None):
+    """
+    Factory to make function to provide extended logs when application works
+    in debug mode.
+    """
+    def debug(message, debug_message, **kwargs):
+        """
+        Concat and log normal log message with debug message when application
+        works in debug mode.
+        """
+        if enabled:
+            message = u''.join((message, debug_message))
+
+        local_extra = extra or kwargs.pop('extra', {})
+        local_level = level or kwargs.pop('level', 'debug')
+        local_instance = instance or kwargs.pop('instance', None)
+        local_instance = local_instance or logging.getLogger(__name__)
+
+        start_time = kwargs.pop('start_time', None)
+
+        if start_time:
+            local_extra['time'] = time.time() - start_time
+
+        message = message.format(**local_extra)
+        kwargs['extra'] = local_extra
+
+        getattr(local_instance, local_level)(message, **kwargs)
+
+    return debug
 
 
 def setup_logging(base, local=None):
