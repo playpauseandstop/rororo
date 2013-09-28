@@ -1,13 +1,9 @@
-try:
-    from unittest2 import TestCase
-except ImportError:
-    from unittest import TestCase
-
 import io
 import sys
 
 from rororo import compat, manage
 from rororo.exceptions import HTTPNotFound
+from rororo.tests import TestCase
 from webtest import TestApp
 
 from app import app, manager, settings

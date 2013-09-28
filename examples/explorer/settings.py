@@ -1,7 +1,4 @@
 import os
-import sys
-
-import six
 
 from rororo import GET, static
 
