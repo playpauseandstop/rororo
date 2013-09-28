@@ -128,6 +128,13 @@ ROUTES
 **Required**. All available routes for your app in list or tuple format. These
 routes would be wrapped with ``routr.route`` function.
 
+ROUTES_VIEW_PREFIX
+------------------
+
+Prepend text to each view string which contains in ``ROUTES`` list.
+
+By default: ``None``
+
 STATIC_DIR
 ----------
 
@@ -212,6 +219,7 @@ DEFAULT_SETTINGS = (
     ('PEP8_CLASS', 'pep8.StyleGuide'),
     ('PEP8_OPTIONS', {'statistics': True}),
     ('RENDERERS', ()),
+    ('ROUTES_VIEW_PREFIX', None),
     ('STATIC_DIR', 'static'),
     ('STATIC_URL', '/static'),
     ('TEMPLATE_DIR', 'templates'),
@@ -272,9 +280,13 @@ def create_app(mixed=None, **kwargs):
             view = trace.target
 
             # If target is string - try to import function from its notation
-            view = (import_string(view)
-                    if isinstance(view, compat.string_types)
-                    else view)
+            if isinstance(view, compat.string_types):
+                prefix = settings.ROUTES_VIEW_PREFIX
+
+                if prefix:
+                    view = '.'.join((prefix, view))
+
+                view = import_string(view)
 
             # Inject request into view args if necessary
             args, kwargs = trace.args, trace.kwargs
@@ -378,12 +390,37 @@ def get_routes(settings):
     if not isinstance(routes, (list, tuple)):
         raise ImproperlyConfigured('ROUTES should be a list or tuple.')
 
-    # Add static view to routes
-    routes = list(routes)
-    routes.insert(
-        1 if isinstance(routes[0], compat.string_types) else 0,
-        static(settings.STATIC_URL, settings._STATIC_DIRS, name='static')
-    )
+    # Add static view to routes if possible
+    if settings.STATIC_URL and settings.STATIC_URL.startswith('/'):
+        routes = list(routes)
+        routes.insert(
+            1 if isinstance(routes[0], compat.string_types) else 0,
+            static(settings.STATIC_URL, settings._STATIC_DIRS, name='static')
+        )
+
+    # Loop over all possible routes and add default name when necessary
+    unique = set()
+
+    for item in routes:
+        # Avoid route groups
+        if isinstance(item, compat.string_types):
+            continue
+
+        # Remember all already defined route names
+        if item.name:
+            unique.add(item.name)
+            continue
+
+        # Calculate new route name
+        name = (compat.func_name(item.target)
+                if callable(item.target)
+                else item.target.rsplit('.', 1)[-1])
+
+        # Route name should be unique, it means it applied only for first route
+        # of multiple defined views
+        if name not in unique:
+            unique.add(name)
+            item.name = name
 
     # And finally initialize routes with wrapping to ``route`` function
     return route(*routes)

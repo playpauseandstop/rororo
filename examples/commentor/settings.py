@@ -15,12 +15,10 @@ REDIS_COMMENTS_KEY = 'commentor:comments'
 
 # Routes settings
 ROUTES = (
-    GET('/', 'views.comments', name='index', renderer='comments.html'),
-    POST('/add',
-         'views.add_comment',
-         name='add_comment',
-         renderer='add_comment.html'),
+    GET('/', 'comments', name='comments', renderer='comments.html'),
+    POST('/add', 'add_comment', renderer='add_comment.html'),
 )
+ROUTES_VIEW_PREFIX = 'views'
 
 # Other settings
 COMMENTS_PER_PAGE = 30
