@@ -279,6 +279,26 @@ class TestRororo(TestCase):
         app.get('/server-error-2', status=500)
         app.get('/server-error-3', status=500)
 
+    def test_redirect(self):
+        app = create_app(__name__)
+        response = app.redirect('json')
+        self.assertEqual(response.code, 307)
+        self.assertEqual(response.location, '/json')
+
+        response = app.redirect('/')
+        self.assertEqual(response.code, 307)
+        self.assertEqual(response.location, '/')
+
+    def test_redirect_permanent(self):
+        app = create_app(__name__)
+        response = app.redirect('json', _permanent=True)
+        self.assertEqual(response.code, 301)
+        self.assertEqual(response.location, '/json')
+
+        response = app.redirect('/', _permanent=True)
+        self.assertEqual(response.code, 301)
+        self.assertEqual(response.location, '/')
+
     def test_server_error(self):
         app = TestApp(create_app(__name__))
 

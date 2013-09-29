@@ -196,7 +196,9 @@ import traceback
 
 from jinja2 import Environment, FileSystemLoader
 from routr import Endpoint, route
+from routr.exc import RouteReversalError
 from routr.utils import import_string, inject_args
+from webob.exc import HTTPMovedPermanently, HTTPTemporaryRedirect
 from webob.request import Request
 from webob.response import Response
 
@@ -257,7 +259,6 @@ class Rororo(object):
         Initialize WSGI-compatible app with extra info.
         """
         self.packages = packages
-        self.reverse = routes.reverse
         self.routes = routes
         self.settings = settings
         self.wsgi_app = application
@@ -267,6 +268,24 @@ class Rororo(object):
         Shortcut for ``wsgi_app``.
         """
         return self.wsgi_app(environ, start_response)
+
+    def redirect(self, location, *args, **kwargs):
+        """
+        Shortcut for making redirects.
+        """
+        permanent = kwargs.pop('_permanent', False)
+        klass = HTTPMovedPermanently if permanent else HTTPTemporaryRedirect
+
+        try:
+            return klass(location=self.reverse(location, *args, **kwargs))
+        except RouteReversalError:
+            return klass(location=location, *args, **kwargs)
+
+    def reverse(self, *args, **kwargs):
+        """
+        Shortcut for reversing routes.
+        """
+        return self.routes.reverse(*args, **kwargs)
 
 
 def create_app(mixed=None, **kwargs):
