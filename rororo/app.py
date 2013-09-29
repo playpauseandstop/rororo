@@ -49,6 +49,20 @@ static route to list of all application routes.
 
 By default: ``False``
 
+DISABLE_SETUP_LOGGING
+---------------------
+
+Disable auto setup logging from ``LOGGING`` and ``LOCAL_LOGGING`` dict configs.
+
+By default: ``False``
+
+DISABLE_SETUP_TIMEZONE
+----------------------
+
+Disable setup timezone from ``TIME_ZONE`` settings.
+
+By default: ``False``
+
 JINJA_FILTERS
 -------------
 
@@ -210,6 +224,8 @@ DEFAULT_RENDERERS = (
 DEFAULT_SETTINGS = (
     ('APP_DIR', None),
     ('DEBUG', False),
+    ('DISABLE_SETUP_LOGGING', False),
+    ('DISABLE_SETUP_TIMEZONE', False),
     ('JINJA_FILTERS', {}),
     ('JINJA_GLOBALS', {}),
     ('JINJA_OPTIONS', {}),
@@ -360,8 +376,11 @@ def create_app(mixed=None, **kwargs):
     settings._TEMPLATE_DIRS = [absdir(settings.TEMPLATE_DIR, settings.APP_DIR)]
 
     # Also setup logging and timezone for application
-    setup_logging(settings.LOGGING, settings.LOCAL_LOGGING)
-    setup_timezone(settings.TIME_ZONE)
+    if not settings.DISABLE_SETUP_LOGGING:
+        setup_logging(settings.LOGGING, settings.LOCAL_LOGGING)
+
+    if not settings.DISABLE_SETUP_TIMEZONE:
+        setup_timezone(settings.TIME_ZONE)
 
     # Now it's time to load all packages if any and modify settings a bit if
     # necessary (settings.PACKAGES is not an empty sequence)

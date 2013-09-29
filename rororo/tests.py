@@ -98,9 +98,10 @@ class TestRororo(TestCase):
 
     def test_create_app_default_settings(self):
         app = create_app(routes=ROUTES)
-        self.assertEqual(app.settings.APP_DIR,
-                         os.getcwdu() if not compat.IS_PY3 else os.getcwd())
+        self.assertEqual(app.settings.APP_DIR, force_unicode(os.getcwd()))
         self.assertFalse(app.settings.DEBUG)
+        self.assertFalse(app.settings.DISABLE_SETUP_LOGGING)
+        self.assertFalse(app.settings.DISABLE_SETUP_TIMEZONE)
         self.assertEqual(app.settings.JINJA_GLOBALS, {})
         self.assertEqual(app.settings.JINJA_FILTERS, {})
         self.assertEqual(app.settings.JINJA_OPTIONS, {})
