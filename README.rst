@@ -2,20 +2,21 @@
 rororo
 ======
 
-.. image:: https://secure.travis-ci.org/playpauseandstop/rororo.png
+.. image:: https://travis-ci.org/playpauseandstop/rororo.png?branch=master
+   :target: https://travis-ci.org/playpauseandstop/rororo
 
 Functional nano web-framework built on top of `WebOb <http://webob.org/>`_,
 `routr <http://routr.readthedocs.com/>`_ and `Jinja2
 <http://jinja.pocoo.org/>`_. Works on Python 2.6 and higher (Python 3
-supported as well).
+support starts from 3.3 version).
 
 Requirements
 ============
 
-* `Python <http://www.python.org/>`_ 2.6 or higher
+* `Python <http://www.python.org/>`_ 2.6, 2.7, 3.3 and higher
 * `WebOb`_ 1.2.3 or higher
 * `routr`_ 0.7.1 or higher
-* `Jinja2`_ 2.6 or higher
+* `Jinja2`_ 2.7 or higher
 
 License
 =======

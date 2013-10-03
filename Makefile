@@ -33,7 +33,7 @@ commentor:
 	$(PYTHON) examples/commentor/app.py $(COMMAND)
 
 distclean: clean
-	-find . -name "*.egg*" -depth 1 -exec rm -rf {} \;
+	-find . -maxdepth 1 -name "*.egg*" -exec rm -rf {} \;
 	-rm -rf build/ dist/ $(ENV)*/
 
 explorer:

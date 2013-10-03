@@ -252,7 +252,7 @@ class Rororo(object):
     Simple class which gives ability to wrap original WSGI application in
     WSGI middlewares.
     """
-    __slots__ = ('packages', 'reverse', 'routes', 'settings', 'wsgi_app')
+    __slots__ = ('packages', 'routes', 'settings', 'wsgi_app')
 
     def __init__(self, application, settings, packages, routes):
         """
