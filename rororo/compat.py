@@ -18,6 +18,12 @@ try:
 except ImportError:
     from logutils.dictconfig import dictConfig as logging_config
 
+# First, try to load unittest2 module, after fallback to normal unittest
+try:
+    from unittest2 import TestCase
+except ImportError:
+    from unittest import TestCase
+
 
 # Are we working on Python 3 or not?
 IS_PY3 = sys.version_info[0] == 3

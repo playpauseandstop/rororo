@@ -10,7 +10,10 @@ All exceptions from WebOb, routr and rororo in one place.
 from string import Template
 
 from routr import exc as routr_exceptions
+from schemify import ValidationError as BaseValidationError
 from webob import exc as webob_exceptions
+
+from .utils import inject_exceptions
 
 
 class HTTPServerError(webob_exceptions.HTTPServerError):
@@ -38,7 +41,7 @@ class NoRendererFound(ValueError):
         super(NoRendererFound, self).__init__(message)
 
 
-class ValidationError(Exception):
+class ValidationError(BaseValidationError):
     """
     Class for validation errors.
 
@@ -48,19 +51,8 @@ class ValidationError(Exception):
     """
 
 
-def inject(module):
-    """
-    Inject all exceptions from module to global namespace.
-    """
-    for attr in dir(module):
-        if attr.startswith('_') or attr in globals():
-            continue
+# First inject WebOb exceptions
+inject_exceptions(webob_exceptions, locals())
 
-        value = getattr(module, attr)
-
-        if isinstance(value, type) and issubclass(value, Exception):
-            globals()[value.__name__] = value
-
-
-inject(routr_exceptions)
-inject(webob_exceptions)
+# Next routr exceptions, but without overwriting original WebOb exceptions
+inject_exceptions(routr_exceptions, locals(), False)

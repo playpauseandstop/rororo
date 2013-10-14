@@ -13,6 +13,8 @@ import os
 import time
 import types
 
+from collections import Container
+
 from routr.utils import import_string
 
 from . import compat
@@ -88,27 +90,102 @@ def get_commands(commands):
     return [cmd for command in commands for cmd in safe(command)]
 
 
-def import_settings(settings, context, fail_silently=False):
+def inject_exceptions(module, namespace, overwrite=True, fail_silently=False):
+    """
+    Inject all exceptions from ``module`` to ``namespace`` dict-like instance.
+
+    See also: ``inject_module`` and ``inject_settings``.
+    """
+    include_func = lambda value: (isinstance(value, type) and
+                                  issubclass(value, Exception))
+    return inject_module(module,
+                         namespace,
+                         include_value=include_func,
+                         overwrite=overwrite,
+                         fail_silently=fail_silently)
+
+
+def inject_module(module, namespace, include_attr=None, ignore_attr=None,
+                  include_value=None, ignore_value=None, overwrite=True,
+                  fail_silently=False):
+    """
+    Inject all attributes with their values from ``module`` to ``namespace``
+    dict-like instance.
+
+    Module should be a path or already imported Python module.
+
+    If you need to include only specified attributes or values you should pass
+    string, container or callable to ``include_attr`` and ``include_value``
+    args. Same to ignorance and ``ignore_attr``, ``ignore_value`` args.
+
+    By default, attributes would be overwritten in namespace if they already
+    setup, to disable use ``overwrite=False``.
+
+    Pass ``fail_silently=True`` to supress raising ``ImportError`` if settings
+    module was a path and unable to import.
+    """
+    def checker(mixed, value):
+        """
+        Check that mixed is not null and value is in mixed or returns positive
+        after call.
+        """
+        if mixed is not None:
+            if callable(mixed):
+                return mixed(value)
+            elif (
+                isinstance(mixed, Container) and
+                not isinstance(mixed, compat.string_types)
+            ):
+                return value in mixed
+            return value == mixed
+        return False
+
+    if isinstance(module, compat.string_types):
+        try:
+            imported = import_string(module)
+        except ImportError:
+            if fail_silently:
+                return False
+            raise
+    else:
+        imported = module
+
+    for attr in dir(imported):
+        value = getattr(imported, attr)
+
+        if (
+            checker(ignore_attr, attr) or
+            checker(ignore_value, value) or
+            (not overwrite and attr in namespace)
+        ):
+            continue
+
+        if (
+            checker(include_attr, attr) or
+            checker(include_value, value) or
+            (not include_attr and not include_value)
+        ):
+            namespace[attr] = value
+
+    return True
+
+
+def inject_settings(settings, namespace, overwrite=True, fail_silently=False):
     """
     Import all possible settings from ``settings`` module and place them to
-    ``context`` dict..
+    ``namespace`` dict-like instance.
+
+    Settings module should be a path or already imported Python module.
 
     If settings module doesn't exist, ``ImportError`` would be raised, but you
     should supress this approach by passing ``fail_silently=True``.
     """
-    try:
-        module = import_string(settings)
-    except ImportError:
-        if fail_silently:
-            return False
-        raise
-
-    for attr in dir(module):
-        if not attr.isupper() or attr.startswith('_'):
-            continue
-        context[attr] = getattr(module, attr)
-
-    return True
+    ignore_func = lambda attr: not attr.isupper() or attr.startswith('_')
+    return inject_module(settings,
+                         namespace,
+                         ignore_attr=ignore_func,
+                         overwrite=overwrite,
+                         fail_silently=fail_silently)
 
 
 def make_debug(enabled=False, extra=None, level=None, instance=None):

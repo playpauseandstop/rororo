@@ -8,20 +8,18 @@ import tempfile
 
 from string import Template
 
-try:
-    from unittest2 import TestCase
-except ImportError:
-    from unittest import TestCase
-
 from jinja2.utils import escape
-from routr import route
 from webob.response import Response
 from webtest import TestApp
 
-from rororo import GET, compat, create_app, exceptions, manage
+from rororo import compat, exceptions
+from rororo.app import create_app
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
+from rororo.manager import manage
+from rororo.routes import GET, route
 from rororo.utils import (
-    absdir, dict_combine, force_unicode, import_settings, make_debug
+    absdir, dict_combine, force_unicode, inject_module, inject_settings,
+    make_debug
 )
 
 
@@ -74,7 +72,7 @@ ROUTES = (
 )
 
 
-class TestRororo(TestCase):
+class TestRororo(compat.TestCase):
 
     def setUp(self):
         if not os.path.isdir(STATIC_DIR):
@@ -334,7 +332,7 @@ class TestRororo(TestCase):
         self.assertNotEqual(len(routes.routes), len(app.routes.routes))
 
 
-class TestRororoUtils(TestCase):
+class TestRororoUtils(compat.TestCase):
 
     def test_absdir(self):
         self.assertEqual(absdir('user', '/Users'), '/Users/user')
@@ -398,9 +396,110 @@ class TestRororoUtils(TestCase):
         self.assertEqual(force_unicode(compat.u('hello')), compat.u('hello'))
         self.assertEqual(force_unicode(compat.u('привет')), compat.u('привет'))
 
-    def test_import_settings(self):
+    def test_inject_module(self):
         data = {}
-        import_settings('rororo.manager', data)
+        self.assertTrue(inject_module(sys, data))
+        self.assertEqual(data['path'], sys.path)
+
+        data = {}
+        self.assertTrue(inject_module('sys', data))
+        self.assertEqual(data['path'], sys.path)
+
+        data = {}
+        self.assertRaises(ImportError, inject_module, 'does_not_exist', data)
+        self.assertEqual(data, {})
+
+    def test_inject_module_include_attr(self):
+        data = {}
+        inject_module('rororo.manager', data, include_attr='manage')
+        self.assertIn('manage', data)
+        self.assertIsNotNone(data['manage'])
+        self.assertNotIn('DEFAULT_HOST', data)
+
+        data = {}
+        inject_module('rororo.manager', data, include_attr=set(['manage']))
+        self.assertIn('manage', data)
+        self.assertIsNotNone(data['manage'])
+        self.assertNotIn('DEFAULT_HOST', data)
+
+        data = {}
+        func = lambda attr: attr.startswith('DEFAULT_')
+        inject_module('rororo.manager', data, include_attr=func)
+        self.assertNotIn('manage', data)
+        self.assertIn('DEFAULT_HOST', data)
+
+    def test_inject_module_include_value(self):
+        data = {}
+        inject_module('rororo.manager', data, include_value='0.0.0.0')
+        self.assertIn('DEFAULT_HOST', data)
+        self.assertNotIn('manage', data)
+
+        data = {}
+        inject_module('rororo.manager', data, include_value=[manage])
+        self.assertIn('manage', data)
+        self.assertNotIn('DEFAULT_HOST', data)
+
+        data = {}
+        func = lambda value: (isinstance(value, compat.string_types) and
+                              value == '0.0.0.0')
+        inject_module('rororo.manager', data, include_value=func)
+        self.assertNotIn('manage', data)
+        self.assertIn('DEFAULT_HOST', data)
+
+    def test_inject_module_ignore_attr(self):
+        data = {}
+        inject_module('rororo.manager', data, ignore_attr='manage')
+        self.assertNotIn('manage', data)
+        self.assertIn('DEFAULT_HOST', data)
+
+        data = {}
+        inject_module('rororo.manager', data, ignore_attr=('manage', ))
+        self.assertNotIn('manage', data)
+        self.assertIn('DEFAULT_HOST', data)
+
+        data = {}
+        func = lambda attr: attr.startswith('DEFAULT_')
+        inject_module('rororo.manager', data, ignore_attr=func)
+        self.assertIn('manage', data)
+        self.assertNotIn('DEFAULT_HOST', data)
+
+    def test_inject_module_ignore_value(self):
+        data = {}
+        inject_module('rororo.manager', data, ignore_value='0.0.0.0')
+        self.assertIn('manage', data)
+        self.assertNotIn('DEFAULT_HOST', data)
+
+        data = {}
+        inject_module('rororo.manager', data, ignore_value=(manage, ))
+        self.assertNotIn('manage', data)
+        self.assertIn('DEFAULT_HOST', data)
+
+        data = {}
+        func = lambda value: (isinstance(value, compat.string_types) and
+                              value == '0.0.0.0')
+        inject_module('rororo.manager', data, ignore_value=func)
+        self.assertIn('manage', data)
+        self.assertNotIn('DEFAULT_HOST', data)
+
+    def test_inject_module_overwrite(self):
+        data = {}
+        inject_module('rororo.manager', data)
+        self.assertIsNotNone(data['manage'])
+
+        data = {'manage': None}
+        inject_module('rororo.manager', data, overwrite=None)
+        self.assertIsNone(data['manage'])
+
+    def test_inject_module_fail_silently(self):
+        data = {}
+        self.assertFalse(inject_module('rororo.does_not_exist',
+                                       data,
+                                       fail_silently=True))
+        self.assertEqual(data, {})
+
+    def test_inject_settings(self):
+        data = {}
+        inject_settings('rororo.manager', data)
 
         self.assertEqual(len(data), 2)
         self.assertIn('DEFAULT_HOST', data)
@@ -409,14 +508,24 @@ class TestRororoUtils(TestCase):
         old_data = data
 
         self.assertRaises(ImportError,
-                          import_settings,
+                          inject_settings,
                           'rororo.does_not_exist',
                           data)
         self.assertEqual(data, old_data)
 
-    def test_import_settings_fail_silently(self):
+    def test_inject_settings_overwrite(self):
+        host = 'x.x.x.x'
+        data = {'DEFAULT_HOST': host}
+        inject_settings('rororo.manager', data)
+        self.assertNotEqual(data['DEFAULT_HOST'], host)
+
+        data = {'DEFAULT_HOST': host}
+        inject_settings('rororo.manager', data, False)
+        self.assertEqual(data['DEFAULT_HOST'], host)
+
+    def test_inject_settings_fail_silently(self):
         data = {}
-        import_settings('rororo.does_not_exist', data, True)
+        inject_settings('rororo.does_not_exist', data, fail_silently=True)
         self.assertEqual(data, {})
 
     def test_make_debug(self):
