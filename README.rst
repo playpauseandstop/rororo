@@ -30,7 +30,7 @@ Installation
 Sometimes in future ``rororo`` will added to PyPI, but for now you can install
 it from master tarball, like::
 
-    # pip install https://github.com/playpauseandstop/rororo/tarball/master#egg=rororo
+    # pip install -e git+https://github.com/playpauseandstop/rororo.git#egg=rororo
 
 For what reason?
 ================
