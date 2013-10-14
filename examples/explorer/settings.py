@@ -1,6 +1,7 @@
 import os
 
-from rororo import GET, static
+from rororo.routes import GET
+from rororo.static import static
 
 
 DIRNAME = os.path.abspath(os.path.dirname(__file__))

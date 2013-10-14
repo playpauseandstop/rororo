@@ -1,11 +1,11 @@
-from rororo.tests import TestCase
+from rororo import compat
 from routr.utils import import_string
 from webtest import TestApp
 
 from app import app
 
 
-class TestWebTest(TestCase):
+class TestWebTest(compat.TestCase):
 
     def setUp(self):
         self.client = TestApp(app)

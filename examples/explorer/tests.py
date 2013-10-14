@@ -1,16 +1,16 @@
 import io
 import sys
 
-from rororo import compat, manage
+from rororo import compat
 from rororo.exceptions import HTTPNotFound
-from rororo.tests import TestCase
+from rororo.manager import manage
 from webtest import TestApp
 
 from app import app, manager, settings
 from views import explorer
 
 
-class TestCustomCommands(TestCase):
+class TestCustomCommands(compat.TestCase):
 
     def tearDown(self):
         sys.argv = self.old_argv
@@ -40,7 +40,7 @@ class TestCustomCommands(TestCase):
         self.assertNotIn('validate', content)
 
 
-class TestViews(TestCase):
+class TestViews(compat.TestCase):
 
     def test_does_not_exist(self):
         self.assertRaises(HTTPNotFound, explorer, '/does_not_exist')
@@ -50,7 +50,7 @@ class TestViews(TestCase):
         self.assertTrue(listing)
 
 
-class TestWebTest(TestCase):
+class TestWebTest(compat.TestCase):
 
     def setUp(self):
         self.client = TestApp(app)

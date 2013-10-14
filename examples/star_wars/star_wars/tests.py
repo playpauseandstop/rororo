@@ -1,11 +1,11 @@
+from rororo import compat
 from rororo.manager import pep8
-from rororo.tests import TestCase
 from webtest import TestApp
 
 from .app import app
 
 
-class TestStarWars(TestCase):
+class TestStarWars(compat.TestCase):
 
     def setUp(self):
         self.app = TestApp(app)

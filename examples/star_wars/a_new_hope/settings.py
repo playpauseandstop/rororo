@@ -1,4 +1,4 @@
-from rororo import GET
+from rororo.routes import GET
 
 
 JINJA_GLOBALS = {

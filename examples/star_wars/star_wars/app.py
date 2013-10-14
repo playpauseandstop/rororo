@@ -1,4 +1,4 @@
-from rororo import create_app
+from rororo.app import create_app
 
 from . import settings
 

@@ -1,4 +1,4 @@
-from rororo import GET, POST
+from rororo.routes import GET, POST
 
 
 # Debug settings
