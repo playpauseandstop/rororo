@@ -1,4 +1,5 @@
 from rororo.routes import GET, POST
+from rororo.schema import form
 
 
 # Debug settings
@@ -16,7 +17,10 @@ REDIS_COMMENTS_KEY = 'commentor:comments'
 # Routes settings
 ROUTES = (
     GET('/', 'comments', name='comments', renderer='comments.html'),
-    POST('/add', 'add_comment', renderer='add_comment.html'),
+    POST('/add',
+         form(author=unicode, text=unicode),
+         'add_comment',
+         renderer='add_comment.html'),
 )
 ROUTES_VIEW_PREFIX = 'views'
 

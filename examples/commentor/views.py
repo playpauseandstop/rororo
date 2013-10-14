@@ -1,7 +1,11 @@
-def add_comment(author, text, time=None):
+from app import app
+
+
+def add_comment(author, text):
     """
     Add new comment to Redis.
     """
+    return app.redirect('comments')
 
 
 def comments():

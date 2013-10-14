@@ -198,7 +198,7 @@ from jinja2 import Environment, FileSystemLoader
 from routr import Endpoint, route
 from routr.exc import RouteReversalError
 from routr.utils import import_string, inject_args
-from webob.exc import HTTPMovedPermanently, HTTPTemporaryRedirect
+from webob.exc import HTTPMovedPermanently, HTTPFound
 from webob.request import Request
 from webob.response import Response
 
@@ -274,7 +274,7 @@ class Rororo(object):
         Shortcut for making redirects.
         """
         permanent = kwargs.pop('_permanent', False)
-        klass = HTTPMovedPermanently if permanent else HTTPTemporaryRedirect
+        klass = HTTPMovedPermanently if permanent else HTTPFound
 
         try:
             return klass(location=self.reverse(location, *args, **kwargs))

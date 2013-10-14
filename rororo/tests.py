@@ -280,11 +280,11 @@ class TestRororo(compat.TestCase):
     def test_redirect(self):
         app = create_app(__name__)
         response = app.redirect('json')
-        self.assertEqual(response.code, 307)
+        self.assertEqual(response.code, 302)
         self.assertEqual(response.location, '/json')
 
         response = app.redirect('/')
-        self.assertEqual(response.code, 307)
+        self.assertEqual(response.code, 302)
         self.assertEqual(response.location, '/')
 
     def test_redirect_permanent(self):

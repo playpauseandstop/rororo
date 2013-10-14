@@ -1,5 +1,4 @@
 from rororo import compat
-from routr.utils import import_string
 from webtest import TestApp
 
 from app import app
