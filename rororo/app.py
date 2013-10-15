@@ -335,6 +335,14 @@ def create_app(mixed=None, **kwargs):
             if not isinstance(response, Response):
                 renderer = trace.annotation('renderer')
                 response = process_renderer(settings, renderer, response)
+
+            # Apply content type and status code from trace keyword arguments
+            # to response instance
+            for item in ('content_type', 'status_code'):
+                value = trace.annotation(item)
+                if not value:
+                    continue
+                setattr(response, item, value)
         # Process exceptions
         except Exception as err:
             # No route found in list of available ones

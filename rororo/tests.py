@@ -57,6 +57,8 @@ RENDERERS = (
 ROUTES = (
     GET('/', 'rororo.tests.index_view', name='index'),
     GET('/blank', blank, name='blank', renderer=TEMPLATE_NAME),
+    GET('/csv', lambda: 'Name,Age\r\nJohn,18\r\nJane,16', name='csv',
+        renderer='text', content_type='text/csv', status_code=201),
     GET('/json', 'rororo.tests.json_view', name='json', renderer='json'),
     GET('/json/custom', 'rororo.tests.json_view', renderer='custom_json'),
     GET('/lambda', lambda: 'Hello, world!', name='lambda', renderer='text'),
@@ -137,7 +139,6 @@ class TestRororo(compat.TestCase):
         app = create_app(__name__)
 
         self.assertEqual(app.reverse('index'), '/')
-        self.assertEqual(app.reverse('index'), '/')
         self.assertEqual(app.reverse('json'), '/json')
         self.assertEqual(app.reverse('server_error'), '/server-error-1')
         self.assertEqual(app.reverse('template'), '/template')
@@ -150,6 +151,11 @@ class TestRororo(compat.TestCase):
         self.assertRaises(RouteReversalError,
                           app.routes.reverse,
                           'does_not_exist')
+
+    def test_custom_content_type_and_status_code(self):
+        app = TestApp(create_app(__name__))
+        response = app.get('/csv', status=201)
+        self.assertEqual(response.content_type, 'text/csv')
 
     def test_jinja_renderer(self):
         dirname = os.path.abspath(os.path.dirname(__file__))
