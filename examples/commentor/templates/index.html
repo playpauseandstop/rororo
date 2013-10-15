@@ -6,9 +6,9 @@
 
   <link href="{{ reverse("static", "css/screen.css") }}" media="screen,projection,tv" rel="stylesheet" type="text/css">
 
-  <script src="{{ reverse("static", "vendor/underscore-1.5.2.min.js") }}" type="text/javascript"></script>
-  <script src="{{ reverse("static", "vendor/zepto-1.0.min.js") }}" type="text/javascript"></script>
-  <script src="{{ reverse("static", "js/commentor.js") }}" type="text/javascript"></script>
+  <script src="{{ reverse("static", "vendor/underscore-1.5.2.min.js") }}" type="application/javascript"></script>
+  <script src="{{ reverse("static", "vendor/zepto-1.0.min.js") }}" type="application/javascript"></script>
+  <script src="{{ reverse("static", "js/commentor.js") }}" type="application/javascript"></script>
 
   <script id="js-comments-template" type="text/template">
     <% if (comments.length == 1) { %>
@@ -44,7 +44,7 @@
         <legend>Add new comment</legend>
         <div>
           <label for="author">Your name:</label><br>
-          <input id="author" name="author" size="80" type="text">
+          <input autocomplete="off" id="author" name="author" size="80" type="text">
           <div class="error"></div>
         </div>
         <p>
