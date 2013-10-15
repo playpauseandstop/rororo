@@ -1,5 +1,7 @@
+from rororo import compat
 from rororo.routes import GET, POST
 from rororo.schema import form
+from rororo.views import blank
 
 
 # Debug settings
@@ -16,11 +18,12 @@ REDIS_COMMENTS_KEY = 'commentor:comments'
 
 # Routes settings
 ROUTES = (
-    GET('/', 'comments', name='comments', renderer='comments.html'),
-    POST('/add',
-         form(author=unicode, text=unicode),
+    GET('/', blank, name='index', renderer='index.html'),
+    POST('/api/comment/add',
+         form(author=compat.text_type, text=compat.text_type),
          'add_comment',
-         renderer='add_comment.html'),
+         renderer='json'),
+    GET('/api/comments', 'get_comments', name='get_comments', renderer='json'),
 )
 ROUTES_VIEW_PREFIX = 'views'
 

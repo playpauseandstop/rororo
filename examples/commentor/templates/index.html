@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Commentor</title>
+  <meta charset="utf-8">
+
+  <link href="{{ reverse("static", "css/screen.css") }}" media="screen,projection,tv" rel="stylesheet" type="text/css">
+  <script src="{{ reverse("static", "vendor/zepto-1.0.min.js") }}" type="text/javascript"></script>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Commentor</h1>
+    <hr>
+    <h2>Latest {{ settings.COMMENTS_PER_PAGE }} comments</h2>
+    <hr>
+    <form action="{{ reverse("add_comment") }}" method="post">
+      <fieldset>
+        <legend>Add new comment</legend>
+        <p>
+          <label for="author">Your name:</label><br>
+          <input id="author" name="author" size="80" type="text">
+        </p>
+        <p>
+          <label for="text">Comment:</label><br>
+          <textarea name="text" id="text" cols="80" rows="5"></textarea>
+        </p>
+        <p>
+          <button type="submit">Submit</button>
+        </p>
+      </fieldset>
+      <script type="text/javascript"><!--
+        document.getElementById("author").focus();
+      --></script>
+    </form>
+  </div>
+
+</body>
+
+</html>
