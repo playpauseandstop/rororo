@@ -1,6 +1,6 @@
 from rororo import compat
 from rororo.routes import GET, POST
-from rororo.schema import form
+from rororo.schema import form, qs
 from rororo.views import blank
 
 
@@ -22,8 +22,13 @@ ROUTES = (
     POST('/api/comment/add',
          form(author=compat.text_type, text=compat.text_type),
          'add_comment',
+         name='api_add_comment',
          renderer='json'),
-    GET('/api/comments', 'get_comments', name='get_comments', renderer='json'),
+    GET('/api/comments',
+        qs(limit=int),
+        'get_comments',
+        name='api_get_comments',
+        renderer='json'),
 )
 ROUTES_VIEW_PREFIX = 'views'
 

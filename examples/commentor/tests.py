@@ -28,7 +28,9 @@ class TestViews(compat.TestCase):
         comments_key = app.settings.REDIS_COMMENTS_KEY
         self.assertEqual(redis.llen(comments_key), 0)
 
-        self.assertTrue(add_comment(TEST_AUTHOR, TEST_TEXT))
+        result = add_comment(TEST_AUTHOR, TEST_TEXT)
+        self.assertIn('added', result)
+        self.assertTrue(result['added'])
         self.assertEqual(redis.llen(comments_key), 1)
 
 
