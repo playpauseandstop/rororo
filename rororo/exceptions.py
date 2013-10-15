@@ -52,7 +52,7 @@ class ValidationError(BaseValidationError):
 
 
 # First inject WebOb exceptions
-inject_exceptions(webob_exceptions, locals())
+inject_exceptions(webob_exceptions, locals(), False)
 
 # Next routr exceptions, but without overwriting original WebOb exceptions
 inject_exceptions(routr_exceptions, locals(), False)

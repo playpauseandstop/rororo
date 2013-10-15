@@ -17,6 +17,7 @@ from rororo.app import create_app
 from rororo.exceptions import ImproperlyConfigured, RouteReversalError
 from rororo.manager import manage
 from rororo.routes import GET, route
+from rororo.views import blank
 from rororo.utils import (
     absdir, dict_combine, force_unicode, inject_module, inject_settings,
     make_debug
@@ -32,6 +33,7 @@ TEMPLATE_WITH_GLOBALS = """<h1>Hello, world!</h1>
 <h2>Links</h2>
 <ul>
     <li><a href="{{ reverse("index") }}">Index view</a></li>
+    <le><a href="{{ reverse("blank") }}">Blank view</a></li>
     <li><a href="{{ reverse("lambda") }}">Lambda view</a></li>
     <li><a href="{{ reverse("json") }}">JSON view</a></li>
     <li><a href="{{ reverse("server_error") }}">Server Error view</a></li>
@@ -54,6 +56,7 @@ RENDERERS = (
 )
 ROUTES = (
     GET('/', 'rororo.tests.index_view', name='index'),
+    GET('/blank', blank, name='blank', renderer=TEMPLATE_NAME),
     GET('/json', 'rororo.tests.json_view', name='json', renderer='json'),
     GET('/json/custom', 'rororo.tests.json_view', renderer='custom_json'),
     GET('/lambda', lambda: 'Hello, world!', name='lambda', renderer='text'),
@@ -158,6 +161,7 @@ class TestRororo(compat.TestCase):
         response = app.get('/template', status=200)
 
         self.assertIn('<a href="/">', response.text)
+        self.assertIn('<a href="/blank">', response.text)
         self.assertIn('<a href="/json">', response.text)
         self.assertIn('<a href="/lambda">', response.text)
         self.assertIn('<a href="/server-error-1">', response.text)
@@ -171,6 +175,9 @@ class TestRororo(compat.TestCase):
         self.assertIn(
             'TEMPLATE_DIR: {0}'.format(escape(TEMPLATE_DIR)), response.text
         )
+
+        new_response = app.get('/blank', status=200)
+        self.assertEqual(response.text, new_response.text)
 
         new_app = TestApp(create_app(routes=ROUTES, template_dir=TEMPLATE_DIR))
         response = new_app.get('/template', status=200)
