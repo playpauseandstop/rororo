@@ -9,7 +9,8 @@ Contains all custom and routr's schemas (guards) and validators.
 
 import copy
 
-from .utils import inject_module
+from routrschema import RequestParams, form, json_body, qs  # noqa
+from schemify import anything, opt, validate  # noqa
 
 
 class defaults(object):
@@ -27,14 +28,3 @@ class defaults(object):
         Update trace kwargs with defaults values.
         """
         trace.kwargs.update(copy.deepcopy(self.__dict__))
-
-
-# Include schemas from routrschema module
-inject_module('routrschema',
-              locals(),
-              include_attr=('RequestParams', 'form', 'json_body', 'qs'))
-
-# Include validators from schemify module
-inject_module('schemify',
-              locals(),
-              include_attr=('anything', 'opt', 'validate'))
