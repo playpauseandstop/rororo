@@ -9,8 +9,6 @@ Logging utilities.
 
 import sys
 
-from logging import StreamHandler
-
 
 class IgnoreErrorsFilter(object):
 
@@ -46,14 +44,14 @@ def default_logging_dict(*loggers, **kwargs):
         },
         'handlers': {
             'stdout': {
-                'class': StreamHandler,
+                'class': 'logging.StreamHandler',
                 'filters': ['ignore_errors'],
                 'formatter': 'default',
                 'level': 'DEBUG',
                 'stream': sys.stdout,
             },
             'stderr': {
-                'class': StreamHandler,
+                'class': 'logging.StreamHandler',
                 'formatter': 'default',
                 'level': 'WARNING',
                 'stream': sys.stderr,
