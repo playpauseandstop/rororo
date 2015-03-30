@@ -32,4 +32,8 @@ pep8:
 	$(PEP8) --statistics $(PROJECT)/
 
 test: bootstrap clean
-	$(TOX)
+ifneq ($(TOXENV),)
+	$(TOX) -e $(TOXENV) $(TOX_ARGS) -- $(TEST_ARGS)
+else
+	$(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
+endif
