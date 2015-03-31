@@ -7,6 +7,7 @@ Test rororo Setting dictionary and additional utilities.
 
 """
 
+import calendar
 import datetime
 import os
 
@@ -17,6 +18,7 @@ from rororo.settings import (
     immutable_settings,
     inject_settings,
     is_setting_key,
+    setup_locale,
     setup_timezone,
     to_bool,
 )
@@ -32,6 +34,7 @@ _TEST_USER = 'private-user'
 class TestSettings(TestCase):
 
     def setUp(self):
+        setup_locale('en_US.UTF-8')
         setup_timezone('UTC')
 
     def check_immutability(self, settings):
@@ -148,6 +151,22 @@ class TestSettings(TestCase):
         self.assertFalse(is_setting_key('_PRIVATE_USER'))
         self.assertFalse(is_setting_key('camelCase'))
         self.assertFalse(is_setting_key('secret_key'))
+
+    def test_setup_locale(self):
+        monday = calendar.day_abbr[0]
+        first_weekday = calendar.firstweekday()
+
+        setup_locale('ru_UA.UTF-8')
+        self.assertNotEqual(calendar.day_abbr[0], monday)
+        self.assertEqual(calendar.firstweekday(), first_weekday)
+
+    def test_setup_locale_with_first_weekday(self):
+        first_weekday = calendar.firstweekday()
+
+        setup_locale('ru_UA.UTF-8', 1)
+        self.assertEqual(calendar.firstweekday(), 1)
+
+        setup_locale('en_US.UTF-8', first_weekday)
 
     def test_setup_timezone(self):
         setup_timezone('UTC')

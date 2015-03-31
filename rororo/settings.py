@@ -10,12 +10,14 @@ Module helps you to prepare and read settings inside your web application.
 
 """
 
+import calendar
 import os
 import time
 import types
 
 from distutils.util import strtobool
 from importlib import import_module
+from locale import LC_ALL, setlocale
 from logging.config import dictConfig as setup_logging  # noqa
 
 
@@ -132,6 +134,18 @@ def iter_settings(mixed):
             yield (attr, getattr(mixed, attr))
     else:
         yield from filter(lambda item: is_setting_key(item[0]), mixed.items())
+
+
+def setup_locale(locale, first_weekday=None):
+    """Setup locale for backend application.
+
+    :param locale: Locale to use.
+    :param first_weekday:
+        Weekday for start week. 0 for Monday, 6 for Sunday. By default: None
+    """
+    if first_weekday is not None:
+        calendar.setfirstweekday(first_weekday)
+    return setlocale(LC_ALL, locale)
 
 
 def setup_timezone(timezone):
