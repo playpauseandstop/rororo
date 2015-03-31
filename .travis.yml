@@ -2,6 +2,9 @@ language: python
 env:
   - TOXENV=py34
 
+before_install:
+  - sudo apt-get update && sudo apt-get --reinstall install language-pack-en language-pack-ru
+
 install:
   - pip install tox
 script:
