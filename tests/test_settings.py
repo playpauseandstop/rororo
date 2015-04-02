@@ -156,14 +156,14 @@ class TestSettings(TestCase):
         monday = calendar.day_abbr[0]
         first_weekday = calendar.firstweekday()
 
-        setup_locale('ru_UA.UTF-8')
+        setup_locale('uk_UA.UTF-8')
         self.assertNotEqual(calendar.day_abbr[0], monday)
         self.assertEqual(calendar.firstweekday(), first_weekday)
 
     def test_setup_locale_with_first_weekday(self):
         first_weekday = calendar.firstweekday()
 
-        setup_locale('ru_UA.UTF-8', 1)
+        setup_locale('uk_UA.UTF-8', 1)
         self.assertEqual(calendar.firstweekday(), 1)
 
         setup_locale('en_US.UTF-8', first_weekday)

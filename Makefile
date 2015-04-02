@@ -18,12 +18,19 @@ else
 	TOX = $(ENV)/bin/tox
 endif
 
+# Tox args
+ifneq ($(TOXENV),)
+	tox_args = -e $(TOXENV)
+endif
+
 bootstrap:
 	bootstrapper -e $(ENV)/
 	$(PIP) install tox
 
 clean:
 	find . -name "*.pyc" -delete
+	-find . -name "__pycache__" -type d -exec rm -rf {} 2> /dev/null +
+	find . -type d -empty -delete
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
@@ -32,8 +39,4 @@ pep8:
 	$(PEP8) --statistics $(PROJECT)/
 
 test: bootstrap clean
-ifneq ($(TOXENV),)
-	$(TOX) -e $(TOXENV) $(TOX_ARGS) -- $(TEST_ARGS)
-else
-	$(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
-endif
+	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
