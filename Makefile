@@ -9,11 +9,9 @@ VENV = $(shell python -c "import sys; print(int(hasattr(sys, 'real_prefix')));")
 
 # Python commands
 ifeq ($(VENV),1)
-	PEP8 = flake8
 	PIP = pip
 	TOX = tox
 else
-	PEP8 = $(ENV)/bin/flake8
 	PIP = $(ENV)/bin/pip
 	TOX = $(ENV)/bin/tox
 endif
@@ -34,9 +32,6 @@ clean:
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
-
-pep8:
-	$(PEP8) --statistics $(PROJECT)/
 
 test: bootstrap clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
