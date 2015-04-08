@@ -11,4 +11,4 @@ applications. Supports `aiohttp.web <http://aiohttp.readthedocs.org/>`_,
 
 __author__ = 'Igor Davydenko'
 __license__ = 'BSD'
-__version__ = '0.1.dev0'
+__version__ = '1.0.dev0'
