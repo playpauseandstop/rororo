@@ -5,6 +5,8 @@ rororo.logger
 
 Logging utilities.
 
+Module provides easy way to setup logging for your web application.
+
 """
 
 import sys
@@ -22,8 +24,8 @@ class IgnoreErrorsFilter(object):
 def default_logging_dict(*loggers, **kwargs):
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
-    :param \*loggers: Enable logging for given loggers sequence.
-    :param \*\*kwargs: Setup additional loggers params via keyword arguments.
+    :param \*loggers: Enable logging for each logger in sequence.
+    :param \*\*kwargs: Setup additional logger params via keyword arguments.
     """
     kwargs.setdefault('level', 'INFO')
     return {
@@ -69,12 +71,12 @@ def update_sentry_logging(logging_dict, sentry_dsn, *loggers):
 
     .. note::
         Sentry logging requires `raven <http://pypi.python.org/pypi/raven>`_
-        to be installed.
+        library to be installed.
 
     :param logging_dict: Logging dict.
     :param sentry_dsn:
-        Sentry DSN value. If None do not update logging dict at all.
-    :param \*loggers: Use Sentry logging for given loggers sequence.
+        Sentry DSN value. If ``None`` do not update logging dict at all.
+    :param \*loggers: Use Sentry logging for each logger in sequence.
     """
     # No Sentry DSN, nothing to do
     if not sentry_dsn:
@@ -94,5 +96,4 @@ def update_sentry_logging(logging_dict, sentry_dsn, *loggers):
             continue
 
         # Handlers list should exist
-        logger_dict.setdefault('handlers', [])
-        logger_dict['handlers'].append('sentry')
+        logger_dict.setdefault('handlers', []).append('sentry')
