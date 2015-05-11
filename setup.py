@@ -35,6 +35,10 @@ setup(
     url='http://github.com/playpauseandstop/rororo',
     packages=[
         'rororo',
+        'rororo.schemas',
+    ],
+    install_requires=[
+        'jsonschema>=2.4.0',
     ],
     platforms='any',
     classifiers=[
