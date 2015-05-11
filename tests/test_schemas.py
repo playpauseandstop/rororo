@@ -9,11 +9,26 @@ from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 
 from rororo.schemas import defaults, Error as SchemaError, Schema, Validator
+from rororo.schemas.empty import EMPTY_ARRAY, EMPTY_OBJECT
 
 import schemas
 
 
 TEST_NAME = choice(('Igor', 'world'))
+
+
+class TestEmpty(TestCase):
+
+    def test_empty_array(self):
+        validate([], EMPTY_ARRAY)
+        self.assertRaises(ValidationError, validate, [1], EMPTY_ARRAY)
+
+    def test_empty_object(self):
+        validate({}, EMPTY_OBJECT)
+        self.assertRaises(ValidationError,
+                          validate,
+                          {'key': 'value'},
+                          EMPTY_OBJECT)
 
 
 class TestSchema(TestCase):
