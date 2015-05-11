@@ -1,8 +1,10 @@
 import time
+import types
 
 from random import choice
 from unittest import TestCase
 
+from aiohttp.multidict import MultiDict, MultiDictProxy
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 
@@ -15,6 +17,29 @@ TEST_NAME = choice(('Igor', 'world'))
 
 
 class TestSchema(TestCase):
+
+    def check_wrapped_data(self, klass):
+        schema = Schema(schemas.index)
+
+        # Validate request should understand wrapped data
+        base = {'name': TEST_NAME}
+        wrapped = (klass(MultiDict(base))
+                   if klass == MultiDictProxy
+                   else klass(base))
+
+        data = schema.validate_request(wrapped)
+        self.assertEqual(data, base)
+        self.assertIsInstance(data, klass)
+
+        # Make response should understand wrapped data
+        base = {'name': TEST_NAME, 'time': time.time()}
+        wrapped = (klass(MultiDict(base))
+                   if klass == MultiDictProxy
+                   else klass(base))
+
+        data = schema.make_response(wrapped)
+        self.assertEqual(data, base)
+        self.assertIsInstance(data, klass)
 
     def test_schema(self):
         schema = Schema(schemas.index)
@@ -43,6 +68,15 @@ class TestSchema(TestCase):
         self.assertRaises(SchemaError,
                           schema.make_response,
                           {'name': 'world', 'time': time.time()})
+
+    def test_schema_mapping_proxy_type(self):
+        self.check_wrapped_data(types.MappingProxyType)
+
+    def test_schema_multi_dict(self):
+        self.check_wrapped_data(MultiDict)
+
+    def test_schema_multi_dict_proxy(self):
+        self.check_wrapped_data(MultiDictProxy)
 
 
 class TestValidator(TestCase):

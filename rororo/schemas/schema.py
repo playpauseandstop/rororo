@@ -7,6 +7,13 @@ Implement class for validating request and response data against JSON Schema.
 
 """
 
+import types
+
+try:
+    from aiohttp.multidict import MultiDict, MultiDictProxy
+except ImportError:  # pragma: no cover
+    MultiDict, MultiDictProxy = None, None
+
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 
@@ -85,6 +92,22 @@ class Schema(object):
         processor = getattr(self.module, 'request_processor', None)
         return processor(data) if processor else data
 
+    def _pure_data(self, data):
+        """
+        Convert multi-dicts or any other custom dicts to normal dicts to be
+        compatible with ``jsonschema.validate`` function.
+
+        :param data: Python dict or other object.
+        """
+        dict_types = [types.MappingProxyType]
+        if MultiDict is not None:
+            dict_types.extend((MultiDict, MultiDictProxy))
+
+        if isinstance(data, tuple(dict_types)):
+            return dict(data)
+
+        return data
+
     def _validate(self, data, schema):
         """Validate data against given schema.
 
@@ -92,7 +115,7 @@ class Schema(object):
         :param schema: Schema to use for validation.
         """
         try:
-            return validate(data, schema, self.validator)
+            return validate(self._pure_data(data), schema, self.validator)
         except ValidationError as err:
             if self.error_class is None:
                 raise
