@@ -1,9 +1,11 @@
+import json
 import time
 import types
 
 from random import choice
 from unittest import TestCase
 
+from aiohttp import web
 from aiohttp.multidict import MultiDict, MultiDictProxy
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
@@ -15,6 +17,11 @@ import schemas
 
 
 TEST_NAME = choice(('Igor', 'world'))
+
+
+class CustomError(Exception):
+
+    """Custom Error."""
 
 
 class TestEmpty(TestCase):
@@ -68,6 +75,26 @@ class TestSchema(TestCase):
         response = schema.make_response({'name': TEST_NAME, 'time': timestamp})
         self.assertEqual(response, {'name': TEST_NAME, 'time': timestamp})
 
+    def test_schema_custom_error_class(self):
+        schema = Schema(schemas.index, error_class=CustomError)
+
+        with self.assertRaises(CustomError):
+            raise schema.make_error('Custom Error')
+
+        self.assertRaises(CustomError, schema.validate_request, {})
+        schema.validate_request({'name': TEST_NAME})
+
+        self.assertRaises(CustomError, schema.make_response, {})
+        schema.make_response({'name': TEST_NAME, 'time': time.time()})
+
+    def test_schema_custom_response_factory(self):
+        schema = Schema(schemas.index, response_factory=json_response_factory)
+        schema.validate_request({'name': TEST_NAME})
+        response = schema.make_response({'name': TEST_NAME,
+                                         'time': time.time()})
+        self.assertIsInstance(response, web.Response)
+        self.assertEqual(response.content_type, 'application/json')
+
     def test_schema_invalid_request(self):
         schema = Schema(schemas.index)
         self.assertRaises(ValidationError, schema.validate_request, {})
@@ -92,6 +119,22 @@ class TestSchema(TestCase):
 
     def test_schema_multi_dict_proxy(self):
         self.check_wrapped_data(MultiDictProxy)
+
+    def test_schema_no_request_defined(self, module=None):
+        schema = Schema(module or schemas.no_request)
+        self.assertRaises(SchemaError, schema.validate_request, {})
+
+    def test_schema_no_response_defined(self, module=None):
+        schema = Schema(module or schemas.no_response)
+        schema.validate_request({})
+        data = schema.make_response({'dummy': True})
+        self.assertEqual(data, {'dummy': True})
+
+    def test_schema_null_request_defined(self):
+        self.test_schema_no_request_defined(schemas.null_request)
+
+    def test_schema_null_response_defined(self):
+        self.test_schema_no_response_defined(schemas.null_response)
 
 
 class TestValidator(TestCase):
@@ -135,3 +178,7 @@ class TestUtils(TestCase):
         data = defaults({'fourth': 3}, first, second)
         self.assertEqual(data,
                          {'first': 1, 'second': 2, 'third': 2, 'fourth': 3})
+
+
+def json_response_factory(data):
+    return web.Response(text=json.dumps(data), content_type='application/json')

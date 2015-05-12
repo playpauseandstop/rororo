@@ -100,7 +100,7 @@ class Schema(object):
         :param data: Python dict or other object.
         """
         dict_types = [types.MappingProxyType]
-        if MultiDict is not None:
+        if MultiDict is not None:  # pragma: no branch
             dict_types.extend((MultiDict, MultiDictProxy))
 
         if isinstance(data, tuple(dict_types)):
