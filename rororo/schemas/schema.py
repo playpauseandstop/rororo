@@ -56,22 +56,27 @@ class Schema(object):
                 if self.error_class is None
                 else self.error_class(message))
 
-    def make_response(self, data, **kwargs):
+    def make_response(self, data=None, **kwargs):
         r"""Validate response data and wrap it inside response factory.
 
-        :param data: Response data.
+        :param data: Response data. Could be ommited.
         :param \*\*kwargs: Keyword arguments to be passed to response factory.
         """
         if not self._valid_request:
             raise self.make_error('Request not validated before, cannot make '
                                   'response')
 
+        if data is None and self.response_factory is None:
+            raise self.make_error('Response data could be omitted only when '
+                                  'response factory is used')
+
         response_schema = getattr(self.module, 'response', None)
         if response_schema is not None:
             self._validate(data, response_schema)
 
         if self.response_factory is not None:
-            return self.response_factory(data, **kwargs)
+            args = (data, ) if data else ()
+            return self.response_factory(*args, **kwargs)
         return data
 
     def validate_request(self, data, *additional, merged_class=dict):

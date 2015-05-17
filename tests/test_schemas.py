@@ -87,6 +87,13 @@ class TestSchema(TestCase):
         self.assertRaises(CustomError, schema.make_response, {})
         schema.make_response({'name': TEST_NAME, 'time': time.time()})
 
+    def test_schema_custom_response_class(self):
+        schema = Schema(schemas.project_page, response_factory=web.Response)
+        schema.validate_request({'project_id': 1})
+        response = schema.make_response(status=204)
+        self.assertIsInstance(response, web.Response)
+        self.assertEqual(response.status, 204)
+
     def test_schema_custom_response_factory(self):
         schema = Schema(schemas.index, response_factory=json_response_factory)
         schema.validate_request({'name': TEST_NAME})
@@ -94,6 +101,12 @@ class TestSchema(TestCase):
                                          'time': time.time()})
         self.assertIsInstance(response, web.Response)
         self.assertEqual(response.content_type, 'application/json')
+
+    def test_schema_empty_response(self):
+        schema = Schema(schemas.null_response)
+        schema.validate_request({})
+        self.assertRaises(SchemaError, schema.make_response)
+        self.assertRaises(SchemaError, schema.make_response, status=204)
 
     def test_schema_invalid_request(self):
         schema = Schema(schemas.index)
