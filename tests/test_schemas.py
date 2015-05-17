@@ -102,6 +102,14 @@ class TestSchema(TestCase):
         self.assertIsInstance(response, web.Response)
         self.assertEqual(response.content_type, 'application/json')
 
+    def test_schema_custom_response_factory_empty_response(self):
+        schema = Schema(schemas.project_page,
+                        response_factory=json_response_factory)
+        schema.validate_request({'project_id': 1})
+        response = schema.make_response({})
+        self.assertIsInstance(response, web.Response)
+        self.assertEqual(response.content_type, 'application/json')
+
     def test_schema_empty_response(self):
         schema = Schema(schemas.null_response)
         schema.validate_request({})

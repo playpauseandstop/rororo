@@ -81,7 +81,7 @@ class Schema(object):
             self._validate(data, response_schema)
 
         if self.response_factory is not None:
-            args = (data, ) if data else ()
+            args = (data, ) if data is not None else ()
             return self.response_factory(*args, **kwargs)
         return data
 
