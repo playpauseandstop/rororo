@@ -23,7 +23,7 @@ endif
 
 bootstrap:
 	bootstrapper -e $(ENV)/
-	$(PIP) install tox
+	$(PIP) install tox==1.9.2
 
 clean:
 	find . -name "*.pyc" -delete
