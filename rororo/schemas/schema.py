@@ -18,6 +18,7 @@ from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 
 from .exceptions import Error
+from .utils import defaults
 from .validators import Validator
 
 
@@ -73,14 +74,25 @@ class Schema(object):
             return self.response_factory(data, **kwargs)
         return data
 
-    def validate_request(self, data):
-        """Validate request data against request schema from module.
+    def validate_request(self, data, *additional, merged_class=dict):
+        r"""Validate request data against request schema from module.
 
         :param data: Request data.
+        :param \*additional:
+            Additional data dicts to be merged with base request data.
+        :param merged_class:
+            When additional data dicts supplied method by default will return
+            merged **dict** with all data, but you can customize things to
+            use read-only dict or any other additional class or callable.
         """
         request_schema = getattr(self.module, 'request', None)
         if request_schema is None:
             raise self.make_error('Request schema should be defined')
+
+        # Merge base and additional data dicts, but only if additional data
+        # dicts have been supplied
+        if additional:
+            data = merged_class(self._merge_data(data, *additional))
 
         try:
             self._validate(data, request_schema)
@@ -91,6 +103,17 @@ class Schema(object):
 
         processor = getattr(self.module, 'request_processor', None)
         return processor(data) if processor else data
+
+    def _merge_data(self, data, *additional):
+        r"""Merge base data and additional dicts.
+
+        :param data: Base data.
+        :param \*additional: Additional data dicts to be merged into base dict.
+        """
+        data = self._pure_data(data)
+        for item in additional:
+            data = defaults(data, self._pure_data(item))
+        return data
 
     def _pure_data(self, data):
         """

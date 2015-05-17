@@ -120,6 +120,31 @@ class TestSchema(TestCase):
     def test_schema_multi_dict_proxy(self):
         self.check_wrapped_data(MultiDictProxy)
 
+    def test_schema_multiple_request_data(self):
+        schema = Schema(schemas.project_page)
+        data = schema.validate_request(
+            {'project_id': 1},
+            {'project_id': 2, 'include_stories': True}
+        )
+        self.assertEqual(data, {'project_id': 1, 'include_stories': True})
+
+    def test_schema_multiple_request_data_merged_class(self):
+        schema = Schema(schemas.project_page)
+        data = schema.validate_request(
+            {'project_id': 1},
+            {'archived': True},
+            {'include_stories': False},
+            merged_class=types.MappingProxyType
+        )
+        self.assertEqual(
+            data,
+            types.MappingProxyType({
+                'project_id': 1,
+                'archived': True,
+                'include_stories': False,
+            })
+        )
+
     def test_schema_no_request_defined(self, module=None):
         schema = Schema(module or schemas.no_request)
         self.assertRaises(SchemaError, schema.validate_request, {})

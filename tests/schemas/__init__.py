@@ -4,4 +4,5 @@ from . import (  # noqa
     no_response,
     null_request,
     null_response,
+    project_page,
 )
