@@ -7,6 +7,7 @@ Implement class for validating request and response data against JSON Schema.
 
 """
 
+import logging
 import types
 
 try:
@@ -20,6 +21,9 @@ from jsonschema.validators import validate
 from .exceptions import Error
 from .utils import defaults
 from .validators import Validator
+
+
+logger = logging.getLogger(__name__)
 
 
 class Schema(object):
@@ -63,10 +67,12 @@ class Schema(object):
         :param \*\*kwargs: Keyword arguments to be passed to response factory.
         """
         if not self._valid_request:
+            logger.error('Request not validated, cannot make response')
             raise self.make_error('Request not validated before, cannot make '
                                   'response')
 
         if data is None and self.response_factory is None:
+            logger.error('Response data omit, but no response factory is used')
             raise self.make_error('Response data could be omitted only when '
                                   'response factory is used')
 
@@ -92,6 +98,9 @@ class Schema(object):
         """
         request_schema = getattr(self.module, 'request', None)
         if request_schema is None:
+            logger.error('Request schema should be defined',
+                         extra={'schema_module': self.module,
+                                'schema_module_attrs': dir(self.module)})
             raise self.make_error('Request schema should be defined')
 
         # Merge base and additional data dicts, but only if additional data
@@ -145,6 +154,10 @@ class Schema(object):
         try:
             return validate(self._pure_data(data), schema, self.validator)
         except ValidationError as err:
+            logger.error('Schema validation error',
+                         exc_info=True,
+                         extra={'schema': schema,
+                                'schema_module': self.module})
             if self.error_class is None:
                 raise
             raise self.make_error('Validation Error', error=err) from err
