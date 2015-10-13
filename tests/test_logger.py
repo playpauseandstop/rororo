@@ -87,6 +87,12 @@ class TestLogger(TestCase):
         self.assertNotIn('sentry',
                          logging_dict['loggers']['rororo']['handlers'])
 
+    def test_update_sentry_logging_empty_loggers(self):
+        logging_dict = default_logging_dict('rororo', 'tests')
+        update_sentry_logging(logging_dict, TEST_SENTRY_DSN)
+        self.assertIn('sentry', logging_dict['loggers']['rororo']['handlers'])
+        self.assertIn('sentry', logging_dict['loggers']['tests']['handlers'])
+
     def test_update_sentry_logging_missed_logger(self):
         logging_dict = default_logging_dict('rororo')
         update_sentry_logging(logging_dict,

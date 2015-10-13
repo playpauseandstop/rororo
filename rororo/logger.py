@@ -76,7 +76,9 @@ def update_sentry_logging(logging_dict, sentry_dsn, *loggers):
     :param logging_dict: Logging dict.
     :param sentry_dsn:
         Sentry DSN value. If ``None`` do not update logging dict at all.
-    :param \*loggers: Use Sentry logging for each logger in sequence.
+    :param \*loggers:
+        Use Sentry logging for each logger in the sequence. If the sequence is
+        empty use Sentry logging to each available logger.
     """
     # No Sentry DSN, nothing to do
     if not sentry_dsn:
@@ -89,6 +91,7 @@ def update_sentry_logging(logging_dict, sentry_dsn, *loggers):
         'dsn': sentry_dsn,
     }
 
+    loggers = tuple(logging_dict['loggers']) if not loggers else loggers
     for logger in loggers:
         # Ignore missing loggers
         logger_dict = logging_dict['loggers'].get(logger)
