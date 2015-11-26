@@ -3,19 +3,17 @@
 import os
 import re
 
+from pathlib import Path
 from setuptools import setup
 
 
-def rel(*parts):
-    """Build relative path from given parts."""
-    dirname = os.path.abspath(os.path.dirname(__file__))
-    return os.path.abspath(os.path.join(dirname, *parts))
+rel = Path(__file__).parent
 
 
-with open(rel('README.rst')) as handler:
+with open(str(rel / 'README.rst')) as handler:
     README = handler.read()
 
-with open(rel('rororo', '__init__.py')) as handler:
+with open(str(rel / 'rororo' / '__init__.py')) as handler:
     INIT_PY = handler.read()
 
 VERSION = re.findall("__version__ = '([^']+)'", INIT_PY)[0]
@@ -48,6 +46,7 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Utilities',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
