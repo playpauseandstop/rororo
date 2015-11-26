@@ -98,5 +98,11 @@ def update_sentry_logging(logging_dict, sentry_dsn, *loggers):
         if not logger_dict:
             continue
 
+        # Ignore logger from logger config
+        if logger_dict.pop('ignore_sentry', False):
+            continue
+
         # Handlers list should exist
-        logger_dict.setdefault('handlers', []).append('sentry')
+        handlers = list(logger_dict.setdefault('handlers', []))
+        handlers.append('sentry')
+        logger_dict['handlers'] = tuple(handlers)

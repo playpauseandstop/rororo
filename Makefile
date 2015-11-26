@@ -25,7 +25,7 @@ all: bootstrap
 
 bootstrap:
 	bootstrapper -e $(ENV)/
-	$(PIP) install tox==2.1.1
+	$(PIP) install tox==2.2.1
 
 clean:
 	find . -name "*.pyc" -delete
