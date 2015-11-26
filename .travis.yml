@@ -6,6 +6,8 @@ addons:
       - language-pack-uk
 
 language: python
+python:
+  - 3.5
 env:
   - TOXENV=py34
   - TOXENV=py35
