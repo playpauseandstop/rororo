@@ -1,11 +1,13 @@
 language: python
 env:
   - TOXENV=py34
+  - TOXENV=py35
 
 before_install:
   - sudo apt-get update && sudo apt-get --reinstall install language-pack-en language-pack-uk
 
 install:
-  - pip install tox
+  - pip install coveralls==1.1 tox==2.2.1
 script:
   - tox
+  - coveralls
