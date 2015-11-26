@@ -17,3 +17,12 @@ install:
 script:
   - tox
   - coveralls
+
+deploy:
+  provider: pypi
+  user: playpauseandstop
+  password:
+    secure: M+tZAABteArGaWnqeKuyS4sHD635KhNcVqxfaZx5W2t9SxkJ8joMuyp18tR+S23NkU/B6WvRpKtd1H4JZIcv7700dPg7KRpBDRuksGdSLkq47FpK0NtlsLGRiwMUayMV5i20r+UK0aaJzyNUD9zrpSOm5iFgMI6ORnOHO0+U7q0=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
