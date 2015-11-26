@@ -18,6 +18,10 @@ rororo
     :target: https://github.com/playpauseandstop/rororo/blob/master/LICENSE
     :alt: BSD License
 
+.. image:: https://coveralls.io/repos/playpauseandstop/rororo/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/playpauseandstop/rororo
+    :alt: Coverage
+
 .. image:: https://readthedocs.org/projects/rororo/badge/?version=latest
     :target: http://rororo.readthedocs.org/en/latest/
     :alt: Documentation
