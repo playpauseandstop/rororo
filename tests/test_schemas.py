@@ -10,8 +10,11 @@ from aiohttp.multidict import MultiDict, MultiDictProxy
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 
-from rororo.schemas import defaults, Error as SchemaError, Schema, Validator
+from rororo.schemas.exceptions import Error as SchemaError
 from rororo.schemas.empty import EMPTY_ARRAY, EMPTY_OBJECT
+from rororo.schemas.schema import Schema
+from rororo.schemas.utils import defaults
+from rororo.schemas.validators import DefaultValidator, Validator
 
 import schemas
 
@@ -75,6 +78,39 @@ class TestSchema(TestCase):
         response = schema.make_response({'name': TEST_NAME, 'time': timestamp})
         self.assertEqual(response, {'name': TEST_NAME, 'time': timestamp})
 
+    def test_schema_default_values(self):
+        schema = Schema(schemas.default_values)
+        data = schema.validate_request({})
+        self.assertEqual(data, {'include_data_id': '0'})
+
+        data = schema.make_response({'data': {'name': 'Igor'}})
+        self.assertEqual(
+            data,
+            {
+                'data': {'name': 'Igor', 'main': False},
+                'system': 'dev',
+            }
+        )
+
+    def test_schema_default_values_override_defaults(self):
+        schema = Schema(schemas.default_values)
+
+        request_data = {'include_data_id': '1'}
+        data = schema.validate_request(request_data)
+        self.assertEqual(data, request_data)
+
+        response_data = {
+            'data': {
+                'name': 'Igor',
+                'uri': 'http://igordavydenko.com/',
+                'main': True,
+            },
+            'data_id': 1,
+            'system': 'production',
+        }
+        data = schema.make_response(response_data)
+        self.assertEqual(data, response_data)
+
     def test_schema_custom_error_class(self):
         schema = Schema(schemas.index, error_class=CustomError)
 
@@ -125,6 +161,12 @@ class TestSchema(TestCase):
         self.assertRaises(SchemaError,
                           schema.make_response,
                           {'name': TEST_NAME, 'time': time.time()})
+
+    def test_shema_make_error_custom_error_class(self):
+        schema = Schema(schemas.index)
+        schema.validate_request({'name': 'Igor'})
+        with self.assertRaisesRegexp(CustomError, 'Something'):
+            raise schema.make_error('Something', error_class=CustomError)
 
     def test_schema_make_response_request_not_validated(self):
         schema = Schema(schemas.index)
@@ -184,6 +226,18 @@ class TestSchema(TestCase):
 
 
 class TestValidator(TestCase):
+
+    def test_invalid_default_value(self):
+        schema = {
+            'properties': {
+                'id': {
+                    'default': 'Hello, world!',
+                    'type': 'number',
+                },
+            },
+        }
+        with self.assertRaises(ValidationError):
+            DefaultValidator(schema).validate({})
 
     def test_tuple_is_array(self):
         schema = {

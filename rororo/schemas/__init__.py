@@ -7,7 +7,11 @@ Validate request and response data using JSON Schema.
 
 """
 
-from .exceptions import Error  # noqa
-from .schema import Schema  # noqa
-from .validators import Validator  # noqa
-from .utils import defaults  # noqa
+from .exceptions import Error
+from .schema import Schema
+from .utils import defaults
+from .validators import DefaultValidator, Validator
+
+(  # Make PEP8 happy
+    defaults, DefaultValidator, Error, Schema, Validator
+)

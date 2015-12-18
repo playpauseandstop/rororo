@@ -23,9 +23,12 @@ endif
 
 all: bootstrap
 
-bootstrap:
+bootstrap: .bootstrap
+
+.bootstrap: setup.py
 	bootstrapper -e $(ENV)/
-	$(PIP) install tox==2.2.1
+	$(PIP) install tox==2.2.1 tox-pyenv==1.0.2
+	touch $@
 
 clean:
 	find . -name "*.pyc" -delete

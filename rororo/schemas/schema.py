@@ -16,11 +16,10 @@ except ImportError:  # pragma: no cover
     MultiDict, MultiDictProxy = None, None
 
 from jsonschema.exceptions import ValidationError
-from jsonschema.validators import validate
 
 from .exceptions import Error
 from .utils import defaults
-from .validators import Validator
+from .validators import DefaultValidator
 
 
 logger = logging.getLogger(__name__)
@@ -30,11 +29,11 @@ class Schema(object):
 
     """Validate request and response data against JSON Schema."""
 
-    __slots__ = ('error_class', 'module', 'response_factory', 'validator',
-                 '_valid_request')
+    __slots__ = ('error_class', 'module', 'response_factory',
+                 'validator_class', '_valid_request')
 
     def __init__(self, module, *, response_factory=None, error_class=None,
-                 validator=None):
+                 validator_class=None):
         """Initialize Schema object.
 
         :param module: Module contains at least request and response schemas.
@@ -42,23 +41,28 @@ class Schema(object):
         :param error_class:
             Wrap all errors in given class. If empty real errors would be
             reraised.
-        :param validator: Use given validator instead of standart one.
+        :param validator_class:
+            Validator class to use for validating request and response data.
+            By default: ``rororo.schemas.validators.DefaultValidator``
         """
         self._valid_request = None
-        self.error_class = error_class
         self.module = module
         self.response_factory = response_factory
-        self.validator = validator or Validator
+        self.error_class = error_class
+        self.validator_class = validator_class or DefaultValidator
 
-    def make_error(self, message, *, error=None):
+    def make_error(self, message, *, error=None, error_class=None):
         """Return error instantiated from given message.
 
         :param message: Message to wrap.
         :param error: Validation error.
+        :param error_class:
+            Special class to wrap error message into. When omitted
+            ``self.error_class`` will be used.
         """
-        return (Error(message)
-                if self.error_class is None
-                else self.error_class(message))
+        if error_class is None:
+            error_class = self.error_class if self.error_class else Error
+        return error_class(message)
 
     def make_response(self, data=None, **kwargs):
         r"""Validate response data and wrap it inside response factory.
@@ -152,7 +156,7 @@ class Schema(object):
         :param schema: Schema to use for validation.
         """
         try:
-            return validate(self._pure_data(data), schema, self.validator)
+            return self.validator_class(schema).validate(self._pure_data(data))
         except ValidationError as err:
             logger.error('Schema validation error',
                          exc_info=True,

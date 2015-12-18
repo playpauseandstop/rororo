@@ -2,6 +2,7 @@
 *.egg-info
 *.py[co]
 
+.bootstrap
 .coverage
 
 .tox/
