@@ -12,7 +12,7 @@ ifeq ($(VENV),1)
 	PIP = pip
 	TOX = tox
 else
-ifeq ($(CIRCLECI),1)
+ifeq ($(CIRCLECI),true)
 	PIP = pip
 	TOX = tox
 else
