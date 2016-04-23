@@ -1,0 +1,12 @@
+machine:
+  python:
+    version: 3.5.1
+
+dependencies:
+  override:
+    - pip install -U pip wheel
+    - make install
+
+test:
+  override:
+    - make test

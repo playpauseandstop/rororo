@@ -1,4 +1,4 @@
-.PHONY: bootstrap clean distclean pep8
+.PHONY: clean distclean install test
 
 # Project settings
 PROJECT = rororo
@@ -21,14 +21,7 @@ ifneq ($(TOXENV),)
 	tox_args = -e $(TOXENV)
 endif
 
-all: bootstrap
-
-bootstrap: .bootstrap
-
-.bootstrap: setup.py
-	bootstrapper -e $(ENV)/
-	$(PIP) install tox==2.2.1 tox-pyenv==1.0.2
-	touch $@
+all: install
 
 clean:
 	find . -name "*.pyc" -delete
@@ -37,6 +30,13 @@ clean:
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
+
+install: .install
+
+.install: setup.py
+	bootstrapper -e $(ENV)/
+	$(PIP) install tox==2.2.1 tox-pyenv==1.0.2
+	touch $@
 
 test: bootstrap clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
