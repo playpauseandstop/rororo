@@ -12,8 +12,13 @@ ifeq ($(VENV),1)
 	PIP = pip
 	TOX = tox
 else
+ifeq ($(CIRCLECI),1)
+	PIP = pip
+	TOX = tox
+else
 	PIP = $(ENV)/bin/pip
 	TOX = $(ENV)/bin/tox
+endif
 endif
 
 # Tox args
