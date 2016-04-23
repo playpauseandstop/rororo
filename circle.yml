@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   override:
-    - pip install -U pip wheel
+    - pip install -U pip bootstrapper wheel
     - make install
 
 test:
