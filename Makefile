@@ -43,5 +43,5 @@ install: .install
 	$(PIP) install tox==2.2.1 tox-pyenv==1.0.2
 	touch $@
 
-test: bootstrap clean
+test: .install clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)

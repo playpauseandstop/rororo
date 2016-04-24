@@ -58,7 +58,7 @@ def immutable_settings(defaults, **optionals):
                 return app
 
         And yes each additional key overwrite default setting value.
-    :type /*/*optionals: dict
+    :type \*\*optionals: dict
     """
     settings = {key: value for key, value in iter_settings(defaults)}
     for key, value in iter_settings(optionals):
@@ -78,6 +78,7 @@ def inject_settings(mixed, context, fail_silently=False):
     :param fail_silently:
         When enabled and reading settings from Python path ignore errors if
         given Python path couldn't be loaded.
+    :type fail_silently: boolean
     """
     if isinstance(mixed, str):
         try:
@@ -98,7 +99,7 @@ def is_setting_key(key):
     are invalid and shouldn't present in Settings dict.
 
     Valid settings keys
-    ===================
+    -------------------
 
     ::
 
@@ -106,7 +107,7 @@ def is_setting_key(key):
         SECRET_KEY
 
     Invalid settings keys
-    =====================
+    ---------------------
 
     ::
 
