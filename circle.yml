@@ -1,14 +1,8 @@
 machine:
-  environment:
-    TEST_ARGS: --with-xunit\ --cover-html\ --cover-html-dir=coverage
-
   python:
     version: 3.5.1
 
 dependencies:
-  cache_directories:
-    - .tox
-
   override:
     - pip install -U bootstrapper pip wheel
     - make install setup-pyenv
@@ -18,13 +12,9 @@ dependencies:
 
 test:
   override:
-    - make test
+    - TEST_ARGS="--with-xunit --cover-html --cover-html-dir=$CIRCLE_ARTIFACTS/coverage" make test
 
   post:
     - "coveralls || :"
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
-
-general:
-  artifacts:
-    - coverage
