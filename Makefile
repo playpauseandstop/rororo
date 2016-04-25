@@ -29,18 +29,15 @@ endif
 all: install
 
 clean:
-	find . -name "*.pyc" -delete
-	-find . -name "__pycache__" -type d -exec rm -rf {} 2> /dev/null +
-	find . -type d -empty -delete
+	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
 
 install: .install
 
-.install: setup.py
-	bootstrapper -e $(ENV)/
-	$(PIP) install tox==2.2.1 tox-pyenv==1.0.2
+.install: setup.py requirements-dev.txt
+	bootstrapper -d -e $(ENV)/
 	touch $@
 
 test: .install clean

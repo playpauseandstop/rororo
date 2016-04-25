@@ -2,10 +2,10 @@
 *.egg-info
 *.py[co]
 
-.bootstrap
 .coverage
+.install
 
-.tox/
 build/
 dist/
 env/
+.tox/

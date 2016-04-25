@@ -1,10 +1,15 @@
-machine:
-  python:
-    version: 3.5.1
-
 dependencies:
+  cache_directories:
+    - .pyenv
+    - .tox
+
   override:
-    - pip install -U pip bootstrapper wheel
+    - "curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash"
+    - pyenv update
+    - pyenv install 3.4.3
+    - pyenv install 3.5.1
+    - pyenv global 3.5.1
+    - pip install -U bootstrapper pip wheel
     - make install
 
 test:

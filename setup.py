@@ -36,7 +36,7 @@ setup(
         'rororo.schemas',
     ],
     install_requires=[
-        'jsonschema>=2.4.0',
+        'jsonschema>=2.4.0,<3.0',
     ],
     platforms='any',
     classifiers=[
