@@ -1,6 +1,6 @@
 machine:
   environment:
-    TEST_ARGS=--with-xunit\ --cover-html\ --cover-html-dir=coverage
+    TEST_ARGS: --with-xunit\ --cover-html\ --cover-html-dir=coverage
 
   python:
     version: 3.5.1
