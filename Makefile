@@ -1,4 +1,4 @@
-.PHONY: clean distclean install test
+.PHONY: clean distclean install setup-pyenv test
 
 # Project settings
 PROJECT = rororo
@@ -39,6 +39,9 @@ install: .install
 .install: setup.py requirements-dev.txt
 	bootstrapper -d -e $(ENV)/
 	touch $@
+
+setup-pyenv:
+	pyenv local 3.4.3 3.5.1
 
 test: .install clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
