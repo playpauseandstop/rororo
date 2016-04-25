@@ -1,4 +1,7 @@
 machine:
+  environment:
+    TEST_ARGS=--with-xunit\ --cover-html\ --cover-html-dir=coverage
+
   python:
     version: 3.5.1
 
@@ -19,3 +22,9 @@ test:
 
   post:
     - "coveralls || :"
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
+
+general:
+  artifacts:
+    - coverage
