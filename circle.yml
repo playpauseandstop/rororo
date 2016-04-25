@@ -1,14 +1,18 @@
+machine:
+  python:
+    version: 3.5.1
+
 dependencies:
   cache_directories:
     - .tox
 
   override:
-    - "pyenv versions | grep 3.4.3 && : || pyenv install 3.4.3"
-    - "pyenv versions | grep 3.5.1 && : || pyenv install 3.5.1"
-    - pyenv global 3.5.1
     - pip install -U bootstrapper pip wheel
     - make install setup-pyenv
 
 test:
   override:
     - make test
+
+  post:
+    - "coveralls || :"

@@ -2,9 +2,9 @@
 rororo
 ======
 
-.. image:: https://img.shields.io/travis/playpauseandstop/rororo/master.svg
-    :target: https://travis-ci.org/playpauseandstop/rororo
-    :alt: Travis CI
+.. image:: https://img.shields.io/circleci/project/playpauseandstop/rororo/master.svg?maxAge=2592000
+    :target: https://circleci.com/gh/playpauseandstop/rororo
+    :alt: CircleCI
 
 .. image:: https://img.shields.io/pypi/v/rororo.svg
     :target: https://warehouse.python.org/project/rororo/
