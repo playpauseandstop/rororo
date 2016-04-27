@@ -5,7 +5,8 @@ machine:
 dependencies:
   override:
     - pip install -U bootstrapper pip wheel
-    - make install setup-pyenv
+    - make
+    - make setup-pyenv
 
   pre:
     - sudo apt-get install -y language-pack-uk

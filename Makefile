@@ -9,16 +9,9 @@ VENV = $(shell python -c "import sys; print(int(hasattr(sys, 'real_prefix')));")
 
 # Python commands
 ifeq ($(VENV),1)
-	PIP = pip
 	TOX = tox
 else
-ifeq ($(CIRCLECI),true)
-	PIP = pip
-	TOX = tox
-else
-	PIP = $(ENV)/bin/pip
 	TOX = $(ENV)/bin/tox
-endif
 endif
 
 # Tox args
