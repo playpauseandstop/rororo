@@ -14,6 +14,11 @@ else
 	TOX = $(ENV)/bin/tox
 endif
 
+# Bootstrapper args
+ifneq ($(CIRCLECI),)
+	bootstrapper_args = --ignore-activated
+endif
+
 # Tox args
 ifneq ($(TOXENV),)
 	tox_args = -e $(TOXENV)
@@ -30,7 +35,7 @@ distclean: clean
 install: .install
 
 .install: setup.py requirements-dev.txt
-	bootstrapper -d -e $(ENV)/
+	bootstrapper -d -e $(ENV)/ $(bootstrapper_args)
 	touch $@
 
 setup-pyenv:
