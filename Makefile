@@ -38,6 +38,9 @@ install: .install
 	bootstrapper -d -e $(ENV)/ $(bootstrapper_args)
 	touch $@
 
+pep8:
+	TOXENV=flake8 $(MAKE) test
+
 setup-pyenv:
 	pyenv local 3.4.3 3.5.1
 

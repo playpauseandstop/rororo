@@ -4,6 +4,7 @@
 
 .coverage
 .install
+.python-version
 
 build/
 dist/
