@@ -10,12 +10,6 @@ dependencies:
 
   pre:
     - sudo apt-get install -y language-pack-uk
-    - pyenv install 3.4.5
-    - pyenv install 3.5.2
-
-  cache_directories:
-    - /opt/circleci/.pyenv/versions/3.4.5
-    - /opt/circleci/.pyenv/versions/3.5.2
 
 test:
   override:

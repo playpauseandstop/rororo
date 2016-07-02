@@ -42,7 +42,7 @@ pep8:
 	TOXENV=flake8 $(MAKE) test
 
 setup-pyenv:
-	pyenv local 3.4.5 3.5.2
+	pyenv local 3.4.4 3.5.1
 
 test: .install clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
