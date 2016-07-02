@@ -1,6 +1,6 @@
 machine:
   python:
-    version: 3.5.2
+    version: 3.5.1
 
 dependencies:
   override:
@@ -11,6 +11,7 @@ dependencies:
   pre:
     - sudo apt-get install -y language-pack-uk
     - pyenv install 3.4.5
+    - pyenv install 3.5.2
 
   cache_directories:
     - /opt/circleci/.pyenv
