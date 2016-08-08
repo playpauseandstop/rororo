@@ -1,4 +1,4 @@
-.PHONY: clean distclean install lint setup-pyenv test
+.PHONY: clean deploy distclean install lint setup-pyenv test
 
 # Project settings
 PROJECT = rororo
@@ -28,6 +28,22 @@ all: install
 
 clean:
 	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
+
+deploy:
+ifeq ($(PYPI_USERNAME),)
+	# PYPI_USERNAME env var should be supplied
+	exit 1
+endif
+ifeq ($(PYPI_PASSWORD),)
+	# PYPI_PASSWORD env var should be supplied
+	exit 1
+endif
+ifeq ($(CIRCLECI),)
+	$(MAKE) test
+endif
+	rm -rf build/ dist/
+	python setup.py sdist bdist_wheel
+	twine upload -u $(PYPI_USERNAME) -p $(PYPI_PASSWORD) dist/*
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/

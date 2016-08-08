@@ -19,3 +19,9 @@ test:
     - "coveralls || :"
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
+
+deployment:
+  release:
+    tag: /v\d+.\d+.\d+.*/
+    commands:
+      - make deploy
