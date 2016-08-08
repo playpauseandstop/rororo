@@ -3,6 +3,9 @@ machine:
     version: 3.5.1
 
 dependencies:
+  cache_directories:
+    - env/
+
   override:
     - pip install -U bootstrapper pip wheel
     - make
