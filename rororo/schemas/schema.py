@@ -11,7 +11,7 @@ import logging
 import types
 
 try:
-    from aiohttp.multidict import MultiDict, MultiDictProxy
+    from multidict import MultiDict, MultiDictProxy
 except ImportError:  # pragma: no cover
     MultiDict, MultiDictProxy = None, None
 

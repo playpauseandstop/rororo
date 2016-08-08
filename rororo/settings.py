@@ -25,9 +25,12 @@ def from_env(key, default=None):
     """Shortcut for safely reading environment variable.
 
     :param key: Environment var key.
+    :type key: str
     :param default:
         Return default value if environment var not found by given key. By
-        default: None
+        default: ``None``
+    :type default: mixed
+    :rtype: mixed
     """
     return os.environ.get(key, default)
 
@@ -59,6 +62,7 @@ def immutable_settings(defaults, **optionals):
 
         And yes each additional key overwrite default setting value.
     :type \*\*optionals: dict
+    :rtype: types.MappingProxyType
     """
     settings = {key: value for key, value in iter_settings(defaults)}
     for key, value in iter_settings(optionals):
@@ -79,6 +83,7 @@ def inject_settings(mixed, context, fail_silently=False):
         When enabled and reading settings from Python path ignore errors if
         given Python path couldn't be loaded.
     :type fail_silently: boolean
+    :rtype: None
     """
     if isinstance(mixed, str):
         try:
@@ -118,6 +123,7 @@ def is_setting_key(key):
 
     :param key: Key to check.
     :type key: str
+    :rtype: bool
     """
     return key.isupper() and key[0] != '_'
 
@@ -127,6 +133,7 @@ def iter_settings(mixed):
 
     :param mixed: Settings instance to iterate.
     :type mixed: module or dict
+    :rtype: generator
     """
     if isinstance(mixed, types.ModuleType):
         for attr in dir(mixed):
@@ -141,8 +148,11 @@ def setup_locale(locale, first_weekday=None):
     """Setup locale for backend application.
 
     :param locale: Locale to use.
+    :type locale: str
     :param first_weekday:
         Weekday for start week. 0 for Monday, 6 for Sunday. By default: None
+    :type first_weekday: bool
+    :rtype: bool
     """
     if first_weekday is not None:
         calendar.setfirstweekday(first_weekday)
@@ -154,6 +164,7 @@ def setup_timezone(timezone):
 
     :param timezone: Timezone to use, e.g. "UTC", "Europe/Kiev".
     :type timezone: str
+    :rtype: None
     """
     if timezone and hasattr(time, 'tzset'):
         tz_root = '/usr/share/zoneinfo'
@@ -181,5 +192,7 @@ def to_bool(value):
     environment just use this function for all good things.
 
     :param value: String or other value.
+    :type: mixed
+    :rtype: bool
     """
     return bool(strtobool(value) if isinstance(value, str) else value)

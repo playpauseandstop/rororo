@@ -1,4 +1,4 @@
-.PHONY: clean distclean install setup-pyenv test
+.PHONY: clean distclean install lint setup-pyenv test
 
 # Project settings
 PROJECT = rororo
@@ -38,7 +38,7 @@ install: .install
 	bootstrapper -d -e $(ENV)/ $(bootstrapper_args)
 	touch $@
 
-pep8:
+lint:
 	TOXENV=flake8 $(MAKE) test
 
 setup-pyenv:

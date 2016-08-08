@@ -6,9 +6,9 @@ from random import choice
 from unittest import TestCase
 
 from aiohttp import web
-from aiohttp.multidict import MultiDict, MultiDictProxy
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
+from multidict import MultiDict, MultiDictProxy
 
 from rororo.schemas.exceptions import Error as SchemaError
 from rororo.schemas.empty import EMPTY_ARRAY, EMPTY_OBJECT
