@@ -37,12 +37,12 @@ coveralls:
 	-$(COVERALLS)
 
 deploy:
-ifeq ($(PYPI_USERNAME),)
-	# PYPI_USERNAME env var should be supplied
+ifeq ($(TWINE_USERNAME),)
+	# TWINE_USERNAME env var should be supplied
 	exit 1
 endif
-ifeq ($(PYPI_PASSWORD),)
-	# PYPI_PASSWORD env var should be supplied
+ifeq ($(TWINE_PASSWORD),)
+	# TWINE_PASSWORD env var should be supplied
 	exit 1
 endif
 ifeq ($(CIRCLECI),)
@@ -50,7 +50,7 @@ ifeq ($(CIRCLECI),)
 endif
 	rm -rf build/ dist/
 	python setup.py sdist bdist_wheel
-	$(TWINE) upload -u $(PYPI_USERNAME) -p $(PYPI_PASSWORD) dist/*
+	$(TWINE) upload dist/*
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
