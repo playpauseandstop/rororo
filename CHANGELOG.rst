@@ -5,8 +5,10 @@
 ====================
 
 - Add ``rororo.aio`` module with:
-  - ``add_resource_context`` context manage
+
+  - ``add_resource_context`` context manager
   - ``is_xhr_request``, ``parse_aioredis_url`` utility functions
+
 - Update flake8 config & bump aiohttp version for tests
 - Added ChangeLog & modified GitHub Releases Page
 
