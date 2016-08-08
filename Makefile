@@ -1,4 +1,4 @@
-.PHONY: clean deploy distclean install lint setup-pyenv test
+.PHONY: clean coveralls deploy distclean install lint setup-pyenv test
 
 # Project settings
 PROJECT = rororo
@@ -9,13 +9,17 @@ VENV = $(shell python -c "import sys; print(int(hasattr(sys, 'real_prefix')));")
 
 # Python commands
 ifeq ($(VENV),1)
+	COVERALLS = coveralls
 	TOX = tox
+	TWINE = twine
 else
+	COVERALLS = $(ENV)/bin/coveralls
 	TOX = $(ENV)/bin/tox
+	TWINE = $(ENV)/bin/twine
 endif
 
 # Bootstrapper args
-ifneq ($(CIRCLECI),)
+ifeq ($(CIRCLECI),true)
 	bootstrapper_args = --ignore-activated
 endif
 
@@ -28,6 +32,9 @@ all: install
 
 clean:
 	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
+
+coveralls:
+	-$(COVERALLS)
 
 deploy:
 ifeq ($(PYPI_USERNAME),)
@@ -43,7 +50,7 @@ ifeq ($(CIRCLECI),)
 endif
 	rm -rf build/ dist/
 	python setup.py sdist bdist_wheel
-	twine upload -u $(PYPI_USERNAME) -p $(PYPI_PASSWORD) dist/*
+	$(TWINE) upload -u $(PYPI_USERNAME) -p $(PYPI_PASSWORD) dist/*
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/

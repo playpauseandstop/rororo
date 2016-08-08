@@ -19,7 +19,7 @@ test:
     - TEST_ARGS="--with-xunit --cover-html --cover-html-dir=$CIRCLE_ARTIFACTS/coverage" make test
 
   post:
-    - "coveralls || :"
+    - make coveralls
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
 
