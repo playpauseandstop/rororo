@@ -101,6 +101,11 @@ class TestLogger(TestCase):
                          logging_dict['loggers']['rororo']['handlers'])
         self.assertIn('sentry', logging_dict['loggers']['tests']['handlers'])
 
+    def test_update_sentry_logging_kwargs(self):
+        logging_dict = default_logging_dict('rororo')
+        update_sentry_logging(logging_dict, TEST_SENTRY_DSN, key='value')
+        self.assertEqual(logging_dict['handlers']['sentry']['key'], 'value')
+
     def test_update_sentry_logging_missed_logger(self):
         logging_dict = default_logging_dict('rororo')
         update_sentry_logging(logging_dict,

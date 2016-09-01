@@ -24,8 +24,19 @@ class IgnoreErrorsFilter(object):
 def default_logging_dict(*loggers, **kwargs):
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
+    Usage
+    =====
+
+    ::
+
+        from logging.config import dictConfig
+        dictConfig(default_logging_dict('yourlogger'))
+
     :param \*loggers: Enable logging for each logger in sequence.
+    :type \*loggers: tuple
     :param \*\*kwargs: Setup additional logger params via keyword arguments.
+    :type \*\*kwargs: dict
+    :rtype: dict
     """
     kwargs.setdefault('level', 'INFO')
     return {
@@ -66,30 +77,58 @@ def default_logging_dict(*loggers, **kwargs):
     }
 
 
-def update_sentry_logging(logging_dict, sentry_dsn, *loggers):
+def update_sentry_logging(logging_dict, sentry_dsn, *loggers, **kwargs):
     r"""Enable Sentry logging if Sentry DSN passed.
 
     .. note::
         Sentry logging requires `raven <http://pypi.python.org/pypi/raven>`_
         library to be installed.
 
+    Usage
+    =====
+
+    ::
+
+        from logging.config import dictConfig
+
+        LOGGING = default_logging_dict()
+        SENTRY_DSN = '...'
+
+        update_sentry_logging(LOGGING, SENTRY_DSN)
+        dictConfig(LOGGING)
+
+    Use AioHttpTransport for SentryHandler
+    ---------------------------------------
+
+    This will allow to use ``aiohttp.client`` for pushing data to Sentry in
+    your ``aiohttp.web`` app, which means elimination of sync calls to Sentry.
+
+    ::
+
+        from raven_aiohttp import AioHttpTransport
+        update_sentry_logging(LOGGING, SENTRY_DSN, transport=AioHttpTransport)
+
     :param logging_dict: Logging dict.
+    :type logging_dict: dict
     :param sentry_dsn:
         Sentry DSN value. If ``None`` do not update logging dict at all.
+    :type sentry_dsn: str or None
     :param \*loggers:
         Use Sentry logging for each logger in the sequence. If the sequence is
         empty use Sentry logging to each available logger.
+    :type \*loggers: tuple
+    :param \*\*kwargs: Additional kwargs to be passed to ``SentryHandler``.
+    :type \*\*kwargs: dict
+    :rtype: None
     """
     # No Sentry DSN, nothing to do
     if not sentry_dsn:
         return
 
     # Add Sentry handler
-    logging_dict['handlers']['sentry'] = {
-        'level': 'WARNING',
-        'class': 'raven.handlers.logging.SentryHandler',
-        'dsn': sentry_dsn,
-    }
+    kwargs['class'] = 'raven.handlers.logging.SentryHandler'
+    kwargs['dsn'] = sentry_dsn
+    logging_dict['handlers']['sentry'] = dict(level='WARNING', **kwargs)
 
     loggers = tuple(logging_dict['loggers']) if not loggers else loggers
     for logger in loggers:
