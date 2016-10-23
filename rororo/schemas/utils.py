@@ -18,3 +18,18 @@ def defaults(current, *args):
         for key, value in data.items():
             current.setdefault(key, value)
     return current
+
+
+def validate_func_factory(validator_class):
+    """Factory to return default validate function for Schema.
+
+    :param validator_class: JSONSchema suitable validator class.
+    """
+    def validate_func(schema, pure_data):
+        """Validate schema with given data.
+
+        :param schema: Schema representation to use.
+        :param pure_data: Pure data to validate.
+        """
+        return validator_class(schema).validate(pure_data)
+    return validate_func

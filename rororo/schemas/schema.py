@@ -18,7 +18,7 @@ except ImportError:  # pragma: no cover
 from jsonschema.exceptions import ValidationError
 
 from .exceptions import Error
-from .utils import defaults
+from .utils import defaults, validate_func_factory
 from .validators import DefaultValidator
 
 
@@ -29,11 +29,14 @@ class Schema(object):
 
     """Validate request and response data against JSON Schema."""
 
-    __slots__ = ('error_class', 'module', 'response_factory',
-                 'validator_class', '_valid_request')
+    __slots__ = (
+        'error_class', 'module', 'response_factory', 'validate_func',
+        'validation_error_class', 'validator_class', '_valid_request',
+    )
 
     def __init__(self, module, *, response_factory=None, error_class=None,
-                 validator_class=None):
+                 validator_class=DefaultValidator, validate_func=None,
+                 validation_error_class=ValidationError):
         """Initialize Schema object.
 
         :param module: Module contains at least request and response schemas.
@@ -44,12 +47,24 @@ class Schema(object):
         :param validator_class:
             Validator class to use for validating request and response data.
             By default: ``rororo.schemas.validators.DefaultValidator``
+        :param validate_func:
+            Validate function to be called for validating request and response
+            data. Function will receive 2 args: ``schema`` and ``pure_data``.
+            By default: ``None``
+        :param validation_error_class:
+            Error class to be expected in case of validation error. By default:
+            ``jsonschema.exceptions.ValidationError``
         """
         self._valid_request = None
+
         self.module = module
         self.response_factory = response_factory
         self.error_class = error_class
-        self.validator_class = validator_class or DefaultValidator
+
+        self.validator_class = validator_class
+        self.validate_func = (validate_func or
+                              validate_func_factory(validator_class))
+        self.validation_error_class = validation_error_class
 
     def make_error(self, message, *, error=None, error_class=None):
         """Return error instantiated from given message.
@@ -156,8 +171,8 @@ class Schema(object):
         :param schema: Schema to use for validation.
         """
         try:
-            return self.validator_class(schema).validate(self._pure_data(data))
-        except ValidationError as err:
+            return self.validate_func(schema, self._pure_data(data))
+        except self.validation_error_class as err:
             logger.error('Schema validation error',
                          exc_info=True,
                          extra={'schema': schema,

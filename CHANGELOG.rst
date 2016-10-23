@@ -1,6 +1,17 @@
 1.0.0 (In Development)
 ======================
 
+1.0.0a5 (2016-10-23)
+====================
+
+- Support validating schema via `fastjsonschema
+  <http://opensource.seznam.cz/python-fastjsonschema/>`_ or any other validator
+
+1.0.0a4 (2016-09-01)
+====================
+
+- Pass ``kwargs`` to ``SentryHandler`` on configuring Sentry logging
+
 1.0.0a3 (2016-08-08)
 ====================
 

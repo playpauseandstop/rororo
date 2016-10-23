@@ -5,6 +5,8 @@ import types
 from random import choice
 from unittest import TestCase
 
+import fastjsonschema
+
 from aiohttp import web
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
@@ -225,6 +227,34 @@ class TestSchema(TestCase):
         self.test_schema_no_response_defined(schemas.null_response)
 
 
+class TestSchemaCustomValidation(TestCase):
+
+    def test_fastjsonschema(self):
+        error_class = fastjsonschema.JsonSchemaException
+        schema = Schema(FastSchemas(),
+                        validate_func=fast_validate,
+                        validation_error_class=error_class)
+
+        # Default error
+        with self.assertRaises(SchemaError):
+            raise schema.make_error('Dummy error')
+
+        # Validation error propagated
+        self.assertRaises(error_class,
+                          schema.validate_request,
+                          {'name': 'Something'})
+
+        # Proper request
+        data = schema.validate_request({'name': TEST_NAME})
+        self.assertEqual(data, {'name': TEST_NAME})
+
+        # Proper response
+        # NOTE: fastjsonschema expects number as an int, not float
+        timestamp = int(time.time())
+        response = schema.make_response({'name': TEST_NAME, 'time': timestamp})
+        self.assertEqual(response, {'name': TEST_NAME, 'time': timestamp})
+
+
 class TestValidator(TestCase):
 
     def test_invalid_default_value(self):
@@ -278,6 +308,21 @@ class TestUtils(TestCase):
         data = defaults({'fourth': 3}, first, second)
         self.assertEqual(data,
                          {'first': 1, 'second': 2, 'third': 2, 'fourth': 3})
+
+
+class FastSchemas(object):
+
+    @property
+    def request(self):
+        return fastjsonschema.compile(schemas.index.request)
+
+    @property
+    def response(self):
+        return fastjsonschema.compile(schemas.index.response)
+
+
+def fast_validate(schema, data):
+    return schema(data)
 
 
 def json_response_factory(data):
