@@ -1,6 +1,13 @@
 1.0.0 (In Development)
 ======================
 
+1.0.0b1 (In Development)
+========================
+
+- Annotate all code in ``rororo``
+- Use `mypy <http://mypy.readthedocs.io/>`_ on linting source code
+- Require Python 3.5 or higher due to changes above
+
 1.0.0a5 (2016-10-23)
 ====================
 

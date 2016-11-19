@@ -7,6 +7,9 @@ Customize default JSON Schema Draft 4 validator.
 
 """
 
+from typing import Any, Iterator
+
+from jsonschema.exceptions import ValidationError
 from jsonschema.validators import Draft4Validator, extend
 
 from .utils import defaults
@@ -24,17 +27,22 @@ class Validator(Draft4Validator):
 
     DEFAULT_TYPES = defaults({
         'array': (list, tuple),
-    }, Draft4Validator.DEFAULT_TYPES)
+    }, Draft4Validator.DEFAULT_TYPES)  # type: dict
 
 
-def extend_with_default(validator_class):
+def extend_with_default(validator_class: Any) -> Any:
     """Append defaults from schema to instance need to be validated.
 
     :param validator_class: Apply the change for given validator class.
     """
     validate_properties = validator_class.VALIDATORS['properties']
 
-    def set_defaults(validator, properties, instance, schema):
+    def set_defaults(
+        validator: Any,
+        properties: dict,
+        instance: dict,
+        schema: dict
+    ) -> Iterator[ValidationError]:
         for prop, subschema in properties.items():
             if 'default' in subschema:
                 instance.setdefault(prop, subschema['default'])

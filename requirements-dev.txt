@@ -1,5 +1,5 @@
 coveralls==1.1
-tox==2.3.1
+tox==2.5.0
 tox-pyenv==1.0.3
-twine==1.8.0
+twine==1.8.1
 wheel==0.29.0

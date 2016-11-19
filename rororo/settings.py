@@ -18,24 +18,28 @@ import types
 from distutils.util import strtobool
 from importlib import import_module
 from locale import LC_ALL, setlocale
-from logging.config import dictConfig as setup_logging  # noqa
+from logging.config import dictConfig as setup_logging  # noqa: F401
+from typing import Any, Dict, Iterator, MutableMapping, Tuple, Union
 
 
-def from_env(key, default=None):
+Settings = Union[types.ModuleType, Dict[str, Any]]
+
+
+def from_env(key: str, default: Any=None) -> Any:
     """Shortcut for safely reading environment variable.
 
     :param key: Environment var key.
-    :type key: str
     :param default:
         Return default value if environment var not found by given key. By
         default: ``None``
-    :type default: mixed
-    :rtype: mixed
     """
     return os.environ.get(key, default)
 
 
-def immutable_settings(defaults, **optionals):
+def immutable_settings(
+    defaults: Settings,
+    **optionals
+) -> types.MappingProxyType:
     r"""Initialize and return immutable Settings dictionary.
 
     Settings dictionary allows you to setup settings values from multiple
@@ -45,7 +49,6 @@ def immutable_settings(defaults, **optionals):
 
     :param defaults:
        Read settings values from module or dict-like instance.
-    :type defaults: module or dict
     :param \*\*optionals:
         Update base settings with optional values.
 
@@ -61,7 +64,6 @@ def immutable_settings(defaults, **optionals):
                 return app
 
         And yes each additional key overwrite default setting value.
-    :type \*\*optionals: dict
     :rtype: types.MappingProxyType
     """
     settings = {key: value for key, value in iter_settings(defaults)}
@@ -70,19 +72,22 @@ def immutable_settings(defaults, **optionals):
     return types.MappingProxyType(settings)
 
 
-def inject_settings(mixed, context, fail_silently=False):
+def inject_settings(
+    mixed: Union[str, Settings],
+    context: MutableMapping[str, Any],
+    fail_silently: bool=False
+) -> None:
     """Inject settings values to given context.
 
     :param mixed:
-        Settings could read from Python path, Python module or dict-like
-        instance.
-    :type mixed: str, module or dict
-    :param context: Context should support dict-like item assingment.
-    :type context: dict
+        Settings can be a string (that it will be read from Python path),
+        Python module or dict-like instance.
+    :param context:
+        Context to assign settings key values. It should support dict-like item
+        assingment.
     :param fail_silently:
         When enabled and reading settings from Python path ignore errors if
         given Python path couldn't be loaded.
-    :type fail_silently: boolean
     :rtype: None
     """
     if isinstance(mixed, str):
@@ -97,7 +102,7 @@ def inject_settings(mixed, context, fail_silently=False):
         context[key] = value
 
 
-def is_setting_key(key):
+def is_setting_key(key: str) -> bool:
     """Check whether given key is valid setting key or not.
 
     Only public uppercase constants are valid settings keys, all other keys
@@ -122,18 +127,14 @@ def is_setting_key(key):
         secret_key
 
     :param key: Key to check.
-    :type key: str
-    :rtype: bool
     """
     return key.isupper() and key[0] != '_'
 
 
-def iter_settings(mixed):
+def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
     """Iterate over settings values from settings module or dict-like instance.
 
     :param mixed: Settings instance to iterate.
-    :type mixed: module or dict
-    :rtype: generator
     """
     if isinstance(mixed, types.ModuleType):
         for attr in dir(mixed):
@@ -144,27 +145,22 @@ def iter_settings(mixed):
         yield from filter(lambda item: is_setting_key(item[0]), mixed.items())
 
 
-def setup_locale(locale, first_weekday=None):
+def setup_locale(locale: str, first_weekday: int=None) -> str:
     """Setup locale for backend application.
 
     :param locale: Locale to use.
-    :type locale: str
     :param first_weekday:
         Weekday for start week. 0 for Monday, 6 for Sunday. By default: None
-    :type first_weekday: bool
-    :rtype: bool
     """
     if first_weekday is not None:
         calendar.setfirstweekday(first_weekday)
     return setlocale(LC_ALL, locale)
 
 
-def setup_timezone(timezone):
+def setup_timezone(timezone: str) -> None:
     """Setup timezone for backend application.
 
     :param timezone: Timezone to use, e.g. "UTC", "Europe/Kiev".
-    :type timezone: str
-    :rtype: None
     """
     if timezone and hasattr(time, 'tzset'):
         tz_root = '/usr/share/zoneinfo'
@@ -177,22 +173,20 @@ def setup_timezone(timezone):
         time.tzset()
 
 
-def to_bool(value):
-    """Convert string or other Python value to boolean.
+def to_bool(value: Any) -> bool:
+    """Convert string or other Python object to boolean.
 
     Rationalle
     ==========
 
-    Passing flags is one of the most used cases of using environment vars and
-    as values are strings we need easy way to convert them to something
-    suitable with Python for later usage.
+    Passing flags is one of the most common cases of using environment vars and
+    as values are strings we need to have an easy way to convert them to
+    boolean Python value.
 
-    And when ``int`` or ``float`` values should be converted without extra
-    work, ``bool('0') => True``. So in case of expecting boolean flag from
-    environment just use this function for all good things.
+    Without this function int or float string values can be converted as false
+    positives, e.g. ``bool('0') => True``, but using this function ensure that
+    digit flag be properly converted to boolean value.
 
     :param value: String or other value.
-    :type: mixed
-    :rtype: bool
     """
     return bool(strtobool(value) if isinstance(value, str) else value)

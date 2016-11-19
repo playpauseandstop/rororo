@@ -56,16 +56,15 @@ distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
 
 install: .install
-
 .install: setup.py requirements-dev.txt
 	bootstrapper -d -e $(ENV)/ $(bootstrapper_args)
 	touch $@
 
 lint:
-	TOXENV=flake8 $(MAKE) test
+	TOXENV=lint $(MAKE) test
 
 setup-pyenv:
-	pyenv local 3.4.4 3.5.1
+	pyenv local 3.5.1
 
 test: .install clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)

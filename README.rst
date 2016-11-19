@@ -30,7 +30,7 @@ Collection of utilities, helpers, and principles for building Python backend
 applications. Supports `aiohttp.web <http://aiohttp.readthedocs.org/>`_,
 `Flask <http://flask.pocoo.org/>`_, and your web-framework.
 
-* Works on Python 3.4+
+* Works on Python 3.5+
 * BSD licensed
 * Latest documentation `on Read the Docs <http://rororo.readthedocs.org/>`_
 * Source, issues, and pull requests `on GitHub

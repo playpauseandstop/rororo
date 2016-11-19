@@ -10,12 +10,39 @@ Various utilities for aiohttp and other aio-libs.
 from contextlib import contextmanager
 from urllib.parse import urlparse
 
+from typing import (  # noqa: F401
+    Any,
+    Callable,
+    Dict,
+    Iterator,
+    TYPE_CHECKING,
+    Union,
+)
+
+# Hack to load ``aiohttp.web`` only on mypy run
+if TYPE_CHECKING:  # pragma: no cover
+    from aiohttp import web
+else:
+    web = type('FakeModule', (object, ), {
+        'AbstractRouter': Any,
+        'Request': Any,
+        'Resource': Any,
+        'Response': Any,
+    })()
+
 
 __all__ = ('add_resource_context', 'is_xhr_request', 'parse_aioredis_url')
 
 
+View = Callable[[web.Request], web.Response]
+
+
 @contextmanager
-def add_resource_context(router, url_prefix=None, name_prefix=None):
+def add_resource_context(
+    router: web.AbstractRouter,
+    url_prefix: str=None,
+    name_prefix: str=None
+) -> Iterator[Any]:
     """Context manager for adding resources for given router.
 
     Main goal of context manager to easify process of adding resources with
@@ -38,14 +65,16 @@ def add_resource_context(router, url_prefix=None, name_prefix=None):
             add_resource('/news', get=views.list_news, post=views.create_news)
 
     :param router: Route to add resources to.
-    :type router: aiohttp.web.UrlDispatcher
     :param url_prefix: If supplied prepend this prefix to each resource URL.
-    :type url_prefix: str
     :param name_prefix: If supplied prepend this prefix to each resource name.
-    :type: name_prefix: str
-    :rtype: func
     """
-    def add_resource(url, get=None, *, name=None, **kwargs):
+    def add_resource(
+        url: str,
+        get: View=None,
+        *,
+        name: str=None,
+        **kwargs
+    ) -> web.Resource:
         """Inner function to create resource and add necessary routes to it.
 
         Support adding routes of all methods, supported by aiohttp, as
@@ -60,10 +89,8 @@ def add_resource_context(router, url_prefix=None, name_prefix=None):
         :param url:
             Resource URL. If ``url_prefix`` setup in context it will be
             prepended to URL with ``/``.
-        :type url: str
         :param get:
             GET handler. Only handler to be setup without explicit call.
-        :type get: types.coroutine
         :param name: Resource name.
         :type name: str
         :rtype: aiohttp.web.Resource
@@ -89,20 +116,18 @@ def add_resource_context(router, url_prefix=None, name_prefix=None):
     yield add_resource
 
 
-def is_xhr_request(request):
+def is_xhr_request(request: web.Request) -> bool:
     """Check whether current request is XHR one or not.
 
     Basically it just checks that request contains ``X-Requested-With`` header
     and that the header equals to ``XMLHttpRequest``.
 
     :param request: Request instance.
-    :type request: aiohttp.web.Request
-    :rtype: bool
     """
     return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
 
-def parse_aioredis_url(url):
+def parse_aioredis_url(url: str) -> Dict[str, Any]:
     """
     Convert Redis URL string to dict suitable to pass to
     ``aioredis.create_redis(...)`` call.
@@ -117,12 +142,10 @@ def parse_aioredis_url(url):
             return await create_redis(**get_aioredis_parts(url))
 
     :param url: URL to access Redis instance, started with ``redis://``.
-    :type url: str
-    :rtype: dict
     """
     parts = urlparse(url)
 
-    db = parts.path[1:] or None
+    db = parts.path[1:] or None  # type: Union[str, int]
     if db:
         db = int(db)
 

@@ -9,19 +9,25 @@ Module provides easy way to setup logging for your web application.
 
 """
 
+import logging
 import sys
+
+from typing import Any, Dict, Optional
+
+
+LoggingDict = Dict[str, Any]
 
 
 class IgnoreErrorsFilter(object):
 
     """Ignore all warnings and errors from stdout handler."""
 
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         """Allow only debug and info log messages to stdout handler."""
         return record.levelname in {'DEBUG', 'INFO'}
 
 
-def default_logging_dict(*loggers, **kwargs):
+def default_logging_dict(*loggers, **kwargs) -> LoggingDict:
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
     Usage
@@ -33,10 +39,7 @@ def default_logging_dict(*loggers, **kwargs):
         dictConfig(default_logging_dict('yourlogger'))
 
     :param \*loggers: Enable logging for each logger in sequence.
-    :type \*loggers: tuple
     :param \*\*kwargs: Setup additional logger params via keyword arguments.
-    :type \*\*kwargs: dict
-    :rtype: dict
     """
     kwargs.setdefault('level', 'INFO')
     return {
@@ -77,7 +80,12 @@ def default_logging_dict(*loggers, **kwargs):
     }
 
 
-def update_sentry_logging(logging_dict, sentry_dsn, *loggers, **kwargs):
+def update_sentry_logging(
+    logging_dict: LoggingDict,
+    sentry_dsn: Optional[str],
+    *loggers,
+    **kwargs
+) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 
     .. note::
@@ -109,17 +117,12 @@ def update_sentry_logging(logging_dict, sentry_dsn, *loggers, **kwargs):
         update_sentry_logging(LOGGING, SENTRY_DSN, transport=AioHttpTransport)
 
     :param logging_dict: Logging dict.
-    :type logging_dict: dict
     :param sentry_dsn:
         Sentry DSN value. If ``None`` do not update logging dict at all.
-    :type sentry_dsn: str or None
     :param \*loggers:
         Use Sentry logging for each logger in the sequence. If the sequence is
         empty use Sentry logging to each available logger.
-    :type \*loggers: tuple
     :param \*\*kwargs: Additional kwargs to be passed to ``SentryHandler``.
-    :type \*\*kwargs: dict
-    :rtype: None
     """
     # No Sentry DSN, nothing to do
     if not sentry_dsn:
