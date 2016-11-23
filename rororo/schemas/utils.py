@@ -11,6 +11,7 @@ from typing import Any, Callable, Mapping
 
 
 AnyMapping = Mapping[Any, Any]
+ValidateFunc = Callable[[AnyMapping, AnyMapping], AnyMapping]
 
 
 def defaults(current: dict, *args) -> dict:
@@ -25,9 +26,7 @@ def defaults(current: dict, *args) -> dict:
     return current
 
 
-def validate_func_factory(
-    validator_class: Any
-) -> Callable[[AnyMapping, AnyMapping], AnyMapping]:
+def validate_func_factory(validator_class: Any) -> ValidateFunc:
     """Factory to return default validate function for Schema.
 
     :param validator_class: JSONSchema suitable validator class.

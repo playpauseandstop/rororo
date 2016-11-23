@@ -38,11 +38,9 @@ View = Callable[[web.Request], web.Response]
 
 
 @contextmanager
-def add_resource_context(
-    router: web.AbstractRouter,
-    url_prefix: str=None,
-    name_prefix: str=None
-) -> Iterator[Any]:
+def add_resource_context(router: web.AbstractRouter,
+                         url_prefix: str=None,
+                         name_prefix: str=None) -> Iterator[Any]:
     """Context manager for adding resources for given router.
 
     Main goal of context manager to easify process of adding resources with

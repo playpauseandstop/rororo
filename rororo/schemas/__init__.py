@@ -13,5 +13,9 @@ from .utils import defaults
 from .validators import DefaultValidator, Validator
 
 (  # Make PEP8 happy
-    defaults, DefaultValidator, Error, Schema, Validator
+    defaults,
+    DefaultValidator,
+    Error,
+    Schema,
+    Validator,
 )

@@ -18,7 +18,7 @@ import types
 from distutils.util import strtobool
 from importlib import import_module
 from locale import LC_ALL, setlocale
-from logging.config import dictConfig as setup_logging  # noqa: F401
+from logging.config import dictConfig as setup_logging  # noqa: F401, N813
 from typing import Any, Dict, Iterator, MutableMapping, Tuple, Union
 
 
@@ -72,11 +72,9 @@ def immutable_settings(
     return types.MappingProxyType(settings)
 
 
-def inject_settings(
-    mixed: Union[str, Settings],
-    context: MutableMapping[str, Any],
-    fail_silently: bool=False
-) -> None:
+def inject_settings(mixed: Union[str, Settings],
+                    context: MutableMapping[str, Any],
+                    fail_silently: bool=False) -> None:
     """Inject settings values to given context.
 
     :param mixed:

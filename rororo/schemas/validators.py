@@ -37,12 +37,10 @@ def extend_with_default(validator_class: Any) -> Any:
     """
     validate_properties = validator_class.VALIDATORS['properties']
 
-    def set_defaults(
-        validator: Any,
-        properties: dict,
-        instance: dict,
-        schema: dict
-    ) -> Iterator[ValidationError]:
+    def set_defaults(validator: Any,
+                     properties: dict,
+                     instance: dict,
+                     schema: dict) -> Iterator[ValidationError]:
         for prop, subschema in properties.items():
             if 'default' in subschema:
                 instance.setdefault(prop, subschema['default'])

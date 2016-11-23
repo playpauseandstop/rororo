@@ -20,7 +20,7 @@ except ImportError:  # pragma: no cover
 from jsonschema.exceptions import ValidationError
 
 from .exceptions import Error
-from .utils import AnyMapping, defaults, validate_func_factory
+from .utils import AnyMapping, defaults, validate_func_factory, ValidateFunc
 from .validators import DefaultValidator
 
 
@@ -39,16 +39,14 @@ class Schema(object):
         'validation_error_class', 'validator_class', '_valid_request',
     )
 
-    def __init__(
-        self,
-        module: types.ModuleType,
-        *,
-        response_factory: Callable[..., Any]=None,
-        error_class: Type[Exception]=None,
-        validator_class: Any=DefaultValidator,
-        validate_func: Callable[[AnyMapping, AnyMapping], AnyMapping]=None,
-        validation_error_class: Type[Exception]=ValidationError
-    ) -> None:
+    def __init__(self,
+                 module: types.ModuleType,
+                 *,
+                 response_factory: Callable[..., Any]=None,
+                 error_class: Type[Exception]=None,
+                 validator_class: Any=DefaultValidator,
+                 validation_error_class: Type[Exception]=ValidationError,
+                 validate_func: ValidateFunc=None) -> None:
         """Initialize Schema object.
 
         :param module: Module contains at least request and response schemas.
@@ -59,13 +57,13 @@ class Schema(object):
         :param validator_class:
             Validator class to use for validating request and response data.
             By default: ``rororo.schemas.validators.DefaultValidator``
+        :param validation_error_class:
+            Error class to be expected in case of validation error. By default:
+            ``jsonschema.exceptions.ValidationError``
         :param validate_func:
             Validate function to be called for validating request and response
             data. Function will receive 2 args: ``schema`` and ``pure_data``.
             By default: ``None``
-        :param validation_error_class:
-            Error class to be expected in case of validation error. By default:
-            ``jsonschema.exceptions.ValidationError``
         """
         self._valid_request = None  # type: bool
 
@@ -79,13 +77,11 @@ class Schema(object):
             validate_func_factory(validator_class))
         self.validation_error_class = validation_error_class
 
-    def make_error(
-        self,
-        message: str,
-        *,
-        error: Exception=None,
-        error_class: Type[Exception]=None
-    ) -> Exception:
+    def make_error(self,
+                   message: str,
+                   *,
+                   error: Exception=None,
+                   error_class: Type[Exception]=None) -> Exception:
         """Return error instantiated from given message.
 
         :param message: Message to wrap.
@@ -127,12 +123,10 @@ class Schema(object):
                 **kwargs)
         return data
 
-    def validate_request(
-        self,
-        data: AnyMapping,
-        *additional,
-        merged_class: Type[dict]=dict
-    ) -> AnyMapping:
+    def validate_request(self,
+                         data: AnyMapping,
+                         *additional,
+                         merged_class: Type[dict]=dict) -> AnyMapping:
         r"""Validate request data against request schema from module.
 
         :param data: Request data.
