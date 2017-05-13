@@ -64,7 +64,7 @@ lint:
 	TOXENV=lint $(MAKE) test
 
 setup-pyenv:
-	pyenv local 3.5.2
+	pyenv local 3.5.3 3.6.1
 
 test: .install clean
 	$(TOX) $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)

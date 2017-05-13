@@ -15,6 +15,7 @@ from typing import (  # noqa: F401
     Callable,
     Dict,
     Iterator,
+    Optional,
     TYPE_CHECKING,
     Union,
 )
@@ -66,13 +67,11 @@ def add_resource_context(router: web.AbstractRouter,
     :param url_prefix: If supplied prepend this prefix to each resource URL.
     :param name_prefix: If supplied prepend this prefix to each resource name.
     """
-    def add_resource(
-        url: str,
-        get: View=None,
-        *,
-        name: str=None,
-        **kwargs
-    ) -> web.Resource:
+    def add_resource(url: str,
+                     get: View=None,
+                     *,
+                     name: str=None,
+                     **kwargs: Any) -> web.Resource:
         """Inner function to create resource and add necessary routes to it.
 
         Support adding routes of all methods, supported by aiohttp, as
@@ -143,7 +142,7 @@ def parse_aioredis_url(url: str) -> Dict[str, Any]:
     """
     parts = urlparse(url)
 
-    db = parts.path[1:] or None  # type: Union[str, int]
+    db = parts.path[1:] or None  # type: Optional[Union[str, int]]
     if db:
         db = int(db)
 

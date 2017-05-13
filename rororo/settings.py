@@ -36,10 +36,8 @@ def from_env(key: str, default: Any=None) -> Any:
     return os.environ.get(key, default)
 
 
-def immutable_settings(
-    defaults: Settings,
-    **optionals
-) -> types.MappingProxyType:
+def immutable_settings(defaults: Settings,
+                       **optionals: Any) -> types.MappingProxyType:
     r"""Initialize and return immutable Settings dictionary.
 
     Settings dictionary allows you to setup settings values from multiple
@@ -144,7 +142,7 @@ def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
 
 
 def setup_locale(locale: str, first_weekday: int=None) -> str:
-    """Setup locale for backend application.
+    """Shortcut helper to setup locale for backend application.
 
     :param locale: Locale to use.
     :param first_weekday:
@@ -156,7 +154,7 @@ def setup_locale(locale: str, first_weekday: int=None) -> str:
 
 
 def setup_timezone(timezone: str) -> None:
-    """Setup timezone for backend application.
+    """Shortcut helper to configure timezone for backend application.
 
     :param timezone: Timezone to use, e.g. "UTC", "Europe/Kiev".
     """

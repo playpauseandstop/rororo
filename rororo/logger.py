@@ -27,7 +27,7 @@ class IgnoreErrorsFilter(object):
         return record.levelname in {'DEBUG', 'INFO'}
 
 
-def default_logging_dict(*loggers, **kwargs) -> LoggingDict:
+def default_logging_dict(*loggers: str, **kwargs: Any) -> LoggingDict:
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
     Usage
@@ -80,12 +80,10 @@ def default_logging_dict(*loggers, **kwargs) -> LoggingDict:
     }
 
 
-def update_sentry_logging(
-    logging_dict: LoggingDict,
-    sentry_dsn: Optional[str],
-    *loggers,
-    **kwargs
-) -> None:
+def update_sentry_logging(logging_dict: LoggingDict,
+                          sentry_dsn: Optional[str],
+                          *loggers: str,
+                          **kwargs: Any) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 
     .. note::

@@ -10,7 +10,7 @@ Implement class for validating request and response data against JSON Schema.
 import logging
 import types
 
-from typing import Any, Callable, Type
+from typing import Any, Callable, Optional, Type  # noqa: F401
 
 try:
     from multidict import MultiDict, MultiDictProxy
@@ -65,7 +65,7 @@ class Schema(object):
             data. Function will receive 2 args: ``schema`` and ``pure_data``.
             By default: ``None``
         """
-        self._valid_request = None  # type: bool
+        self._valid_request = None  # type: Optional[bool]
 
         self.module = module
         self.response_factory = response_factory
@@ -91,13 +91,12 @@ class Schema(object):
             ``self.error_class`` will be used.
         """
         if error_class is None:
-            error_class = (  # type: ignore
-                self.error_class
-                if self.error_class
-                else Error)
+            error_class = self.error_class if self.error_class else Error
         return error_class(message)
 
-    def make_response(self, data: AnyMapping=None, **kwargs) -> AnyMapping:
+    def make_response(self,
+                      data: AnyMapping=None,
+                      **kwargs: Any) -> AnyMapping:
         r"""Validate response data and wrap it inside response factory.
 
         :param data: Response data. Could be ommited.
@@ -115,17 +114,17 @@ class Schema(object):
 
         response_schema = getattr(self.module, 'response', None)
         if response_schema is not None:
-            self._validate(data, response_schema)
+            self._validate(data, response_schema)  # type: ignore
 
         if self.response_factory is not None:
             return self.response_factory(
                 *([data] if data is not None else []),
                 **kwargs)
-        return data
+        return data or {}
 
     def validate_request(self,
                          data: AnyMapping,
-                         *additional,
+                         *additional: AnyMapping,
                          merged_class: Type[dict]=dict) -> AnyMapping:
         r"""Validate request data against request schema from module.
 
@@ -139,9 +138,10 @@ class Schema(object):
         """
         request_schema = getattr(self.module, 'request', None)
         if request_schema is None:
-            logger.error('Request schema should be defined',
-                         extra={'schema_module': self.module,
-                                'schema_module_attrs': dir(self.module)})
+            logger.error(
+                'Request schema should be defined',
+                extra={'schema_module': self.module,
+                       'schema_module_attrs': dir(self.module)})
             raise self.make_error('Request schema should be defined')
 
         # Merge base and additional data dicts, but only if additional data
@@ -159,7 +159,7 @@ class Schema(object):
         processor = getattr(self.module, 'request_processor', None)
         return processor(data) if processor else data
 
-    def _merge_data(self, data: AnyMapping, *additional) -> dict:
+    def _merge_data(self, data: AnyMapping, *additional: AnyMapping) -> dict:
         r"""Merge base data and additional dicts.
 
         :param data: Base data.
@@ -186,11 +186,11 @@ class Schema(object):
         """
         try:
             return self.validate_func(schema, self._pure_data(data))
-        except self.validation_error_class as err:  # type: ignore
-            logger.error('Schema validation error',
-                         exc_info=True,
-                         extra={'schema': schema,
-                                'schema_module': self.module})
+        except self.validation_error_class as err:
+            logger.error(
+                'Schema validation error',
+                exc_info=True,
+                extra={'schema': schema, 'schema_module': self.module})
             if self.error_class is None:
                 raise
             raise self.make_error('Validation Error', error=err) from err

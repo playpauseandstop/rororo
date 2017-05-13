@@ -14,7 +14,7 @@ AnyMapping = Mapping[Any, Any]
 ValidateFunc = Callable[[AnyMapping, AnyMapping], AnyMapping]
 
 
-def defaults(current: dict, *args) -> dict:
+def defaults(current: dict, *args: AnyMapping) -> dict:
     r"""Override current dict with defaults values.
 
     :param current: Current dict.
@@ -27,7 +27,7 @@ def defaults(current: dict, *args) -> dict:
 
 
 def validate_func_factory(validator_class: Any) -> ValidateFunc:
-    """Factory to return default validate function for Schema.
+    """Provide default function for Schema validation.
 
     :param validator_class: JSONSchema suitable validator class.
     """
