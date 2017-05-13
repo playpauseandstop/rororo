@@ -1,8 +1,8 @@
 1.0.0 (In Development)
 ======================
 
-1.0.0b1 (In Development)
-========================
+1.0.0b1 (2017-05-13)
+====================
 
 - Annotate all code in ``rororo``
 - Use `mypy <http://mypy.readthedocs.io/>`_ on linting source code
