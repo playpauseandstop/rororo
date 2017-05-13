@@ -7,11 +7,11 @@ rororo
     :alt: CircleCI
 
 .. image:: https://img.shields.io/pypi/v/rororo.svg
-    :target: https://warehouse.python.org/project/rororo/
+    :target: https://pypi.org/project/rororo/
     :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/pyversions/rororo.svg
-    :target: https://warehouse.python.org/project/rororo/
+    :target: https://pypi.org/project/rororo/
     :alt: Python versions
 
 .. image:: https://img.shields.io/pypi/l/rororo.svg
