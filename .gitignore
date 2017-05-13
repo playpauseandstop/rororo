@@ -6,7 +6,7 @@
 .install
 .python-version
 
-.mypy_cache/
+.*cache/
 __pycache__/
 build/
 dist/
