@@ -3,7 +3,7 @@ import asyncio
 from unittest import TestCase
 
 from aiohttp import web
-from aiohttp.test_utils import AioHTTPTestCase, make_mocked_request
+from aiohttp.test_utils import make_mocked_request
 from multidict import CIMultiDict
 
 from rororo.aio import add_resource_context, parse_aioredis_url, is_xhr_request
@@ -14,16 +14,13 @@ def dummy_handler(request):
     return web.Response(text='Hello, world!')
 
 
-class TestAddResourceContext(AioHTTPTestCase):
+class TestAddResourceContext(TestCase):
 
     def check_length(self, iterable, expected):
         self.assertEqual(len(list(iterable)), expected)
 
-    def get_app(self, loop):
-        return web.Application(loop=loop)
-
     def test_add_resource(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         self.check_length(router.resources(), 0)
         self.check_length(router.routes(), 0)
@@ -35,7 +32,7 @@ class TestAddResourceContext(AioHTTPTestCase):
         self.check_length(router.routes(), 2)
 
     def test_add_resource_missed_handler(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         with add_resource_context(router) as add_resource:
             add_resource('/', None, post=None)
@@ -44,7 +41,7 @@ class TestAddResourceContext(AioHTTPTestCase):
         self.check_length(router.routes(), 0)
 
     def test_add_resource_name_prefix(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         ctx = add_resource_context(router, name_prefix='prefix')
         with ctx as add_resource:
@@ -53,7 +50,7 @@ class TestAddResourceContext(AioHTTPTestCase):
         self.assertEqual(router['prefix.index'].url(), '/')
 
     def test_add_resource_name_prefix_with_dot(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         ctx = add_resource_context(router, name_prefix='with_dot.')
         with ctx as add_resource:
@@ -62,7 +59,7 @@ class TestAddResourceContext(AioHTTPTestCase):
         self.assertEqual(router['with_dot.index'].url(), '/with.dot')
 
     def test_add_resource_real_world(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         with add_resource_context(router, '/api/', 'api') as add_resource:
             add_resource('/', dummy_handler, name='index')
@@ -86,7 +83,7 @@ class TestAddResourceContext(AioHTTPTestCase):
                          '/api/user/1')
 
     def test_add_resource_url_prefix(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         ctx = add_resource_context(router, url_prefix='/api')
         with ctx as add_resource:
@@ -103,7 +100,7 @@ class TestAddResourceContext(AioHTTPTestCase):
         self.assertEqual(router['posts'].url(), '/api/posts')
 
     def test_add_resource_url_prefix_with_slash(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         ctx = add_resource_context(router, url_prefix='/api/')
         with ctx as add_resource:
@@ -112,7 +109,7 @@ class TestAddResourceContext(AioHTTPTestCase):
         self.assertEqual(router['index'].url(), '/api/')
 
     def test_add_resource_wildcard(self):
-        router = web.UrlDispatcher(self.app)
+        router = web.UrlDispatcher()
 
         with add_resource_context(router) as add_resource:
             add_resource('/', **{'*': dummy_handler})
