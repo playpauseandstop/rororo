@@ -43,7 +43,7 @@ class Schema(object):
                  module: types.ModuleType,
                  *,
                  response_factory: Callable[..., Any]=None,
-                 error_class: Type[Exception]=None,
+                 error_class: Type[Exception]=Error,
                  validator_class: Any=DefaultValidator,
                  validation_error_class: Type[Exception]=ValidationError,
                  validate_func: ValidateFunc=None) -> None:
@@ -81,7 +81,10 @@ class Schema(object):
                    message: str,
                    *,
                    error: Exception=None,
-                   error_class: Type[Exception]=None) -> Exception:
+                   # ``error_class: Type[Exception]=None`` doesn't work on
+                   # Python 3.5.2, but that is exact version ran by Read the
+                   # Docs :( More info: http://stackoverflow.com/q/42942867
+                   error_class: Any=None) -> Exception:
         """Return error instantiated from given message.
 
         :param message: Message to wrap.
@@ -90,9 +93,7 @@ class Schema(object):
             Special class to wrap error message into. When omitted
             ``self.error_class`` will be used.
         """
-        if error_class is None:
-            error_class = self.error_class if self.error_class else Error
-        return error_class(message)
+        return (error_class or self.error_class)(message)
 
     def make_response(self,
                       data: AnyMapping=None,
