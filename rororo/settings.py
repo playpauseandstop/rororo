@@ -58,11 +58,10 @@ def immutable_settings(defaults: Settings,
 
             def create_app(**options):
                 app = ...
-                app.settings = Settings(settings, **options)
+                app.settings = immutable_settings(settings, **options)
                 return app
 
         And yes each additional key overwrite default setting value.
-    :rtype: types.MappingProxyType
     """
     settings = {key: value for key, value in iter_settings(defaults)}
     for key, value in iter_settings(optionals):
@@ -84,7 +83,6 @@ def inject_settings(mixed: Union[str, Settings],
     :param fail_silently:
         When enabled and reading settings from Python path ignore errors if
         given Python path couldn't be loaded.
-    :rtype: None
     """
     if isinstance(mixed, str):
         try:
@@ -104,16 +102,14 @@ def is_setting_key(key: str) -> bool:
     Only public uppercase constants are valid settings keys, all other keys
     are invalid and shouldn't present in Settings dict.
 
-    Valid settings keys
-    -------------------
+    **Valid settings keys**
 
     ::
 
         DEBUG
         SECRET_KEY
 
-    Invalid settings keys
-    ---------------------
+    **Invalid settings keys**
 
     ::
 
@@ -172,8 +168,7 @@ def setup_timezone(timezone: str) -> None:
 def to_bool(value: Any) -> bool:
     """Convert string or other Python object to boolean.
 
-    Rationalle
-    ==========
+    **Rationalle**
 
     Passing flags is one of the most common cases of using environment vars and
     as values are strings we need to have an easy way to convert them to

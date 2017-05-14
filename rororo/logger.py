@@ -30,10 +30,7 @@ class IgnoreErrorsFilter(object):
 def default_logging_dict(*loggers: str, **kwargs: Any) -> LoggingDict:
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
-    Usage
-    =====
-
-    ::
+    **Usage**::
 
         from logging.config import dictConfig
         dictConfig(default_logging_dict('yourlogger'))
@@ -90,10 +87,7 @@ def update_sentry_logging(logging_dict: LoggingDict,
         Sentry logging requires `raven <http://pypi.python.org/pypi/raven>`_
         library to be installed.
 
-    Usage
-    =====
-
-    ::
+    **Usage**::
 
         from logging.config import dictConfig
 
@@ -103,8 +97,7 @@ def update_sentry_logging(logging_dict: LoggingDict,
         update_sentry_logging(LOGGING, SENTRY_DSN)
         dictConfig(LOGGING)
 
-    Use AioHttpTransport for SentryHandler
-    ---------------------------------------
+    **Using AioHttpTransport for SentryHandler**
 
     This will allow to use ``aiohttp.client`` for pushing data to Sentry in
     your ``aiohttp.web`` app, which means elimination of sync calls to Sentry.

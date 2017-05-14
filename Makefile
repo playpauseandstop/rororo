@@ -1,4 +1,4 @@
-.PHONY: clean coveralls deploy distclean install lint setup-pyenv test
+.PHONY: clean coveralls deploy distclean docs install lint setup-pyenv test
 
 # Project settings
 PROJECT = rororo
@@ -10,10 +10,12 @@ VENV = $(shell python -c "import sys; print(int(hasattr(sys, 'real_prefix')));")
 # Python commands
 ifeq ($(VENV),1)
 	COVERALLS = coveralls
+	SPHINXBUILD = sphinx-build
 	TOX = tox
 	TWINE = twine
 else
 	COVERALLS = $(ENV)/bin/coveralls
+	SPHINXBUILD = `pwd`/$(ENV)/bin/sphinx-build
 	TOX = $(ENV)/bin/tox
 	TWINE = $(ENV)/bin/twine
 endif
@@ -54,6 +56,9 @@ endif
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ $(ENV)/
+
+docs: .install
+	$(MAKE) -C docs/ SPHINXBUILD=$(SPHINXBUILD) html
 
 install: .install
 .install: setup.py requirements-dev.txt

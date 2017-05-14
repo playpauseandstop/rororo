@@ -1,26 +1,26 @@
 1.0.0 (In Development)
-======================
+----------------------
 
 1.0.0b1 (2017-05-13)
-====================
+--------------------
 
 - Annotate all code in ``rororo``
 - Use `mypy <http://mypy.readthedocs.io/>`_ on linting source code
 - Require Python 3.5 or higher due to changes above
 
 1.0.0a5 (2016-10-23)
-====================
+--------------------
 
 - Support validating schema via `fastjsonschema
   <http://opensource.seznam.cz/python-fastjsonschema/>`_ or any other validator
 
 1.0.0a4 (2016-09-01)
-====================
+--------------------
 
 - Pass ``kwargs`` to ``SentryHandler`` on configuring Sentry logging
 
 1.0.0a3 (2016-08-08)
-====================
+--------------------
 
 - Add ``rororo.aio`` module with:
 
@@ -31,7 +31,7 @@
 - Added ChangeLog & modified GitHub Releases Page
 
 1.0.0a2 (2015-12-18)
-====================
+--------------------
 
 - Adds ability to supply custom error class while making manual errors by
   ``schema.make_error`` method
@@ -40,7 +40,7 @@
 - Several improvements to test process
 
 1.0.0a1 (2015-11-26)
-====================
+--------------------
 
 - New beginning for rororo project. Now it is a bunch of helper methods instead
   of yet another web-framework.

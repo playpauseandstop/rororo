@@ -54,10 +54,7 @@ def add_resource_context(router: web.AbstractRouter,
         resource = router.add_resource(url, name)
         resource.add_route(method, handler)
 
-    Usage
-    =====
-
-    ::
+    **Usage**::
 
         with add_resource_context(app.router, '/api', 'api') as add_resource:
             add_resource('/', get=views.index)
@@ -129,10 +126,7 @@ def parse_aioredis_url(url: str) -> Dict[str, Any]:
     Convert Redis URL string to dict suitable to pass to
     ``aioredis.create_redis(...)`` call.
 
-    Usage
-    =====
-
-    ::
+    **Usage**::
 
         async def connect_redis(url=None):
             url = url or 'redis://localhost:6379/0'

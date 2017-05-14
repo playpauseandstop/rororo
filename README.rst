@@ -22,6 +22,10 @@ rororo
     :target: https://coveralls.io/github/playpauseandstop/rororo
     :alt: Coverage
 
+.. image:: https://readthedocs.org/projects/rororo/badge/?version=latest
+    :target: http://rororo.readthedocs.io/en/latest/
+    :alt: Documentation
+
 Collection of utilities, helpers, and principles for building Python backend
 applications. Supports `aiohttp.web <http://aiohttp.readthedocs.org/>`_,
 `Flask <http://flask.pocoo.org/>`_, and your web-framework.
