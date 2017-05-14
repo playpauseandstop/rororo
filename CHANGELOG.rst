@@ -1,5 +1,7 @@
-1.0.0 (In Development)
-----------------------
+1.0.0 (2017-05-14)
+------------------
+
+- Publish 1.0 release, even proper docs are not ready yet
 
 1.0.0b1 (2017-05-13)
 --------------------
