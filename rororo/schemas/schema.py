@@ -43,7 +43,7 @@ class Schema(object):
                  module: types.ModuleType,
                  *,
                  response_factory: Callable[..., Any]=None,
-                 error_class: Type[Exception]=Error,
+                 error_class: Any=None,
                  validator_class: Any=DefaultValidator,
                  validation_error_class: Type[Exception]=ValidationError,
                  validate_func: ValidateFunc=None) -> None:
@@ -93,7 +93,9 @@ class Schema(object):
             Special class to wrap error message into. When omitted
             ``self.error_class`` will be used.
         """
-        return (error_class or self.error_class)(message)
+        if error_class is None:
+            error_class = self.error_class if self.error_class else Error
+        return error_class(message)
 
     def make_response(self,
                       data: AnyMapping=None,
