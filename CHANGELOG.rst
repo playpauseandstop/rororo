@@ -1,3 +1,8 @@
+1.1.0 (2017-10-09)
+------------------
+
+- Allow to supply non-dicts in request/response data
+
 1.0.0 (2017-05-14)
 ------------------
 

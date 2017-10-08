@@ -12,11 +12,6 @@ import types
 
 from typing import Any, Callable, Optional, Type  # noqa: F401
 
-try:
-    from multidict import MultiDict, MultiDictProxy
-except ImportError:  # pragma: no cover
-    MultiDict, MultiDictProxy = None, None
-
 from jsonschema.exceptions import ValidationError
 
 from .exceptions import Error
@@ -117,7 +112,7 @@ class Schema(object):
 
         response_schema = getattr(self.module, 'response', None)
         if response_schema is not None:
-            self._validate(data, response_schema)  # type: ignore
+            self._validate(data, response_schema)
 
         if self.response_factory is not None:
             return self.response_factory(
@@ -126,9 +121,9 @@ class Schema(object):
         return data or {}
 
     def validate_request(self,
-                         data: AnyMapping,
+                         data: Any,
                          *additional: AnyMapping,
-                         merged_class: Type[dict]=dict) -> AnyMapping:
+                         merged_class: Type[dict]=dict) -> Any:
         r"""Validate request data against request schema from module.
 
         :param data: Request data.
@@ -149,7 +144,7 @@ class Schema(object):
 
         # Merge base and additional data dicts, but only if additional data
         # dicts have been supplied
-        if additional:
+        if isinstance(data, dict) and additional:
             data = merged_class(self._merge_data(data, *additional))
 
         try:
@@ -172,16 +167,21 @@ class Schema(object):
             dict(data) if not isinstance(data, dict) else data,
             *(dict(item) for item in additional))
 
-    def _pure_data(self, data: AnyMapping) -> dict:
+    def _pure_data(self, data: Any) -> Any:
         """
-        Convert mapping to pure dict instance to be compatible and possible to
-        pass to default ``jsonschema.validate`` func.
+        If data is dict-like object, convert it to pure dict instance, so it
+        will be possible to pass to default ``jsonschema.validate`` func.
 
-        :param data: Data mapping.
+        :param data: Request or response data.
         """
-        return dict(data) if not isinstance(data, dict) else data
+        if not isinstance(data, dict):
+            try:
+                return dict(data)
+            except TypeError:
+                ...
+        return data
 
-    def _validate(self, data: AnyMapping, schema: AnyMapping) -> AnyMapping:
+    def _validate(self, data: Any, schema: AnyMapping) -> Any:
         """Validate data against given schema.
 
         :param data: Data to validate.

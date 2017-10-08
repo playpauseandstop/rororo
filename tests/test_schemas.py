@@ -21,6 +21,7 @@ from rororo.schemas.validators import DefaultValidator, Validator
 import schemas
 
 
+TEST_ARRAY = [1, 2, 3]
 TEST_NAME = choice(('Igor', 'world'))
 
 
@@ -79,6 +80,11 @@ class TestSchema(TestCase):
         timestamp = time.time()
         response = schema.make_response({'name': TEST_NAME, 'time': timestamp})
         self.assertEqual(response, {'name': TEST_NAME, 'time': timestamp})
+
+    def test_schema_array(self):
+        schema = Schema(schemas.array)
+        assert schema.validate_request(TEST_ARRAY) == TEST_ARRAY
+        assert schema.make_response(TEST_ARRAY) == TEST_ARRAY
 
     def test_schema_default_values(self):
         schema = Schema(schemas.default_values)

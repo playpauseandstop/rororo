@@ -8,8 +8,6 @@ Various utilities for aiohttp and other aio-libs.
 """
 
 from contextlib import contextmanager
-from urllib.parse import urlparse
-
 from typing import (  # noqa: F401
     Any,
     Callable,
@@ -19,6 +17,7 @@ from typing import (  # noqa: F401
     TYPE_CHECKING,
     Union,
 )
+from urllib.parse import urlparse
 
 # Hack to load ``aiohttp.web`` only on mypy run
 if TYPE_CHECKING:  # pragma: no cover

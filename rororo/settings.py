@@ -18,7 +18,7 @@ import types
 from distutils.util import strtobool
 from importlib import import_module
 from locale import LC_ALL, setlocale
-from logging.config import dictConfig as setup_logging  # noqa: F401, N813
+from logging.config import dictConfig as setup_logging  # noqa: N813
 from typing import Any, Dict, Iterator, MutableMapping, Tuple, Union
 
 
@@ -181,3 +181,6 @@ def to_bool(value: Any) -> bool:
     :param value: String or other value.
     """
     return bool(strtobool(value) if isinstance(value, str) else value)
+
+
+(setup_logging, )
