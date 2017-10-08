@@ -86,6 +86,11 @@ class TestSchema(TestCase):
         assert schema.validate_request(TEST_ARRAY) == TEST_ARRAY
         assert schema.make_response(TEST_ARRAY) == TEST_ARRAY
 
+    def test_schema_array_empty(self):
+        schema = Schema(schemas.array)
+        assert schema.validate_request([]) == []
+        assert schema.make_response([]) == []
+
     def test_schema_default_values(self):
         schema = Schema(schemas.default_values)
         data = schema.validate_request({})

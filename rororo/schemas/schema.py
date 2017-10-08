@@ -93,8 +93,8 @@ class Schema(object):
         return error_class(message)
 
     def make_response(self,
-                      data: AnyMapping=None,
-                      **kwargs: Any) -> AnyMapping:
+                      data: Any=None,
+                      **kwargs: Any) -> Any:
         r"""Validate response data and wrap it inside response factory.
 
         :param data: Response data. Could be ommited.
@@ -118,7 +118,7 @@ class Schema(object):
             return self.response_factory(
                 *([data] if data is not None else []),
                 **kwargs)
-        return data or {}
+        return data
 
     def validate_request(self,
                          data: Any,
@@ -174,7 +174,7 @@ class Schema(object):
 
         :param data: Request or response data.
         """
-        if not isinstance(data, dict):
+        if not isinstance(data, dict) and not isinstance(data, list):
             try:
                 return dict(data)
             except TypeError:

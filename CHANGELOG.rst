@@ -1,3 +1,8 @@
+1.1.1 (2017-10-09)
+------------------
+
+- Do not attempt to convert empty list to dict for request/response data
+
 1.1.0 (2017-10-09)
 ------------------
 
