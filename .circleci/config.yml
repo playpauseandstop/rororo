@@ -1,7 +1,7 @@
 version: 2
 jobs:
   lint:
-    docker:
+    docker: &py37
       - image: circleci/python:3.7.0
     steps:
       - checkout
@@ -25,6 +25,9 @@ jobs:
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py35 make test
+      - store_test_results:
+          path: test-results/nosetests/
+      - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
   test36:
     docker:
       - image: circleci/python:3.6.6
@@ -34,9 +37,11 @@ jobs:
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py36 make test
+      - store_test_results:
+          path: test-results/nosetests/
+      - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
   test37:
-    docker:
-      - image: circleci/python:3.7.0
+    docker: *py37
     steps:
       - checkout
       - run: *install_locales
@@ -44,19 +49,43 @@ jobs:
       - run: *update_path
       - run: TOXENV=py37 make test
       - run: make coveralls
-      - run: mkdir -p $CIRCLE_TEST_REPORTS/junit/
-      - run: "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
+      - store_test_results:
+          path: test-results/nosetests/
+      - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
+  deploy:
+    docker: *py37
+    steps:
+      - checkout
+      - run: *install_bootstrapper
+      - run: *update_path
+      - run: make deploy
 workflows:
   version: 2
-  lint-and-test:
+  ci:
     jobs:
       - lint
+          filters: &all_tags_and_branches
+            tags:
+              only: /.*/
       - test35:
           requires:
             - lint
+          filters: *all_tags_and_branches
       - test36:
           requires:
             - lint
+          filters: *all_tags_and_branches
       - test37:
           requires:
             - lint
+          filters: *all_tags_and_branches
+      - deploy:
+          requires:
+            - test35
+            - test36
+            - test37
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
