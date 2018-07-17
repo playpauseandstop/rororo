@@ -5,28 +5,28 @@ jobs:
       - image: circleci/python:3.7.0
     steps:
       - checkout
-      - run: pip install bootstrapper
+      - run: pip install --user bootstrapper
       - run: make lint
   test35:
     docker:
       - image: circleci/python:3.5.5
     steps:
       - checkout
-      - run: pip install bootstrapper
+      - run: pip install --user bootstrapper
       - run: TOXENV=py35 make test
   test36:
     docker:
       - image: circleci/python:3.6.6
     steps:
       - checkout
-      - run: pip install bootstrapper
+      - run: pip install --user bootstrapper
       - run: TOXENV=py36 make test
   test37:
     docker:
-      - image: circleci/python3.7.0
+      - image: circleci/python:3.7.0
     steps:
       - checkout
-      - run: pip install bootstrapper
+      - run: pip install --user bootstrapper
       - run: TOXENV=py37 make test
       - run: make coveralls
       - run: mkdir -p $CIRCLE_TEST_REPORTS/junit/
