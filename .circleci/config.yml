@@ -63,28 +63,22 @@ workflows:
   version: 2
   ci:
     jobs:
-      - lint
-          filters:
+      - lint:
+          filters: &all_tags_and_branches
             tags:
               only: /.*/
       - test35:
           requires:
             - lint
-          filters:
-            tags:
-              only: /.*/
+          filters: *all_tags_and_branches
       - test36:
           requires:
             - lint
-          filters:
-            tags:
-              only: /.*/
+          filters: *all_tags_and_branches
       - test37:
           requires:
             - lint
-          filters:
-            tags:
-              only: /.*/
+          filters: *all_tags_and_branches
       - deploy:
           requires:
             - test35
