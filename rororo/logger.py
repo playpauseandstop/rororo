@@ -11,11 +11,9 @@ Module provides easy way to setup logging for your web application.
 
 import logging
 import sys
+from typing import Any, Optional, Union
 
-from typing import Any, Dict, Optional
-
-
-LoggingDict = Dict[str, Any]
+from .annotations import StrAnyDict
 
 
 class IgnoreErrorsFilter(object):
@@ -27,7 +25,7 @@ class IgnoreErrorsFilter(object):
         return record.levelname in {'DEBUG', 'INFO'}
 
 
-def default_logging_dict(*loggers: str, **kwargs: Any) -> LoggingDict:
+def default_logging_dict(*loggers: str, **kwargs: Any) -> StrAnyDict:
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
     **Usage**::
@@ -77,9 +75,10 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> LoggingDict:
     }
 
 
-def update_sentry_logging(logging_dict: LoggingDict,
+def update_sentry_logging(logging_dict: StrAnyDict,
                           sentry_dsn: Optional[str],
                           *loggers: str,
+                          level: Union[str, int]=None,
                           **kwargs: Any) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 
@@ -122,7 +121,9 @@ def update_sentry_logging(logging_dict: LoggingDict,
     # Add Sentry handler
     kwargs['class'] = 'raven.handlers.logging.SentryHandler'
     kwargs['dsn'] = sentry_dsn
-    logging_dict['handlers']['sentry'] = dict(level='WARNING', **kwargs)
+    logging_dict['handlers']['sentry'] = dict(
+        level=level or 'WARNING',
+        **kwargs)
 
     loggers = tuple(logging_dict['loggers']) if not loggers else loggers
     for logger in loggers:

@@ -112,3 +112,8 @@ class TestLogger(TestCase):
                               TEST_SENTRY_DSN,
                               'rororo',
                               'does-not-exist')
+
+    def test_update_sentry_logging_overwrite_level(self):
+        logging_dict = default_logging_dict('rororo')
+        update_sentry_logging(logging_dict, TEST_SENTRY_DSN, level='INFO')
+        self.assertEqual(logging_dict['handlers']['sentry']['level'], 'INFO')

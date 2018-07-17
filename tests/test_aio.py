@@ -47,7 +47,7 @@ class TestAddResourceContext(TestCase):
         with ctx as add_resource:
             add_resource('/', dummy_handler, name='index')
 
-        self.assertEqual(router['prefix.index'].url(), '/')
+        self.assertEqual(str(router['prefix.index'].url_for()), '/')
 
     def test_add_resource_name_prefix_with_dot(self):
         router = web.UrlDispatcher()
@@ -56,31 +56,34 @@ class TestAddResourceContext(TestCase):
         with ctx as add_resource:
             add_resource('/with.dot', dummy_handler, name='index')
 
-        self.assertEqual(router['with_dot.index'].url(), '/with.dot')
+        self.assertEqual(str(router['with_dot.index'].url_for()), '/with.dot')
 
     def test_add_resource_real_world(self):
         router = web.UrlDispatcher()
 
         with add_resource_context(router, '/api/', 'api') as add_resource:
             add_resource('/', dummy_handler, name='index')
-            add_resource('/news',
-                         get=dummy_handler,
-                         post=dummy_handler,
-                         name='news')
-            add_resource('/user/{user_id:\d+}',
-                         get=dummy_handler,
-                         patch=dummy_handler,
-                         put=dummy_handler,
-                         delete=dummy_handler,
-                         name='user')
+            add_resource(
+                '/news',
+                get=dummy_handler,
+                post=dummy_handler,
+                name='news')
+            add_resource(
+                '/user/{user_id:\d+}',
+                get=dummy_handler,
+                patch=dummy_handler,
+                put=dummy_handler,
+                delete=dummy_handler,
+                name='user')
 
         self.check_length(router.resources(), 3)
         self.check_length(router.routes(), 7)
 
-        self.assertEqual(router['api.index'].url(), '/api/')
-        self.assertEqual(router['api.news'].url(), '/api/news')
-        self.assertEqual(router['api.user'].url(parts={'user_id': 1}),
-                         '/api/user/1')
+        self.assertEqual(str(router['api.index'].url_for()), '/api/')
+        self.assertEqual(str(router['api.news'].url_for()), '/api/news')
+        self.assertEqual(
+            str(router['api.user'].url_for(user_id='1')),
+            '/api/user/1')
 
     def test_add_resource_url_prefix(self):
         router = web.UrlDispatcher()
@@ -88,16 +91,17 @@ class TestAddResourceContext(TestCase):
         ctx = add_resource_context(router, url_prefix='/api')
         with ctx as add_resource:
             add_resource('/', dummy_handler, name='index')
-            add_resource('/posts',
-                         get=dummy_handler,
-                         post=dummy_handler,
-                         name='posts')
+            add_resource(
+                '/posts',
+                get=dummy_handler,
+                post=dummy_handler,
+                name='posts')
 
         self.check_length(router.resources(), 2)
         self.check_length(router.routes(), 3)
 
-        self.assertEqual(router['index'].url(), '/api/')
-        self.assertEqual(router['posts'].url(), '/api/posts')
+        self.assertEqual(str(router['index'].url_for()), '/api/')
+        self.assertEqual(str(router['posts'].url_for()), '/api/posts')
 
     def test_add_resource_url_prefix_with_slash(self):
         router = web.UrlDispatcher()
@@ -106,7 +110,7 @@ class TestAddResourceContext(TestCase):
         with ctx as add_resource:
             add_resource('/', dummy_handler, name='index')
 
-        self.assertEqual(router['index'].url(), '/api/')
+        self.assertEqual(str(router['index'].url_for()), '/api/')
 
     def test_add_resource_wildcard(self):
         router = web.UrlDispatcher()

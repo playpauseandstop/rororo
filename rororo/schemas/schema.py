@@ -9,7 +9,6 @@ Implement class for validating request and response data against JSON Schema.
 
 import logging
 import types
-
 from typing import Any, Callable, Optional, Type  # noqa: F401
 
 from jsonschema.exceptions import ValidationError

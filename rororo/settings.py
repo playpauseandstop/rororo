@@ -14,7 +14,6 @@ import calendar
 import os
 import time
 import types
-
 from distutils.util import strtobool
 from importlib import import_module
 from locale import LC_ALL, setlocale
