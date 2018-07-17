@@ -5,29 +5,47 @@ jobs:
       - image: circleci/python:3.7.0
     steps:
       - checkout
-      - run: pip install --user bootstrapper
+      - run: &install_bootstrapper
+          name: Install bootstrapper
+          command: pip install --user bootstrapper
+      - run: &update_path
+          name: Update path
+          command: |
+            echo 'export PATH=$HOME/.local/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
       - run: make lint
   test35:
     docker:
       - image: circleci/python:3.5.5
     steps:
       - checkout
-      - run: pip install --user bootstrapper
-      - run: TOXENV=py35 make test
+      - run: *install_bootstrapper
+      - run: *update_path
+      - run: &run_tests
+          name: Run tests
+          command: make test
+          environment:
+            TOXENV: py35
   test36:
     docker:
       - image: circleci/python:3.6.6
     steps:
       - checkout
-      - run: pip install --user bootstrapper
-      - run: TOXENV=py36 make test
+      - run: *install_bootstrapper
+      - run: *update_path
+      - run: *run_tests
+          environment:
+            TOXENV: py36
   test37:
     docker:
       - image: circleci/python:3.7.0
     steps:
       - checkout
-      - run: pip install --user bootstrapper
-      - run: TOXENV=py37 make test
+      - run: *install_bootstrapper
+      - run: *update_path
+      - run: *run_tests
+          environment:
+            TOXENV: py37
       - run: make coveralls
       - run: mkdir -p $CIRCLE_TEST_REPORTS/junit/
       - run: "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
@@ -36,6 +54,9 @@ workflows:
   lint:
     jobs:
       - lint
-      - test35
-      - test36
-      - test37
+      - test35:
+          requires: lint
+      - test36:
+          requires: lint
+      - test37:
+          requires: lint
