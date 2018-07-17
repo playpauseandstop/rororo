@@ -1,30 +1,41 @@
-machine:
-  python:
-    version: 3.6.1
-
-dependencies:
-  cache_directories:
-    - env/
-
-  override:
-    - pip install -U bootstrapper pip wheel
-    - make
-    - make setup-pyenv
-
-  pre:
-    - sudo apt-get install -y language-pack-uk
-
-test:
-  override:
-    - TEST_ARGS="--with-xunit --cover-html --cover-html-dir=$CIRCLE_ARTIFACTS/coverage" make test
-
-  post:
-    - make coveralls
-    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-    - "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
-
-deployment:
-  release:
-    tag: /v\d+.\d+.\d+.*/
-    commands:
-      - make deploy
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: circleci/python:3.7.0
+    steps:
+      - checkout
+      - run: pip install bootstrapper
+      - run: make lint
+  test35:
+    docker:
+      - image: circleci/python:3.5.5
+    steps:
+      - checkout
+      - run: pip install bootstrapper
+      - run: TOXENV=py35 make test
+  test36:
+    docker:
+      - image: circleci/python:3.6.6
+    steps:
+      - checkout
+      - run: pip install bootstrapper
+      - run: TOXENV=py36 make test
+  test37:
+    docker:
+      - image: circleci/python3.7.0
+    steps:
+      - checkout
+      - run: pip install bootstrapper
+      - run: TOXENV=py37 make test
+      - run: make coveralls
+      - run: mkdir -p $CIRCLE_TEST_REPORTS/junit/
+      - run: "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
+workflows:
+  version: 2
+  lint:
+    jobs:
+      - lint
+      - test35
+      - test36
+      - test37
