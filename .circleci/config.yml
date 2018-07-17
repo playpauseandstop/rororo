@@ -5,9 +5,6 @@ jobs:
       - image: circleci/python:3.7.0
     steps:
       - checkout
-      - run: &install_locale
-          name: Install locales
-          command: sudo apt-get install -y language-pack-en language-pack-uk
       - run: &install_bootstrapper
           name: Install bootstrapper
           command: pip install --user bootstrapper
@@ -22,7 +19,9 @@ jobs:
       - image: circleci/python:3.5.5
     steps:
       - checkout
-      - run: *install_locale
+      - run: &install_locale
+          name: Install locales
+          command: sudo apt-get install -y locales locales-all
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py35 make test
