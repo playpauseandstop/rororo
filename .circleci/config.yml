@@ -25,9 +25,10 @@ jobs:
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py35 make test
-      - store_test_results:
-          path: test-results/nosetests/
+      - run: mkdir -p test-results/nosetests
       - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
+      - store_test_results:
+          path: test-results
   test36:
     docker:
       - image: circleci/python:3.6.6
@@ -37,9 +38,10 @@ jobs:
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py36 make test
-      - store_test_results:
-          path: test-results/nosetests/
+      - run: mkdir -p test-results/nosetests
       - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
+      - store_test_results:
+          path: test-results
   test37:
     docker: *py37
     steps:
@@ -48,10 +50,11 @@ jobs:
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py37 make test
-      - run: make coveralls
-      - store_test_results:
-          path: test-results/nosetests/
+      - run: mkdir -p test-results/nosetests
       - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
+      - store_test_results:
+          path: test-results
+      - run: make coveralls
   deploy:
     docker: *py37
     steps:
