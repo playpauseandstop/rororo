@@ -19,7 +19,7 @@ jobs:
       - image: circleci/python:3.5.5
     steps:
       - checkout
-      - run: &install_locale
+      - run: &install_locales
           name: Install locales
           command: sudo apt-get install -y locales locales-all
       - run: *install_bootstrapper
@@ -30,7 +30,7 @@ jobs:
       - image: circleci/python:3.6.6
     steps:
       - checkout
-      - run: *install_locale
+      - run: *install_locales
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py36 make test
@@ -39,6 +39,7 @@ jobs:
       - image: circleci/python:3.7.0
     steps:
       - checkout
+      - run: *install_locales
       - run: *install_bootstrapper
       - run: *update_path
       - run: TOXENV=py37 make test
