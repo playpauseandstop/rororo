@@ -21,11 +21,7 @@ jobs:
       - checkout
       - run: *install_bootstrapper
       - run: *update_path
-      - run: &run_tests
-          name: Run tests
-          command: make test
-          environment:
-            TOXENV: py35
+      - run: TOXENV=py35 make test
   test36:
     docker:
       - image: circleci/python:3.6.6
@@ -33,10 +29,7 @@ jobs:
       - checkout
       - run: *install_bootstrapper
       - run: *update_path
-      - run:
-          <<: *run_tests
-          environment:
-            TOXENV: py36
+      - run: TOXENV=py36 make test
   test37:
     docker:
       - image: circleci/python:3.7.0
@@ -44,10 +37,7 @@ jobs:
       - checkout
       - run: *install_bootstrapper
       - run: *update_path
-      - run:
-          <<: *run_tests
-          environment:
-            TOXENV: py37
+      - run: TOXENV=py37 make test
       - run: make coveralls
       - run: mkdir -p $CIRCLE_TEST_REPORTS/junit/
       - run: "[ -r nosetests.xml ] && mv nosetests.xml $CIRCLE_TEST_REPORTS/junit/ || :"
