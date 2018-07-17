@@ -33,7 +33,8 @@ jobs:
       - checkout
       - run: *install_bootstrapper
       - run: *update_path
-      - run: *run_tests
+      - run:
+          <<: *run_tests
           environment:
             TOXENV: py36
   test37:
@@ -43,7 +44,8 @@ jobs:
       - checkout
       - run: *install_bootstrapper
       - run: *update_path
-      - run: *run_tests
+      - run:
+          <<: *run_tests
           environment:
             TOXENV: py37
       - run: make coveralls
