@@ -10,7 +10,7 @@ repository = "https://github.com/playpauseandstop/rororo"
 documentation = "https://rororo.readthedocs.io/"
 keywords = ["utilities", "helpers", "principles", "backend", "backend application", "aiohttp", "flask", "web framework"]
 classifiers = [
-    "Development Status :: 5 - Stable",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "Operating System :: OS Independent",
     "Topic :: Utilities",
