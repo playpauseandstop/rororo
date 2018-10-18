@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.5.3"
 jsonschema = "^2.6 || ^3.0"
 
 [tool.poetry.dev-dependencies]

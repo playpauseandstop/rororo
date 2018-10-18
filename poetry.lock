@@ -3,7 +3,6 @@ category = "dev"
 description = "Async http client/server framework (asyncio)"
 name = "aiohttp"
 optional = false
-platform = "*"
 python-versions = ">=3.5.3"
 version = "3.4.4"
 
@@ -23,7 +22,6 @@ category = "dev"
 description = "A configurable sidebar-enabled Sphinx theme"
 name = "alabaster"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "0.7.12"
 
@@ -32,7 +30,6 @@ category = "dev"
 description = "Timeout context manager for asyncio programs"
 name = "async-timeout"
 optional = false
-platform = "*"
 python-versions = ">=3.5.3"
 version = "3.0.1"
 
@@ -41,7 +38,6 @@ category = "dev"
 description = "Classes Without Boilerplate"
 name = "attrs"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "18.2.0"
 
@@ -50,7 +46,6 @@ category = "dev"
 description = "Internationalization utilities"
 name = "babel"
 optional = false
-platform = "*"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.6.0"
 
@@ -62,7 +57,6 @@ category = "dev"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "2018.10.15"
 
@@ -71,28 +65,23 @@ category = "dev"
 description = "Universal encoding detector for Python 2 and 3"
 name = "chardet"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "3.0.4"
 
 [[package]]
 category = "dev"
 description = "Cross-platform colored terminal text."
+marker = "sys_platform == \"win32\""
 name = "colorama"
 optional = false
-platform = "*"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.4.0"
-
-[package.requirements]
-platform = "win32"
 
 [[package]]
 category = "dev"
 description = "Code coverage measurement for Python"
 name = "coverage"
 optional = false
-platform = "*"
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, <4"
 version = "4.5.1"
 
@@ -101,7 +90,6 @@ category = "dev"
 description = "Show coverage stats online via coveralls.io"
 name = "coveralls"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "1.5.1"
 
@@ -115,7 +103,6 @@ category = "dev"
 description = "Pythonic argument parser, that will make you smile"
 name = "docopt"
 optional = false
-platform = "UNKNOWN"
 python-versions = "*"
 version = "0.6.2"
 
@@ -124,7 +111,6 @@ category = "dev"
 description = "Docutils -- Python Documentation Utilities"
 name = "docutils"
 optional = false
-platform = "OS-independent"
 python-versions = "*"
 version = "0.14"
 
@@ -133,7 +119,6 @@ category = "dev"
 description = "Fastest Python implementation of JSON schema"
 name = "fastjsonschema"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "2.4"
 
@@ -145,7 +130,6 @@ category = "dev"
 description = "A platform independent file lock."
 name = "filelock"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "3.0.9"
 
@@ -154,31 +138,26 @@ category = "dev"
 description = "Internationalized Domain Names in Applications (IDNA)"
 name = "idna"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "2.7"
 
 [[package]]
 category = "dev"
 description = "Patch ssl.match_hostname for Unicode(idna) domains support"
+marker = "python_version < \"3.7\""
 name = "idna-ssl"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "1.1.0"
 
 [package.dependencies]
 idna = ">=2.0"
 
-[package.requirements]
-python = "<3.7"
-
 [[package]]
 category = "dev"
 description = "Getting image size from png/jpeg/jpeg2000/gif file"
 name = "imagesize"
 optional = false
-platform = "*"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.1.0"
 
@@ -187,7 +166,6 @@ category = "dev"
 description = "A small but fast and easy to use stand-alone template engine written in pure python."
 name = "jinja2"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "2.10"
 
@@ -199,7 +177,6 @@ category = "dev"
 description = "A Python DSL for defining JSON schemas"
 name = "jsl"
 optional = false
-platform = "UNKNOWN"
 python-versions = "*"
 version = "0.2.4"
 
@@ -208,7 +185,6 @@ category = "main"
 description = "An implementation of JSON Schema validation for Python"
 name = "jsonschema"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "2.6.0"
 
@@ -217,7 +193,6 @@ category = "dev"
 description = "Implements a XML/HTML/XHTML Markup safe string for Python"
 name = "markupsafe"
 optional = false
-platform = "UNKNOWN"
 python-versions = "*"
 version = "1.0"
 
@@ -226,7 +201,6 @@ category = "dev"
 description = "multidict implementation"
 name = "multidict"
 optional = false
-platform = "*"
 python-versions = ">=3.4.1"
 version = "4.4.2"
 
@@ -235,7 +209,6 @@ category = "dev"
 description = "Core utilities for Python packages"
 name = "packaging"
 optional = false
-platform = "*"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "18.0"
 
@@ -248,7 +221,6 @@ category = "dev"
 description = "plugin and hook calling mechanisms for python"
 name = "pluggy"
 optional = false
-platform = "unix"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.8.0"
 
@@ -257,7 +229,6 @@ category = "dev"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
 name = "py"
 optional = false
-platform = "unix"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.7.0"
 
@@ -266,7 +237,6 @@ category = "dev"
 description = "Pygments is a syntax highlighting package written in Python."
 name = "pygments"
 optional = false
-platform = "any"
 python-versions = "*"
 version = "2.2.0"
 
@@ -275,7 +245,6 @@ category = "dev"
 description = "Python parsing module"
 name = "pyparsing"
 optional = false
-platform = "*"
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 version = "2.2.2"
 
@@ -284,7 +253,6 @@ category = "dev"
 description = "World timezone definitions, modern and historical"
 name = "pytz"
 optional = false
-platform = "Independent"
 python-versions = "*"
 version = "2018.5"
 
@@ -293,7 +261,6 @@ category = "dev"
 description = "Python HTTP for Humans."
 name = "requests"
 optional = false
-platform = "*"
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.19.1"
 
@@ -308,7 +275,6 @@ category = "dev"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "1.11.0"
 
@@ -317,7 +283,6 @@ category = "dev"
 description = "This package provides 16 stemmer algorithms (15 + Poerter English stemmer) generated from Snowball algorithms."
 name = "snowballstemmer"
 optional = false
-platform = "UNKNOWN"
 python-versions = "*"
 version = "1.2.1"
 
@@ -326,7 +291,6 @@ category = "dev"
 description = "Python documentation generator"
 name = "sphinx"
 optional = false
-platform = "any"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.8.1"
 
@@ -335,6 +299,7 @@ Jinja2 = ">=2.3"
 Pygments = ">=2.0"
 alabaster = ">=0.7,<0.8"
 babel = ">=1.3,<2.0 || >2.0"
+colorama = ">=0.3.5"
 docutils = ">=0.11"
 imagesize = "*"
 packaging = "*"
@@ -344,16 +309,11 @@ six = ">=1.5"
 snowballstemmer = ">=1.1"
 sphinxcontrib-websupport = "*"
 
-[package.dependencies.colorama]
-platform = "win32"
-version = ">=0.3.5"
-
 [[package]]
 category = "dev"
 description = "Type hints (PEP 484) support for the Sphinx autodoc extension"
 name = "sphinx-autodoc-typehints"
 optional = false
-platform = "*"
 python-versions = "!=3.5.0, !=3.5.1"
 version = "1.3.0"
 
@@ -365,7 +325,6 @@ category = "dev"
 description = "Sphinx API for Web Apps"
 name = "sphinxcontrib-websupport"
 optional = false
-platform = "any"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.1.0"
 
@@ -374,7 +333,6 @@ category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 name = "toml"
 optional = false
-platform = "*"
 python-versions = "*"
 version = "0.10.0"
 
@@ -383,7 +341,6 @@ category = "dev"
 description = "virtualenv-based automation of test activities"
 name = "tox"
 optional = false
-platform = "unix"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "3.5.2"
 
@@ -401,7 +358,6 @@ category = "dev"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
 optional = false
-platform = "*"
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
 version = "1.23"
 
@@ -410,7 +366,6 @@ category = "dev"
 description = "Virtual Python Environment builder"
 name = "virtualenv"
 optional = false
-platform = "*"
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
 version = "16.0.0"
 
@@ -419,7 +374,6 @@ category = "dev"
 description = "A built-package format for Python."
 name = "wheel"
 optional = false
-platform = "*"
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.32.1"
 
@@ -428,7 +382,6 @@ category = "dev"
 description = "Yet another URL library"
 name = "yarl"
 optional = false
-platform = "*"
 python-versions = ">=3.5.3"
 version = "1.2.6"
 
@@ -437,9 +390,8 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "7ade1a9fe6a5562b0e1bc8bbe71358b3734d9edb763f69ec7e48bcc90be329c4"
-platform = "*"
-python-versions = "^3.5"
+content-hash = "6d48b02b05faef910c5cb531ca2ba880ab65fd6a7589b8ea557858e4c134012f"
+python-versions = "^3.5.3"
 
 [metadata.hashes]
 aiohttp = ["0419705a36b43c0ac6f15469f9c2a08cad5c939d78bd12a5c23ea167c8253b2b", "1812fc4bc6ac1bde007daa05d2d0f61199324e0cc893b11523e646595047ca08", "2214b5c0153f45256d5d52d1e0cafe53f9905ed035a142191727a5fb620c03dd", "275909137f0c92c61ba6bb1af856a522d5546f1de8ea01e4e726321c697754ac", "3983611922b561868428ea1e7269e757803713f55b53502423decc509fef1650", "51afec6ffa50a9da4cdef188971a802beb1ca8e8edb40fa429e5e529db3475fa", "589f2ec8a101a0f340453ee6945bdfea8e1cd84c8d88e5be08716c34c0799d95", "789820ddc65e1f5e71516adaca2e9022498fa5a837c79ba9c692a9f8f916c330", "7a968a0bdaaf9abacc260911775611c9a602214a23aeb846f2eb2eeaa350c4dc", "7aeefbed253f59ea39e70c5848de42ed85cb941165357fc7e87ab5d8f1f9592b", "7b2eb55c66512405103485bd7d285a839d53e7fdc261ab20e5bcc51d7aaff5de", "87bc95d3d333bb689c8d755b4a9d7095a2356108002149523dfc8e607d5d32a4", "9d80e40db208e29168d3723d1440ecbb06054d349c5ece6a2c5a611490830dd7", "a1b442195c2a77d33e4dbee67c9877ccbdd3a1f686f91eb479a9577ed8cc326b", "ab3d769413b322d6092f169f316f7b21cd261a7589f7e31db779d5731b0480d8", "b066d3dec5d0f5aee6e34e5765095dc3d6d78ef9839640141a2b20816a0642bd", "b24e7845ae8de3e388ef4bcfcf7f96b05f52c8e633b33cf8003a6b1d726fc7c2", "c59a953c3f8524a7c86eaeaef5bf702555be12f5668f6384149fe4bb75c52698", "cf2cc6c2c10d242790412bea7ccf73726a9a44b4c4b073d2699ef3b48971fd95", "e0c9c8d4150ae904f308ff27b35446990d2b1dfc944702a21925937e937394c6", "f1839db4c2b08a9c8f9788112644f8a8557e8e0ecc77b07091afabb941dc55d0", "f3df52362be39908f9c028a65490fae0475e4898b43a03d8aa29d1e765b45e07"]

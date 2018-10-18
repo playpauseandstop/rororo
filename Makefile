@@ -50,5 +50,8 @@ install: .install
 lint:
 	TOXENV=lint $(MAKE) test
 
+poetry.lock:
+	$(POETRY) install
+
 test: .install clean
 	$(PYTHON) -m tox $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
