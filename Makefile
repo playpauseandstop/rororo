@@ -34,7 +34,8 @@ ifeq ($(CIRCLECI),)
 	$(MAKE) test
 endif
 	rm -rf build/ dist/
-	$(POETRY) publish --build -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+	$(POETRY) build
+	$(POETRY) run twine upload dist/*
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/
