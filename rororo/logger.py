@@ -13,7 +13,7 @@ import logging
 import sys
 from typing import Any, Optional, Union
 
-from .annotations import StrAnyDict
+from .annotations import DictStrAny
 
 
 class IgnoreErrorsFilter(object):
@@ -25,7 +25,7 @@ class IgnoreErrorsFilter(object):
         return record.levelname in {'DEBUG', 'INFO'}
 
 
-def default_logging_dict(*loggers: str, **kwargs: Any) -> StrAnyDict:
+def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
     r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
 
     **Usage**::
@@ -75,7 +75,7 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> StrAnyDict:
     }
 
 
-def update_sentry_logging(logging_dict: StrAnyDict,
+def update_sentry_logging(logging_dict: DictStrAny,
                           sentry_dsn: Optional[str],
                           *loggers: str,
                           level: Union[str, int]=None,

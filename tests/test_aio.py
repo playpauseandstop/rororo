@@ -1,5 +1,3 @@
-import asyncio
-
 from unittest import TestCase
 
 from aiohttp import web
@@ -9,8 +7,7 @@ from multidict import CIMultiDict
 from rororo.aio import add_resource_context, parse_aioredis_url, is_xhr_request
 
 
-@asyncio.coroutine
-def dummy_handler(request):
+async def dummy_handler(request):
     return web.Response(text='Hello, world!')
 
 

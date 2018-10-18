@@ -10,7 +10,6 @@ Test rororo Setting dictionary and additional utilities.
 import calendar
 import datetime
 import os
-
 from unittest import TestCase
 
 from rororo.settings import (
@@ -20,7 +19,6 @@ from rororo.settings import (
     is_setting_key,
     setup_locale,
     setup_timezone,
-    to_bool,
 )
 
 import settings as settings_module
@@ -184,13 +182,3 @@ class TestSettings(TestCase):
 
     def test_setup_timezone_unknown(self):
         self.assertRaises(ValueError, setup_timezone, 'Unknown/Timezone')
-
-    def test_to_bool(self):
-        self.assertTrue(to_bool('1'))
-        self.assertFalse(to_bool('0'))
-        self.assertTrue(to_bool('y'))
-        self.assertFalse(to_bool('n'))
-        self.assertTrue(to_bool(1))
-        self.assertFalse(to_bool(0))
-        self.assertTrue(to_bool([1, 2, 3]))
-        self.assertFalse(to_bool([]))

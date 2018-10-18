@@ -14,17 +14,16 @@ import calendar
 import os
 import time
 import types
-from distutils.util import strtobool
 from importlib import import_module
 from locale import LC_ALL, setlocale
 from logging.config import dictConfig as setup_logging  # noqa: N813
-from typing import Any, Dict, Iterator, MutableMapping, Tuple, Union
+from typing import Any, Iterator, MutableMapping, Optional, Tuple, Union
+
+from .annotations import Settings, T
+from .utils import to_bool
 
 
-Settings = Union[types.ModuleType, Dict[str, Any]]
-
-
-def from_env(key: str, default: Any=None) -> Any:
+def from_env(key: str, default: T=None) -> Union[str, Optional[T]]:
     """Shortcut for safely reading environment variable.
 
     :param key: Environment var key.
@@ -32,7 +31,7 @@ def from_env(key: str, default: Any=None) -> Any:
         Return default value if environment var not found by given key. By
         default: ``None``
     """
-    return os.environ.get(key, default)
+    return os.getenv(key, default)
 
 
 def immutable_settings(defaults: Settings,
@@ -164,22 +163,5 @@ def setup_timezone(timezone: str) -> None:
         time.tzset()
 
 
-def to_bool(value: Any) -> bool:
-    """Convert string or other Python object to boolean.
-
-    **Rationalle**
-
-    Passing flags is one of the most common cases of using environment vars and
-    as values are strings we need to have an easy way to convert them to
-    boolean Python value.
-
-    Without this function int or float string values can be converted as false
-    positives, e.g. ``bool('0') => True``, but using this function ensure that
-    digit flag be properly converted to boolean value.
-
-    :param value: String or other value.
-    """
-    return bool(strtobool(value) if isinstance(value, str) else value)
-
-
-(setup_logging, )
+# Make flake8 happy
+(setup_logging, to_bool)

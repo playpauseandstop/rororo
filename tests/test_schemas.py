@@ -1,12 +1,10 @@
 import json
 import time
 import types
-
 from random import choice
 from unittest import TestCase
 
 import fastjsonschema
-
 from aiohttp import web
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate

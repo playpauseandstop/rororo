@@ -8,7 +8,11 @@ place.
 
 """
 
-from typing import Any, Dict
+import types
+from typing import Any, Dict, TypeVar, Union
 
 
-StrAnyDict = Dict[str, Any]
+DictStrInt = Dict[str, int]
+DictStrAny = Dict[str, Any]
+Settings = Union[types.ModuleType, DictStrAny]
+T = TypeVar('T')

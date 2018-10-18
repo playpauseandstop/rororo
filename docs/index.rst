@@ -47,7 +47,6 @@ Utilities API
 .. autofunction:: rororo.settings.inject_settings
 .. autofunction:: rororo.settings.iter_settings
 .. autofunction:: rororo.settings.from_env
-.. autofunction:: rororo.settings.to_bool
 .. autofunction:: rororo.settings.setup_locale
 .. autofunction:: rororo.settings.setup_timezone
 
@@ -58,6 +57,12 @@ Utilities API
     :members:
 
 .. automodule:: rororo.aio
+    :members:
+
+.. automodule:: rororo.timedelta
+    :members:
+
+.. automodule:: rororo.utils
     :members:
 
 Changelog

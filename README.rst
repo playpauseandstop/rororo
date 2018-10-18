@@ -23,7 +23,7 @@ rororo
     :alt: Coverage
 
 .. image:: https://readthedocs.org/projects/rororo/badge/?version=latest
-    :target: http://rororo.readthedocs.io/en/latest/
+    :target: https://rororo.readthedocs.io/
     :alt: Documentation
 
 Collection of utilities, helpers, and principles for building Python backend
@@ -32,7 +32,7 @@ applications. Supports `aiohttp.web <http://aiohttp.readthedocs.org/>`_,
 
 * Works on Python 3.5+
 * BSD licensed
-* Latest documentation `on Read the Docs <http://rororo.readthedocs.org/>`_
+* Latest documentation `on Read the Docs <https://rororo.readthedocs.org/>`_
 * Source, issues, and pull requests `on GitHub
   <https://github.com/playpauseandstop/rororo>`_
 * Install with ``pip install rororo``

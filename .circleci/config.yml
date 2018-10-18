@@ -5,9 +5,9 @@ jobs:
       - image: circleci/python:3.7.0
     steps:
       - checkout
-      - run: &install_bootstrapper
-          name: Install bootstrapper
-          command: pip install --user bootstrapper
+      - run: &install_poetry
+          name: Install poetry
+          command: pip install --user poetry
       - run: &update_path
           name: Update path
           command: |
@@ -16,13 +16,13 @@ jobs:
       - run: make lint
   test35:
     docker:
-      - image: circleci/python:3.5.5
+      - image: circleci/python:3.5.6
     steps:
       - checkout
       - run: &install_locales
           name: Install locales
           command: sudo apt-get install -y locales locales-all
-      - run: *install_bootstrapper
+      - run: *install_poetry
       - run: *update_path
       - run: TOXENV=py35 make test
       - run: mkdir -p test-results/nosetests
@@ -35,7 +35,7 @@ jobs:
     steps:
       - checkout
       - run: *install_locales
-      - run: *install_bootstrapper
+      - run: *install_poetry
       - run: *update_path
       - run: TOXENV=py36 make test
       - run: mkdir -p test-results/nosetests
@@ -47,7 +47,7 @@ jobs:
     steps:
       - checkout
       - run: *install_locales
-      - run: *install_bootstrapper
+      - run: *install_poetry
       - run: *update_path
       - run: TOXENV=py37 make test
       - run: mkdir -p test-results/nosetests
@@ -59,7 +59,7 @@ jobs:
     docker: *py37
     steps:
       - checkout
-      - run: *install_bootstrapper
+      - run: *install_poetry
       - run: *update_path
       - run: make deploy
 workflows:

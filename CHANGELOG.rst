@@ -4,6 +4,9 @@
 - Python 3.7 support
 - Ensure that ``rororo`` works well with latest ``aiohttp``
 - Allow setting ``level`` on updating logging dict to use Sentry handler
+- Add new ``rororo.timedelta`` module with utilities to work with timedeltas
+- Add new ``rororo.utils`` module
+- Move type annotations to ``rororo.annotations`` module
 
 1.1.1 (2017-10-09)
 ------------------

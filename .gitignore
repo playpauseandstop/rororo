@@ -4,7 +4,6 @@
 
 .coverage
 .install
-.python-version
 
 .*cache/
 __pycache__/
@@ -13,3 +12,4 @@ dist/
 docs/_build/
 env/
 .tox/
+.venv/
