@@ -35,7 +35,7 @@ ifeq ($(CIRCLECI),)
 endif
 	rm -rf build/ dist/
 	$(POETRY) build
-	$(POETRY) run twine upload dist/*
+	$(PYTHON) -m twine upload dist/*
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/

@@ -61,7 +61,7 @@ jobs:
       - checkout
       - run: *install_poetry
       - run: *update_path
-      - run: make deploy
+      - run: make install deploy
 workflows:
   version: 2
   ci:
