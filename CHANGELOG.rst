@@ -1,6 +1,9 @@
 1.2.0 (In Development)
 ----------------------
 
+1.2.0a0 (2018-10-18)
+--------------------
+
 - Python 3.7 support
 - Ensure that ``rororo`` works well with latest ``aiohttp``
 - Allow setting ``level`` on updating logging dict to use Sentry handler
