@@ -1,6 +1,12 @@
 1.2.0 (In Development)
 ----------------------
 
+1.2.0a1 (2018-10-22)
+--------------------
+
+- Make all project packages `PEP-561 <https://www.python.org/dev/peps/pep-0561/>`_
+  compatible
+
 1.2.0a0 (2018-10-18)
 --------------------
 
