@@ -2,7 +2,7 @@
 rororo
 ======
 
-.. image:: https://img.shields.io/circleci/project/playpauseandstop/rororo/master.svg?maxAge=2592000
+.. image:: https://img.shields.io/circleci/project/github/playpauseandstop/rororo/master.svg
     :target: https://circleci.com/gh/playpauseandstop/rororo
     :alt: CircleCI
 
