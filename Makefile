@@ -1,4 +1,12 @@
-.PHONY: clean coveralls deploy distclean docs install lint setup-pyenv test
+.PHONY: clean \
+	coveralls \
+	deploy \
+	distclean \
+	docs \
+	install \
+	lint \
+	test \
+	update-python
 
 # Project settings
 PROJECT = rororo
@@ -7,11 +15,6 @@ PROJECT = rororo
 POETRY ?= poetry
 PYTHON ?= $(POETRY) run python
 SPHINXBUILD ?= $(POETRY) run sphinx-build
-
-# Tox args
-ifneq ($(TOXENV),)
-	tox_args = -e $(TOXENV)
-endif
 
 all: install
 
@@ -51,8 +54,17 @@ install: .install
 lint:
 	TOXENV=lint $(MAKE) test
 
-poetry.lock:
+poetry.lock: pyproject.toml
 	$(POETRY) install
 
 test: .install clean
-	$(PYTHON) -m tox $(tox_args) $(TOX_ARGS) -- $(TEST_ARGS)
+	TOXENV=$(TOXENV) $(PYTHON) -m tox $(TOX_ARGS) -- $(TEST_ARGS)
+
+update-python:
+ifeq ($(PYTHON_VERSION),)
+	# PYTHON_VERSION environment var should be supplied to update Python version to use
+else
+	rm -rf .install .venv/
+	pyenv local $(PYTHON_VERSION)
+	$(MAKE) .install
+endif
