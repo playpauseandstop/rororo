@@ -34,3 +34,7 @@ jsl = "^0.2.4"
 fastjsonschema = "^2.4"
 coverage = "^4.5"
 twine = "^1.12"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
