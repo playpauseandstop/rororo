@@ -2,7 +2,7 @@ version: 2
 jobs:
   lint:
     docker: &py37
-      - image: circleci/python:3.7.0
+      - image: circleci/python:3.7.1
     steps:
       - checkout
       - run: &install_poetry
@@ -31,7 +31,7 @@ jobs:
           path: test-results
   test36:
     docker:
-      - image: circleci/python:3.6.6
+      - image: circleci/python:3.6.7
     steps:
       - checkout
       - run: *install_locales
