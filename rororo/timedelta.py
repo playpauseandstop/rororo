@@ -64,7 +64,7 @@ TIMEDELTA_FORMATS = {
 
 
 def str_to_timedelta(value: str,
-                     fmt: str=None) -> Optional[datetime.timedelta]:
+                     fmt: str = None) -> Optional[datetime.timedelta]:
     """
     Convert string value to timedelta instance according to the given format.
 
@@ -188,7 +188,7 @@ def timedelta_seconds(value: datetime.timedelta) -> int:
     return SECONDS_PER_DAY * value.days + value.seconds
 
 
-def timedelta_to_str(value: datetime.timedelta, fmt: str=None) -> str:
+def timedelta_to_str(value: datetime.timedelta, fmt: str = None) -> str:
     """Display the timedelta formatted according to the given string.
 
     You should use global setting ``TIMEDELTA_FORMAT`` to specify default

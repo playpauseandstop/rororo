@@ -11,11 +11,11 @@ Module helps you to prepare and read settings inside your web application.
 """
 
 import calendar
+import locale
 import os
 import time
 import types
 from importlib import import_module
-from locale import LC_ALL, setlocale
 from logging.config import dictConfig as setup_logging  # noqa: N813
 from typing import Any, Iterator, MutableMapping, Optional, Tuple, Union
 
@@ -23,7 +23,7 @@ from .annotations import Settings, T
 from .utils import to_bool
 
 
-def from_env(key: str, default: T=None) -> Union[str, Optional[T]]:
+def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
     """Shortcut for safely reading environment variable.
 
     :param key: Environment var key.
@@ -69,7 +69,7 @@ def immutable_settings(defaults: Settings,
 
 def inject_settings(mixed: Union[str, Settings],
                     context: MutableMapping[str, Any],
-                    fail_silently: bool=False) -> None:
+                    fail_silently: bool = False) -> None:
     """Inject settings values to given context.
 
     :param mixed:
@@ -135,16 +135,38 @@ def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
         yield from filter(lambda item: is_setting_key(item[0]), mixed.items())
 
 
-def setup_locale(locale: str, first_weekday: int=None) -> str:
+def setup_locale(lc_all: str,
+                 first_weekday: int = None,
+                 *,
+                 lc_collate: str = None,
+                 lc_ctype: str = None,
+                 lc_messages: str = None,
+                 lc_monetary: str = None,
+                 lc_numeric: str = None,
+                 lc_time: str = None) -> str:
     """Shortcut helper to setup locale for backend application.
 
-    :param locale: Locale to use.
+    :param lc_all: Locale to use.
     :param first_weekday:
         Weekday for start week. 0 for Monday, 6 for Sunday. By default: None
+    :param lc_collate: Collate locale to use. By default: ``<lc_all>``
+    :param lc_ctype: Ctype locale to use. By default: ``<lc_all>``
+    :param lc_messages: Messages locale to use. By default: ``<lc_all>``
+    :param lc_monetary: Monetary locale to use. By default: ``<lc_all>``
+    :param lc_numeric: Numeric locale to use. By default: ``<lc_all>``
+    :param lc_time: Time locale to use. By default: ``<lc_all>``
     """
     if first_weekday is not None:
         calendar.setfirstweekday(first_weekday)
-    return setlocale(LC_ALL, locale)
+
+    locale.setlocale(locale.LC_COLLATE, lc_collate or lc_all)
+    locale.setlocale(locale.LC_CTYPE, lc_ctype or lc_all)
+    locale.setlocale(locale.LC_MESSAGES, lc_messages or lc_all)
+    locale.setlocale(locale.LC_MONETARY, lc_monetary or lc_all)
+    locale.setlocale(locale.LC_NUMERIC, lc_numeric or lc_all)
+    locale.setlocale(locale.LC_TIME, lc_time or lc_all)
+
+    return locale.setlocale(locale.LC_ALL, lc_all)
 
 
 def setup_timezone(timezone: str) -> None:

@@ -36,11 +36,11 @@ class Schema(object):
     def __init__(self,
                  module: types.ModuleType,
                  *,
-                 response_factory: Callable[..., Any]=None,
-                 error_class: Any=None,
-                 validator_class: Any=DefaultValidator,
-                 validation_error_class: Type[Exception]=ValidationError,
-                 validate_func: ValidateFunc=None) -> None:
+                 response_factory: Callable[..., Any] = None,
+                 error_class: Any = None,
+                 validator_class: Any = DefaultValidator,
+                 validation_error_class: Type[Exception] = ValidationError,
+                 validate_func: ValidateFunc = None) -> None:
         """Initialize Schema object.
 
         :param module: Module contains at least request and response schemas.
@@ -74,11 +74,11 @@ class Schema(object):
     def make_error(self,
                    message: str,
                    *,
-                   error: Exception=None,
+                   error: Exception = None,
                    # ``error_class: Type[Exception]=None`` doesn't work on
                    # Python 3.5.2, but that is exact version ran by Read the
                    # Docs :( More info: http://stackoverflow.com/q/42942867
-                   error_class: Any=None) -> Exception:
+                   error_class: Any = None) -> Exception:
         """Return error instantiated from given message.
 
         :param message: Message to wrap.
@@ -92,7 +92,7 @@ class Schema(object):
         return error_class(message)
 
     def make_response(self,
-                      data: Any=None,
+                      data: Any = None,
                       **kwargs: Any) -> Any:
         r"""Validate response data and wrap it inside response factory.
 
@@ -122,7 +122,7 @@ class Schema(object):
     def validate_request(self,
                          data: Any,
                          *additional: AnyMapping,
-                         merged_class: Type[dict]=dict) -> Any:
+                         merged_class: Type[dict] = dict) -> Any:
         r"""Validate request data against request schema from module.
 
         :param data: Request data.

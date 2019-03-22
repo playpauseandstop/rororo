@@ -6,7 +6,7 @@
 	install \
 	lint \
 	test \
-	update-python
+	update-setup-py
 
 # Project settings
 PROJECT = rororo
@@ -36,9 +36,9 @@ endif
 ifeq ($(CIRCLECI),)
 	$(MAKE) test
 endif
-	rm -rf build/ dist/
+	-rm -rf build/ dist/
 	$(POETRY) build
-	$(PYTHON) -m twine upload dist/*
+	$(POETRY) publish -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/
@@ -51,20 +51,15 @@ install: .install
 	$(POETRY) install
 	touch $@
 
-lint:
+lint: .install
 	TOXENV=lint $(MAKE) test
-
-poetry.lock: pyproject.toml
-	$(POETRY) install
 
 test: .install clean
 	TOXENV=$(TOXENV) $(PYTHON) -m tox $(TOX_ARGS) -- $(TEST_ARGS)
 
-update-python:
-ifeq ($(PYTHON_VERSION),)
-	# PYTHON_VERSION environment var should be supplied to update Python version to use
-else
-	rm -rf .install .venv/
-	pyenv local $(PYTHON_VERSION)
-	$(MAKE) .install
-endif
+update-setup-py: .install
+	rm -rf dist/
+	$(POETRY) build
+	tar -xzf dist/$(PROJECT)-*.tar.gz --directory dist/
+	cp dist/$(PROJECT)-*/setup.py .
+	rm -rf dist/

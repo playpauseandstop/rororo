@@ -78,7 +78,7 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
 def update_sentry_logging(logging_dict: DictStrAny,
                           sentry_dsn: Optional[str],
                           *loggers: str,
-                          level: Union[str, int]=None,
+                          level: Union[str, int] = None,
                           **kwargs: Any) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 

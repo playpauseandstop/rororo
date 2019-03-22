@@ -11,13 +11,14 @@ from contextlib import contextmanager
 from typing import (  # noqa: F401
     Any,
     Callable,
-    Dict,
     Iterator,
     Optional,
     TYPE_CHECKING,
     Union,
 )
 from urllib.parse import urlparse
+
+from .annotations import DictStrAny
 
 # Hack to load ``aiohttp.web`` only on mypy run
 if TYPE_CHECKING:  # pragma: no cover
@@ -39,8 +40,8 @@ View = Callable[[web.Request], web.Response]
 
 @contextmanager
 def add_resource_context(router: web.AbstractRouter,
-                         url_prefix: str=None,
-                         name_prefix: str=None) -> Iterator[Any]:
+                         url_prefix: str = None,
+                         name_prefix: str = None) -> Iterator[Any]:
     """Context manager for adding resources for given router.
 
     Main goal of context manager to easify process of adding resources with
@@ -64,9 +65,9 @@ def add_resource_context(router: web.AbstractRouter,
     :param name_prefix: If supplied prepend this prefix to each resource name.
     """
     def add_resource(url: str,
-                     get: View=None,
+                     get: View = None,
                      *,
-                     name: str=None,
+                     name: str = None,
                      **kwargs: Any) -> web.Resource:
         """Inner function to create resource and add necessary routes to it.
 
@@ -120,7 +121,7 @@ def is_xhr_request(request: web.Request) -> bool:
     return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
 
-def parse_aioredis_url(url: str) -> Dict[str, Any]:
+def parse_aioredis_url(url: str) -> DictStrAny:
     """
     Convert Redis URL string to dict suitable to pass to
     ``aioredis.create_redis(...)`` call.
@@ -139,6 +140,7 @@ def parse_aioredis_url(url: str) -> Dict[str, Any]:
     if db:
         db = int(db)
 
-    return {'address': (parts.hostname, parts.port or 6379),
-            'db': db,
-            'password': parts.password}
+    return {
+        'address': (parts.hostname, parts.port or 6379),
+        'db': db,
+        'password': parts.password}
