@@ -44,6 +44,7 @@ distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/
 
 docs: .install
+	$(PYTHON) -m pip install -r docs/requirements.txt
 	$(MAKE) -C docs/ SPHINXBUILD="$(SPHINXBUILD)" html
 
 install: .install
