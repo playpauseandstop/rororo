@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rororo"
-version = "1.2.1"
+version = "1.2.1a0"
 description = "Collection of utilities, helpers, and principles for building Python backend applications. Supports aiohttp.web, Flask, and your web-framework"
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
@@ -25,15 +25,50 @@ jsonschema = "^2.6"
 
 [tool.poetry.dev-dependencies]
 tox = "^3.5"
-coveralls = "^1.5"
-Sphinx = "^1.8"
-sphinx_autodoc_typehints = "^1.3"
-wheel = "^0.32.1"
-aiohttp = "^3.4"
-jsl = "^0.2.4"
-fastjsonschema = "^2.4"
+aiohttp = "^3.5"
 coverage = "^4.5"
+coveralls = "^1.7"
+fastjsonschema = "^2.9"
+jsl = "^0.2.4"
+flake8 = "^3.7"
+flake8-bugbear = "^18.8"
+flake8-commas = "^2.0"
+flake8-comprehensions = "^2.1"
+flake8-docstrings = "^1.3"
+flake8-import-order = "^0.18.1"
+flake8-mutable = "^1.2"
+flake8-quotes = "^1.0"
+flake8-string-format = "^0.2.3"
+flake8-tidy-imports = "^2.0"
+pep8-naming = "^0.8.2"
+mypy = "^0.670.0"
 
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = lint,py35,py36,py37
+skipsdist = True
+
+[testenv]
+passenv =
+    PYTHONPATH
+setenv =
+    PYTHONPATH=.
+    USER=playpauseandstop
+skip_install = True
+whitelist_externals = poetry
+commands_pre =
+    poetry install
+commands =
+    poetry run coverage run --branch --source=rororo/ -m unittest discover -b tests/
+    poetry run coverage report -m
+    poetry run coverage html {posargs:-d /tmp/rororo-coverage}
+
+[testenv:lint]
+basepython = python3.7
+skip_install = True
+whitelist_externals = poetry
+commands =
+    poetry run flake8 rororo/
+    poetry run mypy rororo/
+"""
