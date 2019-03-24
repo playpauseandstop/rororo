@@ -1,7 +1,12 @@
-1.2.1 (2019-03-22)
-------------------
+1.2.1 (In Development)
+----------------------
 
-- Do not depend on ``jsonschema>=3.0.0``
+1.2.1a0 (2019-02-24)
+--------------------
+
+- fix: Do not yet depend on ``jsonschema>=3.0.0``
+- chore: Move ``tox.ini`` content into ``pyproject.toml``
+- chore: Only use poetry for install project deps for tests & lint
 
 1.2.0 (2018-11-01)
 ------------------
