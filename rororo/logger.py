@@ -20,9 +20,9 @@ class IgnoreErrorsFilter(object):
 
     """Ignore all warnings and errors from stdout handler."""
 
-    def filter(self, record: logging.LogRecord) -> bool:
+    def filter(self, record: logging.LogRecord) -> bool:  # noqa: A003
         """Allow only debug and info log messages to stdout handler."""
-        return record.levelname in {'DEBUG', 'INFO'}
+        return record.levelname in {"DEBUG", "INFO"}
 
 
 def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
@@ -36,50 +36,46 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
     :param \*loggers: Enable logging for each logger in sequence.
     :param \*\*kwargs: Setup additional logger params via keyword arguments.
     """
-    kwargs.setdefault('level', 'INFO')
+    kwargs.setdefault("level", "INFO")
     return {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'filters': {
-            'ignore_errors': {
-                '()': IgnoreErrorsFilter,
+        "version": 1,
+        "disable_existing_loggers": True,
+        "filters": {"ignore_errors": {"()": IgnoreErrorsFilter}},
+        "formatters": {
+            "default": {
+                "format": "%(asctime)s [%(levelname)s:%(name)s] %(message)s"
+            },
+            "naked": {"format": u"%(message)s"},
+        },
+        "handlers": {
+            "stdout": {
+                "class": "logging.StreamHandler",
+                "filters": ["ignore_errors"],
+                "formatter": "default",
+                "level": "DEBUG",
+                "stream": sys.stdout,
+            },
+            "stderr": {
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+                "level": "WARNING",
+                "stream": sys.stderr,
             },
         },
-        'formatters': {
-            'default': {
-                'format': '%(asctime)s [%(levelname)s:%(name)s] %(message)s',
-            },
-            'naked': {
-                'format': u'%(message)s',
-            },
-        },
-        'handlers': {
-            'stdout': {
-                'class': 'logging.StreamHandler',
-                'filters': ['ignore_errors'],
-                'formatter': 'default',
-                'level': 'DEBUG',
-                'stream': sys.stdout,
-            },
-            'stderr': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'default',
-                'level': 'WARNING',
-                'stream': sys.stderr,
-            },
-        },
-        'loggers': {
-            logger: dict(handlers=['stdout', 'stderr'], **kwargs)
+        "loggers": {
+            logger: dict(handlers=["stdout", "stderr"], **kwargs)
             for logger in loggers
         },
     }
 
 
-def update_sentry_logging(logging_dict: DictStrAny,
-                          sentry_dsn: Optional[str],
-                          *loggers: str,
-                          level: Union[str, int] = None,
-                          **kwargs: Any) -> None:
+def update_sentry_logging(
+    logging_dict: DictStrAny,
+    sentry_dsn: Optional[str],
+    *loggers: str,
+    level: Union[str, int] = None,
+    **kwargs: Any
+) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 
     .. note::
@@ -119,24 +115,24 @@ def update_sentry_logging(logging_dict: DictStrAny,
         return
 
     # Add Sentry handler
-    kwargs['class'] = 'raven.handlers.logging.SentryHandler'
-    kwargs['dsn'] = sentry_dsn
-    logging_dict['handlers']['sentry'] = dict(
-        level=level or 'WARNING',
-        **kwargs)
+    kwargs["class"] = "raven.handlers.logging.SentryHandler"
+    kwargs["dsn"] = sentry_dsn
+    logging_dict["handlers"]["sentry"] = dict(
+        level=level or "WARNING", **kwargs
+    )
 
-    loggers = tuple(logging_dict['loggers']) if not loggers else loggers
+    loggers = tuple(logging_dict["loggers"]) if not loggers else loggers
     for logger in loggers:
         # Ignore missing loggers
-        logger_dict = logging_dict['loggers'].get(logger)
+        logger_dict = logging_dict["loggers"].get(logger)
         if not logger_dict:
             continue
 
         # Ignore logger from logger config
-        if logger_dict.pop('ignore_sentry', False):
+        if logger_dict.pop("ignore_sentry", False):
             continue
 
         # Handlers list should exist
-        handlers = list(logger_dict.setdefault('handlers', []))
-        handlers.append('sentry')
-        logger_dict['handlers'] = tuple(handlers)
+        handlers = list(logger_dict.setdefault("handlers", []))
+        handlers.append("sentry")
+        logger_dict["handlers"] = tuple(handlers)

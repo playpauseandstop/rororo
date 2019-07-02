@@ -25,9 +25,9 @@ class Validator(Draft4Validator):
 
     """
 
-    DEFAULT_TYPES = defaults({
-        'array': (list, tuple),
-    }, Draft4Validator.DEFAULT_TYPES)  # type: dict
+    DEFAULT_TYPES = defaults(
+        {"array": (list, tuple)}, Draft4Validator.DEFAULT_TYPES
+    )  # type: dict
 
 
 def extend_with_default(validator_class: Any) -> Any:
@@ -35,22 +35,21 @@ def extend_with_default(validator_class: Any) -> Any:
 
     :param validator_class: Apply the change for given validator class.
     """
-    validate_properties = validator_class.VALIDATORS['properties']
+    validate_properties = validator_class.VALIDATORS["properties"]
 
-    def set_defaults(validator: Any,
-                     properties: dict,
-                     instance: dict,
-                     schema: dict) -> Iterator[ValidationError]:
+    def set_defaults(
+        validator: Any, properties: dict, instance: dict, schema: dict
+    ) -> Iterator[ValidationError]:
         for prop, subschema in properties.items():
-            if 'default' in subschema:
-                instance.setdefault(prop, subschema['default'])
+            if "default" in subschema:
+                instance.setdefault(prop, subschema["default"])
 
         for error in validate_properties(
-            validator, properties, instance, schema,
+            validator, properties, instance, schema
         ):
             yield error  # pragma: no cover
 
-    return extend(validator_class, {'properties': set_defaults})
+    return extend(validator_class, {"properties": set_defaults})
 
 
 DefaultValidator = extend_with_default(Validator)

@@ -13,6 +13,7 @@ PROJECT = rororo
 
 # Python commands
 POETRY ?= poetry
+PRE_COMMIT ?= pre-commit
 PYTHON ?= $(POETRY) run python
 SPHINXBUILD ?= $(POETRY) run sphinx-build
 
@@ -53,9 +54,12 @@ install: .install
 	touch $@
 
 lint: .install
-	TOXENV=lint $(MAKE) test
+	SKIP=$(SKIP) $(PRE_COMMIT) run --all $(HOOK)
 
-test: .install clean
+list-outdated: .install
+	$(POETRY) show -o
+
+test: .install clean lint
 	TOXENV=$(TOXENV) $(PYTHON) -m tox $(TOX_ARGS) -- $(TEST_ARGS)
 
 update-setup-py: .install

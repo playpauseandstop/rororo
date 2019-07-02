@@ -11,4 +11,4 @@ import os
 
 
 DEBUG = True
-USER = os.environ['USER']
+USER = os.environ["USER"]

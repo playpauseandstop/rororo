@@ -34,8 +34,9 @@ def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
     return os.getenv(key, default)
 
 
-def immutable_settings(defaults: Settings,
-                       **optionals: Any) -> types.MappingProxyType:
+def immutable_settings(
+    defaults: Settings, **optionals: Any
+) -> types.MappingProxyType:
     r"""Initialize and return immutable Settings dictionary.
 
     Settings dictionary allows you to setup settings values from multiple
@@ -67,9 +68,11 @@ def immutable_settings(defaults: Settings,
     return types.MappingProxyType(settings)
 
 
-def inject_settings(mixed: Union[str, Settings],
-                    context: MutableMapping[str, Any],
-                    fail_silently: bool = False) -> None:
+def inject_settings(
+    mixed: Union[str, Settings],
+    context: MutableMapping[str, Any],
+    fail_silently: bool = False,
+) -> None:
     """Inject settings values to given context.
 
     :param mixed:
@@ -118,7 +121,7 @@ def is_setting_key(key: str) -> bool:
 
     :param key: Key to check.
     """
-    return key.isupper() and key[0] != '_'
+    return key.isupper() and key[0] != "_"
 
 
 def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
@@ -135,15 +138,17 @@ def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
         yield from filter(lambda item: is_setting_key(item[0]), mixed.items())
 
 
-def setup_locale(lc_all: str,
-                 first_weekday: int = None,
-                 *,
-                 lc_collate: str = None,
-                 lc_ctype: str = None,
-                 lc_messages: str = None,
-                 lc_monetary: str = None,
-                 lc_numeric: str = None,
-                 lc_time: str = None) -> str:
+def setup_locale(
+    lc_all: str,
+    first_weekday: int = None,
+    *,
+    lc_collate: str = None,
+    lc_ctype: str = None,
+    lc_messages: str = None,
+    lc_monetary: str = None,
+    lc_numeric: str = None,
+    lc_time: str = None
+) -> str:
     """Shortcut helper to setup locale for backend application.
 
     :param lc_all: Locale to use.
@@ -174,14 +179,14 @@ def setup_timezone(timezone: str) -> None:
 
     :param timezone: Timezone to use, e.g. "UTC", "Europe/Kiev".
     """
-    if timezone and hasattr(time, 'tzset'):
-        tz_root = '/usr/share/zoneinfo'
-        tz_filename = os.path.join(tz_root, *(timezone.split('/')))
+    if timezone and hasattr(time, "tzset"):
+        tz_root = "/usr/share/zoneinfo"
+        tz_filename = os.path.join(tz_root, *(timezone.split("/")))
 
         if os.path.exists(tz_root) and not os.path.exists(tz_filename):
-            raise ValueError('Incorrect timezone value: {0}'.format(timezone))
+            raise ValueError("Incorrect timezone value: {0}".format(timezone))
 
-        os.environ['TZ'] = timezone
+        os.environ["TZ"] = timezone
         time.tzset()
 
 

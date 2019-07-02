@@ -15,4 +15,4 @@ from typing import Any, Dict, TypeVar, Union
 DictStrInt = Dict[str, int]
 DictStrAny = Dict[str, Any]
 Settings = Union[types.ModuleType, DictStrAny]
-T = TypeVar('T')
+T = TypeVar("T")

@@ -2,53 +2,14 @@ version: 2
 jobs:
   lint:
     docker: &py37
-      - image: circleci/python:3.7.2
+      - image: playpauseandstop/docker-python:1.0.3
     steps:
       - checkout
-      - run: &install_poetry
-          name: Install poetry
-          command: pip install --user poetry
-      - run: &update_path
-          name: Update path
-          command: |
-            echo 'export PATH=$HOME/.local/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
       - run: make lint
-  test35:
-    docker:
-      - image: circleci/python:3.5.7
-    steps:
-      - checkout
-      - run: &install_locales
-          name: Install locales
-          command: sudo apt-get install -y locales locales-all
-      - run: *install_poetry
-      - run: *update_path
-      - run: TOXENV=py35 make test
-      - run: mkdir -p test-results/nosetests
-      - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
-      - store_test_results:
-          path: test-results
-  test36:
-    docker:
-      - image: circleci/python:3.6.8
-    steps:
-      - checkout
-      - run: *install_locales
-      - run: *install_poetry
-      - run: *update_path
-      - run: TOXENV=py36 make test
-      - run: mkdir -p test-results/nosetests
-      - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
-      - store_test_results:
-          path: test-results
   test37:
     docker: *py37
     steps:
       - checkout
-      - run: *install_locales
-      - run: *install_poetry
-      - run: *update_path
       - run: TOXENV=py37 make test
       - run: mkdir -p test-results/nosetests
       - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
@@ -59,8 +20,6 @@ jobs:
     docker: *py37
     steps:
       - checkout
-      - run: *install_poetry
-      - run: *update_path
       - run: make install deploy
 workflows:
   version: 2
@@ -70,22 +29,12 @@ workflows:
           filters: &all_tags_and_branches
             tags:
               only: /.*/
-      - test35:
-          requires:
-            - lint
-          filters: *all_tags_and_branches
-      - test36:
-          requires:
-            - lint
-          filters: *all_tags_and_branches
       - test37:
           requires:
             - lint
           filters: *all_tags_and_branches
       - deploy:
           requires:
-            - test35
-            - test36
             - test37
           filters:
             tags:

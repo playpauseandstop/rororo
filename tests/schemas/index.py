@@ -1,7 +1,7 @@
 from jsl import Document, NumberField, StringField
 
 
-NAME_ENUM = ('Igor', 'world')
+NAME_ENUM = ("Igor", "world")
 
 
 class Request(Document):

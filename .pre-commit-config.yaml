@@ -1,0 +1,42 @@
+minimum_pre_commit_version: 1.17.0
+repos:
+  - repo: "https://github.com/ambv/black"
+    rev: "19.3b0"
+    hooks:
+      - id: black
+        name: Format code (black)
+        exclude: ^docs/|setup\.py$
+
+  - repo: "https://github.com/pre-commit/pre-commit-hooks"
+    rev: "v2.2.1"
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: "https://gitlab.com/PyCQA/flake8"
+    rev: "3.7.7"
+    hooks:
+      - id: flake8
+        name: Lint code (flake8)
+        exclude: ^docs/|setup\.py$
+        additional_dependencies:
+          - flake8==3.7.7
+          - flake8-broken-line==0.1.0
+          - flake8-bugbear==19.3.0
+          - flake8-builtins==1.4.1
+          - flake8-comprehensions==2.1.0
+          - flake8-eradicate==0.2.0
+          - flake8-import-order==0.18.1
+          - flake8-mutable==1.2.0
+          - flake8-quotes==2.0.1
+          - flake8-string-format==0.2.3
+          - flake8-tidy-imports==2.0.0
+          - pep8-naming==0.8.2
+
+  - repo: "https://github.com/pre-commit/mirrors-mypy"
+    rev: "v0.711"
+    hooks:
+      - id: mypy
+        name: Lint code (mypy)
+        args: [--python-executable=.venv/bin/python]
+        exclude: ^docs/|setup\.py|tests/$

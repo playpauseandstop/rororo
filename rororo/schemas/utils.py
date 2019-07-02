@@ -31,6 +31,7 @@ def validate_func_factory(validator_class: Any) -> ValidateFunc:
 
     :param validator_class: JSONSchema suitable validator class.
     """
+
     def validate_func(schema: AnyMapping, pure_data: AnyMapping) -> AnyMapping:
         """Validate schema with given data.
 
@@ -38,4 +39,5 @@ def validate_func_factory(validator_class: Any) -> ValidateFunc:
         :param pure_data: Pure data to validate.
         """
         return validator_class(schema).validate(pure_data)
+
     return validate_func

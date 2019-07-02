@@ -1,11 +1,2 @@
-"""
-==============
-settings_error
-==============
-
-This settings contain error and cannot be imported.
-
-"""
-
-
-USER = os.environ['USER']
+# flake8: noqa
+USER = os.environ["USER"]

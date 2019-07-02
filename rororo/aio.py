@@ -24,24 +24,28 @@ from .annotations import DictStrAny
 if TYPE_CHECKING:  # pragma: no cover
     from aiohttp import web
 else:
-    web = type('FakeModule', (object, ), {
-        'AbstractRouter': Any,
-        'Request': Any,
-        'Resource': Any,
-        'Response': Any,
-    })()
+    web = type(
+        "FakeModule",
+        (object,),
+        {
+            "Request": Any,
+            "Resource": Any,
+            "Response": Any,
+            "UrlDispatcher": Any,
+        },
+    )()
 
 
-__all__ = ('add_resource_context', 'is_xhr_request', 'parse_aioredis_url')
+__all__ = ("add_resource_context", "is_xhr_request", "parse_aioredis_url")
 
 
-View = Callable[[web.Request], web.Response]
+Handler = Callable[[web.Request], web.Response]
 
 
 @contextmanager
-def add_resource_context(router: web.AbstractRouter,
-                         url_prefix: str = None,
-                         name_prefix: str = None) -> Iterator[Any]:
+def add_resource_context(
+    router: web.UrlDispatcher, url_prefix: str = None, name_prefix: str = None
+) -> Iterator[Any]:
     """Context manager for adding resources for given router.
 
     Main goal of context manager to easify process of adding resources with
@@ -64,11 +68,10 @@ def add_resource_context(router: web.AbstractRouter,
     :param url_prefix: If supplied prepend this prefix to each resource URL.
     :param name_prefix: If supplied prepend this prefix to each resource name.
     """
-    def add_resource(url: str,
-                     get: View = None,
-                     *,
-                     name: str = None,
-                     **kwargs: Any) -> web.Resource:
+
+    def add_resource(
+        url: str, get: Handler = None, *, name: str = None, **kwargs: Any
+    ) -> web.Resource:
         """Inner function to create resource and add necessary routes to it.
 
         Support adding routes of all methods, supported by aiohttp, as
@@ -89,15 +92,15 @@ def add_resource_context(router: web.AbstractRouter,
         :type name: str
         :rtype: aiohttp.web.Resource
         """
-        kwargs['get'] = get
+        kwargs["get"] = get
 
         if url_prefix:
-            url = '/'.join((url_prefix.rstrip('/'), url.lstrip('/')))
+            url = "/".join((url_prefix.rstrip("/"), url.lstrip("/")))
 
         if not name and get:
             name = get.__name__
         if name_prefix and name:
-            name = '.'.join((name_prefix.rstrip('.'), name.lstrip('.')))
+            name = ".".join((name_prefix.rstrip("."), name.lstrip(".")))
 
         resource = router.add_resource(url, name=name)
         for method, handler in kwargs.items():
@@ -118,7 +121,7 @@ def is_xhr_request(request: web.Request) -> bool:
 
     :param request: Request instance.
     """
-    return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
 
 def parse_aioredis_url(url: str) -> DictStrAny:
@@ -141,6 +144,7 @@ def parse_aioredis_url(url: str) -> DictStrAny:
         db = int(db)
 
     return {
-        'address': (parts.hostname, parts.port or 6379),
-        'db': db,
-        'password': parts.password}
+        "address": (parts.hostname, parts.port or 6379),
+        "db": db,
+        "password": parts.password,
+    }
