@@ -11,10 +11,6 @@ jobs:
     steps:
       - checkout
       - run: TOXENV=py37 make test
-      - run: mkdir -p test-results/nosetests
-      - run: "[ -r nosetests.xml ] && mv nosetests.xml test-results/nosetests/results.xml || :"
-      - store_test_results:
-          path: test-results
       - run: make coveralls
   deploy:
     docker: *py37

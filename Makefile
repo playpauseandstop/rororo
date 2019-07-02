@@ -50,6 +50,10 @@ docs: .install
 
 install: .install
 .install: pyproject.toml poetry.lock
+ifneq ($(CIRCLECI),)
+	$(POETRY) config settings.virtualenvs.create true
+endif
+	$(POETRY) config settings.virtualenvs.in-project true
 	$(POETRY) install
 	touch $@
 
