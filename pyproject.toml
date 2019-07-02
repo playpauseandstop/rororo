@@ -3,7 +3,7 @@ line_length = 79
 
 [tool.poetry]
 name = "rororo"
-version = "1.2.1a0"
+version = "1.2.1a1"
 description = "Collection of utilities, helpers, and principles for building Python backend applications. Supports aiohttp.web, Flask, and your web-framework"
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"

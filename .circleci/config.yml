@@ -2,10 +2,16 @@ version: 2
 jobs:
   lint:
     docker: &py37
-      - image: playpauseandstop/docker-python:1.0.3
+      - image: playpauseandstop/docker-python:1.0.3-py37
     steps:
       - checkout
       - run: make lint
+  test36:
+    docker:
+      - image: playpauseandstop/docker-python:1.0.3-py36
+    steps:
+      - checkout
+      - run: TOXENV=py36 make test
   test37:
     docker: *py37
     steps:
@@ -31,6 +37,7 @@ workflows:
           filters: *all_tags_and_branches
       - deploy:
           requires:
+            - test36
             - test37
           filters:
             tags:

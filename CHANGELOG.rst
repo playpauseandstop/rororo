@@ -1,6 +1,13 @@
 1.2.1 (In Development)
 ----------------------
 
+1.2.1a1 (2019-07-02)
+--------------------
+
+- chore: Introduce `pre-commit` hooks
+- chore: Use `pytest` for tests
+- chore: Use `black` for code formatting
+
 1.2.1a0 (2019-02-24)
 --------------------
 
