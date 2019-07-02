@@ -6,23 +6,39 @@ jobs:
     steps:
       - checkout
       - run: make lint
+
+  test35:
+    docker:
+      - image: playpauseandstop/docker-python:1.0.3-py35
+    steps:
+      - checkout
+      - run: TOXENV=py35 make test
+
   test36:
     docker:
       - image: playpauseandstop/docker-python:1.0.3-py36
     steps:
       - checkout
       - run: TOXENV=py36 make test
+
   test37:
     docker: *py37
     steps:
       - checkout
-      - run: TOXENV=py37 make test
+      - run: mkdir -p test-results
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/junit.xml TOXENV=py37 make test
       - run: make coveralls
+      - store_test_results:
+        path: test-results
+      - store_artifacts:
+        path: test-results
+
   deploy:
     docker: *py37
     steps:
       - checkout
       - run: make install deploy
+
 workflows:
   version: 2
   ci:
@@ -37,6 +53,7 @@ workflows:
           filters: *all_tags_and_branches
       - deploy:
           requires:
+            - test35
             - test36
             - test37
           filters:
