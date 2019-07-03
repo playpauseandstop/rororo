@@ -5,28 +5,32 @@ jobs:
       - image: playpauseandstop/docker-python:1.0.3-py37
     steps:
       - checkout
-      - run: make lint
+      - run: make install
+      - run: make ci-lint
 
   test35:
     docker:
       - image: playpauseandstop/docker-python:1.0.3-py35
     steps:
       - checkout
-      - run: TOXENV=py35 make test
+      - run: make install
+      - run: TOXENV=py35 make ci-test
 
   test36:
     docker:
       - image: playpauseandstop/docker-python:1.0.3-py36
     steps:
       - checkout
-      - run: TOXENV=py36 make test
+      - run: make install
+      - run: TOXENV=py36 make ci-test
 
   test37:
     docker: *py37
     steps:
       - checkout
       - run: mkdir -p test-results
-      - run: PYTEST_ADDOPTS=--junitxml=test-results/junit.xml TOXENV=py37 make test
+      - run: make install
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/junit.xml TOXENV=py37 make ci-test
       - run: make coveralls
       - store_test_results:
         path: test-results
@@ -37,7 +41,8 @@ jobs:
     docker: *py37
     steps:
       - checkout
-      - run: make install deploy
+      - run: make install
+      - run: make ci-deploy
 
 workflows:
   version: 2

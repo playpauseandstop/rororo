@@ -1,10 +1,13 @@
-.PHONY: clean \
+.PHONY: ci-deploy \
+	ci-lint \
+	ci-test \
+	clean \
 	coveralls \
-	deploy \
 	distclean \
 	docs \
 	install \
 	lint \
+	list-outdated \
 	test \
 	update-setup-py
 
@@ -19,13 +22,7 @@ SPHINXBUILD ?= $(POETRY) run sphinx-build
 
 all: install
 
-clean:
-	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
-
-coveralls:
-	-$(PYTHON) -m coveralls
-
-deploy:
+ci-deploy:
 ifeq ($(TWINE_USERNAME),)
 	# TWINE_USERNAME env var should be supplied
 	exit 1
@@ -40,6 +37,18 @@ endif
 	-rm -rf build/ dist/
 	$(POETRY) build
 	$(POETRY) publish -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+
+ci-lint:
+	SKIP=$(SKIP) $(PRE_COMMIT) run --all $(HOOK)
+
+ci-test:
+	TOXENV=$(TOXENV) $(PYTHON) -m tox $(TOX_ARGS) -- $(TEST_ARGS)
+
+clean:
+	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
+
+coveralls:
+	-$(PYTHON) -m coveralls
 
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/
@@ -57,14 +66,12 @@ endif
 	$(POETRY) install
 	touch $@
 
-lint: .install
-	SKIP=$(SKIP) $(PRE_COMMIT) run --all $(HOOK)
+lint: install ci-lint
 
-list-outdated: .install
+list-outdated: install
 	$(POETRY) show -o
 
-test: .install clean lint
-	TOXENV=$(TOXENV) $(PYTHON) -m tox $(TOX_ARGS) -- $(TEST_ARGS)
+test: install clean lint ci-test
 
 update-setup-py: .install
 	rm -rf dist/
