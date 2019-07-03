@@ -13,29 +13,39 @@ jobs:
       - image: playpauseandstop/docker-python:1.0.3-py35
     steps:
       - checkout
+      - run: mkdir -p test-results/pytest
       - run: make install
-      - run: TOXENV=py35 make ci-test
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py35 make ci-test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
 
   test36:
     docker:
       - image: playpauseandstop/docker-python:1.0.3-py36
     steps:
       - checkout
+      - run: mkdir -p test-results/pytest
       - run: make install
-      - run: TOXENV=py36 make ci-test
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py36 make ci-test
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
 
   test37:
     docker: *py37
     steps:
       - checkout
-      - run: mkdir -p test-results
+      - run: mkdir -p test-results/pytest
       - run: make install
-      - run: PYTEST_ADDOPTS=--junitxml=test-results/junit.xml TOXENV=py37 make ci-test
-      - run: make coveralls
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py37 make ci-test
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
+      - run: make coveralls
 
   deploy:
     docker: *py37
