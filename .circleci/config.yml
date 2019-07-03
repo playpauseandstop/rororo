@@ -33,9 +33,9 @@ jobs:
       - run: PYTEST_ADDOPTS=--junitxml=test-results/junit.xml TOXENV=py37 make ci-test
       - run: make coveralls
       - store_test_results:
-        path: test-results
+          path: test-results
       - store_artifacts:
-        path: test-results
+          path: test-results
 
   deploy:
     docker: *py37
