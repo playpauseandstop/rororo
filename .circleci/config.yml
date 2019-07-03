@@ -47,10 +47,22 @@ workflows:
           filters: &all_tags_and_branches
             tags:
               only: /.*/
+
+      - test35:
+          requires:
+            - lint
+          filters: *all_tags_and_branches
+
+      - test36:
+          requires:
+            - lint
+          filters: *all_tags_and_branches
+
       - test37:
           requires:
             - lint
           filters: *all_tags_and_branches
+
       - deploy:
           requires:
             - test35
