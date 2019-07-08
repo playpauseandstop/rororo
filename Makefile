@@ -80,3 +80,4 @@ update-setup-py: .install
 	tar -xzf dist/$(PROJECT)-*.tar.gz --directory dist/
 	cp dist/$(PROJECT)-*/setup.py .
 	rm -rf dist/
+	sed -i 's/from distutils.core import setup/from setuptools import setup/g' setup.py
