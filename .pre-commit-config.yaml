@@ -40,3 +40,12 @@ repos:
         name: Lint code (mypy)
         args: [--python-executable=.venv/bin/python]
         exclude: ^docs/|setup\.py|tests/$
+
+  - repo: local
+    hooks:
+      - id: generate-requirements
+        name: Update setup.py file
+        entry: make update-setup-py
+        pass_filenames: false
+        language: system
+        files: ^pyproject\.toml$

@@ -18,80 +18,83 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 
+import datetime
 import re
 import sys
-
 from pathlib import Path
 
 
 rel = Path(__file__).parent.parent
 sys.path.insert(0, str(rel))
 
-with open(str(rel / 'rororo' / '__init__.py')) as handler:
-    INIT_PY = handler.read()
-
-VERSION = re.findall("__version__ = '([^']+)'", INIT_PY)[0]
+PROJECT = "rororo"
+INIT_PY = (rel / PROJECT / "__init__.py").read_text()
+AUTHOR = re.findall('__author__ = "([^"]+)"', INIT_PY)[0]
+VERSION = re.findall('__version__ = "([^"]+)"', INIT_PY)[0]
 
 
 extensions = [
-    'alabaster',
-    'sphinx.ext.autodoc',
-    'sphinx_autodoc_typehints',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.coverage',
-    'sphinx.ext.viewcode',
+    "alabaster",
+    "sphinx.ext.autodoc",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.coverage",
+    "sphinx.ext.viewcode",
 ]
 
-templates_path = ['_templates']
-source_suffix = '.rst'
-master_doc = 'index'
+templates_path = ["_templates"]
+source_suffix = ".rst"
+master_doc = "index"
 
-project = 'rororo'
-copyright = '2017, Igor Davydenko'
-author = 'Igor Davydenko'
+project = PROJECT
+author = AUTHOR
+copyright = "2017-{0}, {1}".format(datetime.date.today().year, AUTHOR)
 
-version = '.'.join(VERSION.split('.')[:2])
+version = ".".join(VERSION.split(".")[:2])
 release = VERSION
 
-language = 'en'
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-pygments_style = 'sphinx'
+language = "en"
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+pygments_style = "sphinx"
 
-html_theme = 'alabaster'
+html_theme = "alabaster"
 html_theme_options = {
-    'logo_name': True,
-    'description': 'Utilites & helpers for web applications',
-    'github_user': 'playpauseandstop',
-    'github_repo': project,
-    'github_banner': True,
-    'github_button': True,
-    'github_type': 'star',
-    'fixed_sidebar': True,
+    "logo_name": True,
+    "description": "Utilites & helpers for web applications",
+    "github_user": "playpauseandstop",
+    "github_repo": project,
+    "github_banner": True,
+    "github_button": True,
+    "github_type": "star",
+    "fixed_sidebar": True,
 }
-html_static_path = ['_static']
-html_sidebars = {
-    '**': [
-        'about.html', 'localtoc.html', 'searchbox.html',
-    ]
-}
+html_static_path = ["_static"]
+html_sidebars = {"**": ["about.html", "localtoc.html", "searchbox.html"]}
 
-htmlhelp_basename = 'rororodoc'
-latex_elements = {
-}
+htmlhelp_basename = "rororodoc"
+latex_elements = {}
 latex_documents = [
-    (master_doc, 'rororo.tex', 'rororo Documentation',
-     'Igor Davydenko', 'manual'),
+    (
+        master_doc,
+        "rororo.tex",
+        "rororo Documentation",
+        "Igor Davydenko",
+        "manual",
+    )
 ]
 
-man_pages = [
-    (master_doc, 'rororo', 'rororo Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "rororo", "rororo Documentation", [author], 1)]
 
 texinfo_documents = [
-    (master_doc, 'rororo', 'rororo Documentation',
-     author, 'rororo', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "rororo",
+        "rororo Documentation",
+        author,
+        "rororo",
+        "One line description of project.",
+        "Miscellaneous",
+    )
 ]
 
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {"https://docs.python.org/": None}

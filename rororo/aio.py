@@ -3,7 +3,8 @@
 rororo.aio
 ==========
 
-Various utilities for aiohttp and other aio-libs.
+Various utilities for `aiohttp <https://aiohttp.rtfd.io/>`_ and other
+`aio-libs <https://github.com/aio-libs>`_.
 
 """
 

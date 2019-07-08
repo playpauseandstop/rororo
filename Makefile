@@ -66,7 +66,8 @@ endif
 	$(POETRY) install
 	touch $@
 
-lint: install ci-lint
+lint: install
+	SKIP=update-setup-py $(MAKE) ci-lint
 
 list-outdated: install
 	$(POETRY) show -o
