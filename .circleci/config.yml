@@ -13,7 +13,6 @@ jobs:
       - image: playpauseandstop/docker-python:1.1.0-py35
     steps:
       - checkout
-      - run: python --version
       - run: mkdir -p test-results/pytest
       - run: make install
       - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py35 make ci-test
@@ -27,7 +26,6 @@ jobs:
       - image: playpauseandstop/docker-python:1.1.0-py36
     steps:
       - checkout
-      - run: python --version
       - run: mkdir -p test-results/pytest
       - run: make install
       - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py36 make ci-test
@@ -40,7 +38,6 @@ jobs:
     docker: *py37
     steps:
       - checkout
-      - run: python --version
       - run: mkdir -p test-results/pytest
       - run: make install
       - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py37 make ci-test

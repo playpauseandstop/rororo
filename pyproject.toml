@@ -27,7 +27,6 @@ python = "^3.5.3"
 jsonschema = "^2.6"
 
 [tool.poetry.dev-dependencies]
-tox = "^3.5"
 aiohttp = "^3.5"
 coveralls = "^1.7"
 fastjsonschema = "^2.9"
