@@ -80,4 +80,4 @@ update-setup-py: .install
 	tar -xzf dist/$(PROJECT)-*.tar.gz --directory dist/
 	cp dist/$(PROJECT)-*/setup.py .
 	rm -rf dist/
-	sed -i 's/from distutils.core import setup/from setuptools import setup/g' setup.py
+	$(PYTHON) -c 'from pathlib import Path; setup_py = Path("setup.py"); setup_py.write_text(setup_py.read_text().replace("from distutils.core import setup", "from setuptools import setup"))'
