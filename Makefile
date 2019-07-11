@@ -19,6 +19,7 @@ POETRY ?= poetry
 PRE_COMMIT ?= pre-commit
 PYTHON ?= $(POETRY) run python
 SPHINXBUILD ?= $(POETRY) run sphinx-build
+TOX ?= tox
 
 all: install
 
@@ -42,7 +43,7 @@ ci-lint:
 	SKIP=$(SKIP) $(PRE_COMMIT) run --all $(HOOK)
 
 ci-test:
-	TOXENV=$(TOXENV) $(PYTHON) -m tox $(TOX_ARGS) -- $(TEST_ARGS)
+	TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
 
 clean:
 	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
