@@ -43,9 +43,9 @@ repos:
 
   - repo: local
     hooks:
-      - id: generate-requirements
+      - id: update-setup-py
         name: Update setup.py file
         entry: make update-setup-py
         pass_filenames: false
         language: system
-        files: ^pyproject\.toml$
+        files: ^(pyproject\.toml|README\.rst)$
