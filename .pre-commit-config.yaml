@@ -8,19 +8,19 @@ repos:
         exclude: ^docs/|setup\.py$
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
-    rev: "v2.2.1"
+    rev: "v2.2.3"
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
   - repo: "https://gitlab.com/PyCQA/flake8"
-    rev: "3.7.7"
+    rev: "3.7.8"
     hooks:
       - id: flake8
         name: Lint code (flake8)
         exclude: ^docs/|setup\.py$
         additional_dependencies:
-          - flake8==3.7.7
+          - flake8==3.7.8
           - flake8-broken-line==0.1.0
           - flake8-bugbear==19.3.0
           - flake8-builtins==1.4.1
@@ -34,7 +34,7 @@ repos:
           - pep8-naming==0.8.2
 
   - repo: "https://github.com/pre-commit/mirrors-mypy"
-    rev: "v0.711"
+    rev: "v0.720"
     hooks:
       - id: mypy
         name: Lint code (mypy)
