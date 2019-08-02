@@ -3,7 +3,7 @@ line_length = 79
 
 [tool.poetry]
 name = "rororo"
-version = "1.2.1"
+version = "1.3.0a0"
 description = "Collection of utilities, helpers, and principles for building Python backend applications. Supports aiohttp.web, Flask, and your web-framework"
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
@@ -24,7 +24,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.5.3"
-jsonschema = "^2.6"
+jsonschema = ">=2.6, <4.0"
 
 [tool.poetry.dev-dependencies]
 aiohttp = "^3.5"
