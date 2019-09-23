@@ -8,8 +8,8 @@
 	install \
 	lint \
 	list-outdated \
-	test \
-	update-setup-py
+	setup.py \
+	test
 
 # Project settings
 PROJECT = rororo
@@ -75,10 +75,10 @@ list-outdated: install
 
 test: install clean lint ci-test
 
-update-setup-py: .install
-	rm -rf dist/
+setup.py:
+	@rm -rf dist/
 	$(POETRY) build
 	tar -xzf dist/$(PROJECT)-*.tar.gz --directory dist/
 	cp dist/$(PROJECT)-*/setup.py .
-	rm -rf dist/
+	@rm -rf dist/
 	$(PYTHON) -c 'from pathlib import Path; setup_py = Path("setup.py"); setup_py.write_text(setup_py.read_text().replace("from distutils.core import setup", "from setuptools import setup"))'

@@ -26,13 +26,14 @@ rororo
     :target: https://rororo.readthedocs.io/
     :alt: Documentation
 
-Collection of utilities, helpers, and principles for building Python backend
-applications. Supports `aiohttp.web <http://aiohttp.readthedocs.org/>`_,
-`Flask <http://flask.pocoo.org/>`_, and your web-framework.
+`OpenAPI 3 <https://spec.openapis.org/oas/v3.0.2>`_ schema support
+for `aiohttp.web <https://aiohttp.readthedocs.io/en/stable/web.html>`_
+applications.
+
+As well as bunch other utilities to build effective web applications with
+Python 3 & ``aiohttp.web``.
 
 * Works on Python 3.5+
 * BSD licensed
-* Latest documentation `on Read the Docs <https://rororo.readthedocs.org/>`_
 * Source, issues, and pull requests `on GitHub
   <https://github.com/playpauseandstop/rororo>`_
-* Install with ``pip install rororo``

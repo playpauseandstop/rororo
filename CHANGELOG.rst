@@ -1,3 +1,14 @@
+2.0.0 (In Development)
+----------------------
+
+- **feature: Complete library rewrite**
+
+  - Instead of targeting any Python web framework, make ``rororo`` support only
+    ``aiohttp.web`` applications
+  - Build the library around the OpenAPI 3 schema support for ``aiohttp.web``
+    applications
+  - As result entirely remove ``rororo.schemas`` package from the project
+
 1.2.1 (2019-07-08)
 ------------------
 
@@ -6,9 +17,9 @@
 1.2.1a1 (2019-07-03)
 --------------------
 
-- chore: Introduce `pre-commit` hooks
-- chore: Use `pytest` for tests
-- chore: Use `black` for code formatting
+- chore: Introduce ``pre-commit`` hooks
+- chore: Use ``pytest`` for tests
+- chore: Use ``black`` for code formatting
 
 1.2.1a0 (2019-02-24)
 --------------------
