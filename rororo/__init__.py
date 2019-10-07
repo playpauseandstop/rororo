@@ -3,11 +3,29 @@
 rororo
 ======
 
-Collection of utilities, helpers, and principles for building Python backend
-applications. Supports `aiohttp.web <http://aiohttp.readthedocs.org/>`_,
-`Flask <http://flask.pocoo.org/>`_, and your web-framework.
+`OpenAPI 3 <https://spec.openapis.org/oas/v3.0.2>`_ schema support
+for `aiohttp.web <https://aiohttp.readthedocs.io/en/stable/web.html>`_
+applications.
+
+As well as bunch other utilities to build effective web applications with
+Python 3 & ``aiohttp.web``.
 
 """
+
+from .openapi import (
+    get_openapi_schema,
+    openapi_context,
+    OperationTableDef,
+    setup_openapi,
+)
+
+
+__all__ = (
+    "get_openapi_schema",
+    "openapi_context",
+    "OperationTableDef",
+    "setup_openapi",
+)
 
 __author__ = "Igor Davydenko"
 __license__ = "BSD-3-Clause"

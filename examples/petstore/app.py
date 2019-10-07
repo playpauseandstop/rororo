@@ -40,7 +40,7 @@ def create_app(argv: List[str] = None) -> web.Application:
             cors_middleware(allow_all=True),
             # It's good practice to enable error middleware right after the
             # CORS one to catch as many errors as possible
-            error_middleware(views.error),
+            error_middleware(default_handler=views.error),
         )
     )
 

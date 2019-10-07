@@ -1,8 +1,9 @@
-from dataclasses import dataclass
 from typing import Optional
 
+import attr
 
-@dataclass
+
+@attr.dataclass(frozen=True, slots=True)
 class NewPet:
     name: str
     tag: Optional[str]
@@ -11,6 +12,6 @@ class NewPet:
         return Pet(id=pet_id, name=self.name, tag=self.tag)
 
 
-@dataclass
+@attr.dataclass(frozen=True, slots=True)
 class Pet(NewPet):
     id: int
