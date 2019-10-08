@@ -54,7 +54,7 @@ coveralls:
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/
 
-docs: .install
+docs: install
 	$(PYTHON) -m pip install -r docs/requirements.txt
 	$(MAKE) -C docs/ SPHINXBUILD="$(SPHINXBUILD)" html
 
@@ -72,6 +72,9 @@ lint: install
 
 list-outdated: install
 	$(POETRY) show -o
+
+open-docs: docs
+	open docs/_build/html/index.html
 
 test: install clean lint ci-test
 

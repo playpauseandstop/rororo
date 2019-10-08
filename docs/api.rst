@@ -2,6 +2,17 @@
 rororo API
 ==========
 
+OpenAPI
+=======
+
+.. automodule:: rororo.openapi
+.. autofunction:: rororo.openapi.setup_openapi
+.. autoclass:: rororo.openapi.OperationTableDef
+.. autofunction:: rororo.openapi.openapi_context
+.. autofunction:: rororo.openapi.get_openapi_context
+.. autofunction:: rororo.openapi.get_openapi_schema
+.. autofunction:: rororo.openapi.get_openapi_spec
+
 Settings
 ========
 

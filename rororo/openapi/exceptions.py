@@ -6,17 +6,9 @@ class ConfigurationError(OpenAPIError):
     """Wrong OpenAPI configuration."""
 
 
+class ContextError(OpenAPIError):
+    """Attempt to use context when it is not available."""
+
+
 class OperationError(OpenAPIError):
     """Invalid OpenAPI operation."""
-
-
-class ParameterError(OpenAPIError):
-    """OpenAPI parameter error."""
-
-
-class RequestBodyError(OpenAPIError):
-    """Request body error."""
-
-
-class ValidationError(OpenAPIError):
-    """Validation error."""

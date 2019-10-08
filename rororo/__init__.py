@@ -13,6 +13,7 @@ Python 3 & ``aiohttp.web``.
 """
 
 from .openapi import (
+    get_openapi_context,
     get_openapi_schema,
     get_openapi_spec,
     openapi_context,
@@ -22,6 +23,7 @@ from .openapi import (
 
 
 __all__ = (
+    "get_openapi_context",
     "get_openapi_schema",
     "get_openapi_spec",
     "openapi_context",
@@ -31,4 +33,4 @@ __all__ = (
 
 __author__ = "Igor Davydenko"
 __license__ = "BSD-3-Clause"
-__version__ = "2.0.0a0"
+__version__ = "2.0.0a1"

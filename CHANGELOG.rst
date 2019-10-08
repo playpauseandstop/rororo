@@ -1,6 +1,15 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0a1 (2019-10-08)
+--------------------
+
+- feature: Add ``rororo.get_openapi_context`` shortcut
+- chore: Update API docs for ``rororo.openapi`` public functions & classes
+
+2.0.0a0 (2019-10-08)
+--------------------
+
 - **feature: Complete library rewrite**
 
   - Instead of targeting any Python web framework, make ``rororo`` support only

@@ -4,7 +4,7 @@ from functools import wraps
 from aiohttp import web
 from openapi_core.shortcuts import validate_body, validate_parameters
 
-from .contexts import OPENAPI_CONTEXT_REQUEST_KEY
+from .constants import OPENAPI_CONTEXT_REQUEST_KEY
 from .data import (
     OpenAPIContext,
     to_openapi_core_request,

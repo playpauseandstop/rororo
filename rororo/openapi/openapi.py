@@ -39,6 +39,47 @@ class OperationRegistrator:
 
 
 class OperationTableDef(dict):
+    """Map OpenAPI 3 operations to aiohttp.web view handlers.
+
+    In short it is rororo's equialent to :class:`aiohttp.web.RouteTableDef`.
+    Under the hood, on :func:`rororo.openapi.setup_openapi` it
+    still will use ``RouteTableDef`` for registering view handlers to
+    :class:`aiohttp.web.Application`.
+
+    But unlike ``RouteTableDef`` it does not register any HTTP method handlers
+    (as via ``@routes.get`` decorator) in favor of just registering the
+    operations.
+
+    There are two ways for registering view hanlder,
+
+    1. With bare ``@operations.register`` call when OpenAPI ``operationId``
+       equals to view handler name.
+    2. Or by passing ``operation_id`` to the decorator as first arg, when
+       ``operationId`` does not match view handler name, or if you don't like
+       the fact of guessing operation ID from view handler name.
+
+    Both of ways described below,
+
+    .. code-block:: python
+
+        from rororo import OperationTableDef
+
+        operations = OperationTableDef()
+
+        # Expect OpenAPI 3 schema to contain operationId: hello_world
+        @operations.register
+        async def hello_world(request: web.Request) -> web.Response:
+            ...
+
+        # Explicitly use operationId: helloWorld
+        @operations.register("helloWorld")
+        async def hello_world(request: web.Request) -> web.Response:
+            ...
+
+    If supplied ``operation_id`` does not exist in OpenAPI 3 schema,
+    :func:`rororo.openapi.setup_openapi` call raises an ``OperationError``.
+    """
+
     def __init__(self) -> None:
         self.register = OperationRegistrator(self)
 
@@ -69,13 +110,14 @@ def setup_openapi(
 ) -> None:
     """Setup OpenAPI schema to use with aiohttp.web application.
 
-    Unlike ``aiohttp-apispec`` and other tools, which provides OpenAPI/Swagger
-    support for aiohttp.web applications, ``rororo`` changes the way of using
-    OpenAPI schema with aiohttp.web apps.
+    Unlike `aiohttp-apispec <https://aiohttp-apispec.readthedocs.io/>`_ and
+    other tools, which provides OpenAPI/Swagger support for aiohttp.web
+    applications, ``rororo`` changes the way of using OpenAPI schema with
+    ``aiohttp.web`` apps.
 
     ``rororo`` relies on concrete OpenAPI schema file, path to which need to be
     registered on application startup (mostly inside of ``create_app`` factory
-    or right after ``web.Application`` instantiation).
+    or right after :class:`aiohttp.web.Application` instantiation).
 
     And as valid OpenAPI schema ensure unique ``operationId`` used accross the
     schema ``rororo`` uses them as a key while telling aiohttp.web to use given
@@ -83,10 +125,10 @@ def setup_openapi(
 
     With that in mind registering (setting up) OpenAPI schema requires:
 
-    1. ``aiohttp.web`` application
+    1. :class:`aiohttp.web.Application` instance
     2. Path to file (json or yaml) with OpenAPI schema
     3. OpenAPI operation handlers mapping (rororo's equialent of
-       ``web.RouteTableDef``)
+       :class:`aiohttp.web.RouteTableDef`)
 
     In common cases setup looks like,
 

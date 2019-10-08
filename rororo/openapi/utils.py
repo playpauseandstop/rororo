@@ -2,9 +2,13 @@ from typing import Optional
 
 from aiohttp import web
 
-from .constants import OPENAPI_SCHEMA_APP_KEY, OPENAPI_SPEC_APP_KEY
-from .data import OpenAPIOperation
-from .exceptions import ConfigurationError, OperationError
+from .constants import (
+    OPENAPI_CONTEXT_REQUEST_KEY,
+    OPENAPI_SCHEMA_APP_KEY,
+    OPENAPI_SPEC_APP_KEY,
+)
+from .data import OpenAPIContext, OpenAPIOperation
+from .exceptions import ConfigurationError, ContextError, OperationError
 from ..annotations import DictStrAny
 
 
@@ -12,8 +16,31 @@ def add_prefix(path: str, prefix: Optional[str]) -> str:
     return f"{prefix}{path}" if prefix else path
 
 
+def get_openapi_context(request: web.Request) -> OpenAPIContext:
+    """Shortcut to retrieve OpenAPI schema from ``aiohttp.web`` request.
+
+    ``OpenAPIContext`` attached to :class:`aiohttp.web.Request` instance only
+    if current request contains valid data.
+
+    ``ContextError`` raises if, for some reason, the function called outside of
+    valid OpenAPI request context.
+    """
+    try:
+        return request[OPENAPI_CONTEXT_REQUEST_KEY]
+    except KeyError:
+        raise ContextError(
+            "Request instance does not contain valid OpenAPI context. In "
+            "most cases it means, the function is called outside of valid "
+            "OpenAPI request context."
+        )
+
+
 def get_openapi_schema(app: web.Application) -> DictStrAny:
-    """Shortcut to retrieve OpenAPI schema from ``aiohttp.web`` application."""
+    """Shortcut to retrieve OpenAPI schema from ``aiohttp.web`` application.
+
+    ``ConfigruationError`` raises if :class:`aiohttp.web.Application` does not
+    contain registered OpenAPI schema.
+    """
     try:
         return app[OPENAPI_SCHEMA_APP_KEY]
     except KeyError:
@@ -25,7 +52,11 @@ def get_openapi_schema(app: web.Application) -> DictStrAny:
 
 
 def get_openapi_spec(app: web.Application) -> DictStrAny:
-    """Shortcut to retrieve OpenAPI spec from ``aiohttp.web`` application."""
+    """Shortcut to retrieve OpenAPI spec from ``aiohttp.web`` application.
+
+    ``ConfigruationError`` raises if :class:`aiohttp.web.Application` does not
+    contain registered OpenAPI spec.
+    """
     try:
         return app[OPENAPI_SPEC_APP_KEY]
     except KeyError:
