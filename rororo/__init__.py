@@ -14,6 +14,7 @@ Python 3 & ``aiohttp.web``.
 
 from .openapi import (
     get_openapi_schema,
+    get_openapi_spec,
     openapi_context,
     OperationTableDef,
     setup_openapi,
@@ -22,6 +23,7 @@ from .openapi import (
 
 __all__ = (
     "get_openapi_schema",
+    "get_openapi_spec",
     "openapi_context",
     "OperationTableDef",
     "setup_openapi",

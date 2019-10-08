@@ -3,3 +3,6 @@ OPENAPI_CONTEXT_REQUEST_KEY = "rororo_openapi_context"
 
 #: Key to store OpenAPI schema within the ``web.Application`` instance
 OPENAPI_SCHEMA_APP_KEY = "rororo_openapi_schema"
+
+#: Key to store OpenAPI spec within the ``web.Application`` instance
+OPENAPI_SPEC_APP_KEY = "rororo_openapi_spec"

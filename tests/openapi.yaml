@@ -1,0 +1,38 @@
+openapi: "3.0.2"
+
+info:
+  title: "rororo"
+  version: "1.0.0"
+  contact:
+    name: "Igor Davydenko (developer)"
+    url: "https://igordavydenko.com"
+    email: "iam@igordavydenko.com"
+  license:
+    name: "BSD-3-Clause"
+    url: "https://opensource.org/licenses/BSD-3-Clause"
+
+servers:
+  - url: "/api"
+
+paths:
+  "/hello":
+    get:
+      operationId: "hello_world"
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: "Dummy response."
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    minLength: 1

@@ -1,27 +1,44 @@
-import types
 from typing import Optional
 
-import attr
 from aiohttp import web
 
-from .constants import OPENAPI_SCHEMA_APP_KEY
-from ..annotations import DictStrAny, MappingStrAny
+from .constants import OPENAPI_SCHEMA_APP_KEY, OPENAPI_SPEC_APP_KEY
+from .data import OpenAPIOperation
+from .exceptions import ConfigurationError, OperationError
+from ..annotations import DictStrAny
 
 
-@attr.dataclass(frozen=True, slots=True)
-class OperationDetails:
-    method: str
-    path: str
+def add_prefix(path: str, prefix: Optional[str]) -> str:
+    return f"{prefix}{path}" if prefix else path
 
 
 def get_openapi_schema(app: web.Application) -> DictStrAny:
     """Shortcut to retrieve OpenAPI schema from ``aiohttp.web`` application."""
-    return app[OPENAPI_SCHEMA_APP_KEY]
+    try:
+        return app[OPENAPI_SCHEMA_APP_KEY]
+    except KeyError:
+        raise ConfigurationError(
+            "Seems like OpenAPI schema not registered to the application. Use "
+            '"from rororo import setup_openapi" function to register OpenAPI '
+            "schema to your web.Application."
+        )
 
 
-def get_operation_details(
-    schema: DictStrAny, operation_id: str
-) -> Optional[OperationDetails]:
+def get_openapi_spec(app: web.Application) -> DictStrAny:
+    """Shortcut to retrieve OpenAPI spec from ``aiohttp.web`` application."""
+    try:
+        return app[OPENAPI_SPEC_APP_KEY]
+    except KeyError:
+        raise ConfigurationError(
+            "Seems like OpenAPI spec not registered to the application. Use "
+            '"from rororo import setup_openapi" function to register OpenAPI '
+            "schema to your web.Application."
+        )
+
+
+def get_openapi_operation(
+    oas: DictStrAny, operation_id: str
+) -> OpenAPIOperation:
     """Go through OpenAPI schema and try to find operation details by its ID.
 
     These details allow to add given operation to router as they share:
@@ -31,30 +48,17 @@ def get_operation_details(
 
     for the operation.
     """
-    for path, path_schema in (schema.get("paths") or {}).items():
+    for path, path_schema in (oas.get("paths") or {}).items():
         for method, operation_schema in path_schema.items():
             if operation_schema.get("operationId") == operation_id:
-                return OperationDetails(method=method, path=path)
-    return None
+                return OpenAPIOperation(
+                    id=operation_id,
+                    method=method,
+                    path=path,
+                    schema=operation_schema,
+                )
 
-
-def guess_openapi_schema_path(schema: DictStrAny) -> str:
-    return "/api/openapi.{schema_format}"
-
-
-def immutable_dict_factory() -> MappingStrAny:
-    """Shortcut to create immutable dict factory.
-
-    For now, stick with ``types.MappingProxyType`` as immutable dict
-    implementation.
-    """
-    return types.MappingProxyType({})
-
-
-def safe_route_name(operation_id: str) -> str:
-    """Ensure safe route name for given operation ID.
-
-    OpenAPI schema allows to use spaces for operation ID, while aiohttp
-    disallows them. Cause of that replace all spaces with dashes.
-    """
-    return operation_id.replace(" ", "-")
+    raise OperationError(
+        f'Unable to find operation "{operation_id}" in provided OpenAPI '
+        "Schema."
+    )
