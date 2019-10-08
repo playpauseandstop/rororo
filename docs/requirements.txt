@@ -20,8 +20,8 @@ pytz==2019.1              # via babel
 requests==2.22.0          # via sphinx
 six==1.12.0               # via packaging
 snowballstemmer==1.9.0    # via sphinx
+sphinx-autodoc-typehints==1.6.0
 sphinx==2.1.2
-sphinx_autodoc_typehints==1.6.0
 sphinxcontrib-applehelp==1.0.1  # via sphinx
 sphinxcontrib-devhelp==1.0.1  # via sphinx
 sphinxcontrib-htmlhelp==1.0.2  # via sphinx

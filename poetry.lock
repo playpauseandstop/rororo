@@ -1,5 +1,5 @@
 [[package]]
-category = "dev"
+category = "main"
 description = "Async http client/server framework (asyncio)"
 name = "aiohttp"
 optional = false
@@ -34,7 +34,7 @@ aiohttp = ">=3.5,<4.0"
 async-timeout = ">=1.2,<4"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Timeout context manager for asyncio programs"
 name = "async-timeout"
 optional = false
@@ -66,7 +66,7 @@ python-versions = "*"
 version = "2019.9.11"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Universal encoding detector for Python 2 and 3"
 name = "chardet"
 optional = false
@@ -112,7 +112,7 @@ python-versions = "*"
 version = "0.6.2"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Internationalized Domain Names in Applications (IDNA)"
 name = "idna"
 optional = false
@@ -120,7 +120,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.8"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Patch ssl.match_hostname for Unicode(idna) domains support"
 marker = "python_version < \"3.7\""
 name = "idna-ssl"
@@ -185,7 +185,7 @@ python-versions = ">=3.4"
 version = "7.2.0"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "multidict implementation"
 name = "multidict"
 optional = false
@@ -358,7 +358,7 @@ python-versions = "*"
 version = "0.7"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Type Hints for Python"
 marker = "python_version < \"3.7\""
 name = "typing"
@@ -367,7 +367,7 @@ python-versions = "*"
 version = "3.7.4.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Backported and Experimental Type Hints for Python 3.5+"
 marker = "python_version < \"3.7\""
 name = "typing-extensions"
@@ -395,7 +395,7 @@ python-versions = "*"
 version = "0.1.7"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Yet another URL library"
 name = "yarl"
 optional = false
@@ -419,7 +419,7 @@ version = "0.6.0"
 more-itertools = "*"
 
 [metadata]
-content-hash = "0d7c4fbb5a36fe6285b9a4964bb3459e2ac0936072d4e82b44b37a00a664dc11"
+content-hash = "d03af3adc95acc6a09fda7c4dab94688c42c1f012c6386932f22621c976f624e"
 python-versions = "^3.6"
 
 [metadata.hashes]
