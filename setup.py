@@ -10,6 +10,7 @@ package_data = \
 install_requires = \
 ['PyYAML>=5.1,<6.0',
  'aiohttp>=3.5,<4.0',
+ 'attrs>=19.1,<20.0',
  'jsonschema>=3.0,<4.0',
  'openapi-core>=0.12.0,<0.13.0']
 
