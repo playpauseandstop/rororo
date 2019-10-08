@@ -51,9 +51,9 @@ schema file.
 .. code-block:: python
 
     from pathlib import Path
+    from typing import List
 
     from aiohttp import web
-
     from rororo import openapi_context, OperationTableDef, setup_openapi
 
 
