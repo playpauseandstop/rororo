@@ -13,8 +13,12 @@ from rororo import (
 from rororo.openapi.exceptions import ConfigurationError, OperationError
 
 
-OPENAPI_JSON_PATH = Path(__file__).parent / "openapi.json"
-OPENAPI_YAML_PATH = Path(__file__).parent / "openapi.yaml"
+ROOT_PATH = Path(__file__).parent
+
+INVALID_OPENAPI_JSON_PATH = ROOT_PATH / "invalid-openapi.json"
+INVALID_OPENAPI_YAML_PATH = ROOT_PATH / "invalid-openapi.yaml"
+OPENAPI_JSON_PATH = ROOT_PATH / "openapi.json"
+OPENAPI_YAML_PATH = ROOT_PATH / "openapi.yaml"
 
 operations = OperationTableDef()
 invalid_operations = OperationTableDef()
@@ -107,16 +111,18 @@ def test_setup_openapi_invalid_operation():
 def test_setup_openapi_invalid_path():
     with pytest.raises(ConfigurationError):
         setup_openapi(
-            web.Application(),
-            Path(__file__).parent / "does-not-exist.yaml",
-            operations,
+            web.Application(), ROOT_PATH / "does-not-exist.yaml", operations
         )
 
 
-def test_setup_openapi_invalid_spec():
+def test_setup_openapi_invalid_file():
     with pytest.raises(ConfigurationError):
-        setup_openapi(
-            web.Application(),
-            Path(__file__).parent / "settings.py",
-            operations,
-        )
+        setup_openapi(web.Application(), ROOT_PATH / "settings.py", operations)
+
+
+@pytest.mark.parametrize(
+    "schema_path", (INVALID_OPENAPI_JSON_PATH, INVALID_OPENAPI_YAML_PATH)
+)
+def test_setup_openapi_invalid_spec(schema_path):
+    with pytest.raises(ConfigurationError):
+        setup_openapi(web.Application(), schema_path, operations)

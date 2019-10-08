@@ -1,10 +1,12 @@
 import json
+import os
 from pathlib import Path
 from typing import overload, Union
 
 import yaml
 from aiohttp import web
 from openapi_core.shortcuts import create_spec
+from openapi_spec_validator.exceptions import OpenAPIValidationError
 
 from . import views
 from .constants import OPENAPI_SCHEMA_APP_KEY, OPENAPI_SPEC_APP_KEY
@@ -170,22 +172,33 @@ def setup_openapi(
             return yaml.safe_load(content)
 
         raise ConfigurationError(
-            f"Unsupported OpenAPI schema file: {path.name}. At a moment "
-            "rororo supports loading OpenAPI schemas from: .json, .yml, .yaml"
+            f"Unsupported OpenAPI schema file: {path}. At a moment rororo "
+            "supports loading OpenAPI schemas from: .json, .yml, .yaml files"
         )
 
     # Ensure OpenAPI schema is a readable file
     path = Path(schema_path) if isinstance(schema_path, str) else schema_path
     if not path.exists() or not path.is_file():
+        uid = os.getuid()
         raise ConfigurationError(
-            f"Unable to find OpenAPI schema file at {path}"
+            f"Unable to find OpenAPI schema file at {path}. Please check that "
+            "file exists at given path and readable by current user ID: "
+            f"{uid}"
         )
 
     # Store OpenAPI schema dict in the application dict
     app[OPENAPI_SCHEMA_APP_KEY] = oas = read_schema(path)
 
     # Create the spec and put it to the application dict as well
-    app[OPENAPI_SPEC_APP_KEY] = create_spec(oas)
+    try:
+        app[OPENAPI_SPEC_APP_KEY] = create_spec(oas)
+    except OpenAPIValidationError:
+        raise ConfigurationError(
+            f"Unable to load valid OpenAPI schema in {path}. In most cases "
+            "it means that given file doesn't contain valid OpenAPI 3 schema. "
+            "To get full details about errors run `openapi-spec-validator "
+            f"{path}`"
+        )
 
     # Register all operation handlers to web application
     for item in operations:
