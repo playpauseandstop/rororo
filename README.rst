@@ -38,6 +38,21 @@ Python 3 & ``aiohttp.web``.
 * Source, issues, and pull requests `on GitHub
   <https://github.com/playpauseandstop/rororo>`_
 
+Important
+=========
+
+**2.0.0** version still in development, to install it and give it a try,
+
+```bash
+pip install rororo>=2.0.0a2
+```
+
+or,
+
+```
+poetry add rororo^=2.0.0a2
+```
+
 Quick Start
 ===========
 

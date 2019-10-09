@@ -2,7 +2,7 @@ openapi: "3.0.2"
 
 info:
   title: "rororo"
-  version: "1.0.0"
+  version: "2.0.0a3"
   contact:
     name: "Igor Davydenko (developer)"
     url: "https://igordavydenko.com"
@@ -36,3 +36,29 @@ paths:
                   message:
                     type: "string"
                     minLength: 1
+
+  "/array":
+    post:
+      operationId: "retrieve_array_from_request_body"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UniqueStrArray"
+      responses:
+        "200":
+          description: "Array from request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UniqueStrArray"
+
+components:
+  schemas:
+    UniqueStrArray:
+      type: "array"
+      items:
+        type: "string"
+        minLength: 1
+      minItems: 1
+      uniqueItems: true

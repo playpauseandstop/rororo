@@ -52,6 +52,45 @@
           }
         }
       }
+    },
+    "/array": {
+      "post": {
+        "operationId": "retrieve_array_from_request_body",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UniqueStrArray"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Array from request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UniqueStrArray"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UniqueStrArray": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minItems": 1,
+        "uniqueItems": true
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ import types
 from functools import wraps
 
 from aiohttp import web
+from openapi_core.extensions.models.models import Model
 from openapi_core.shortcuts import validate_body, validate_parameters
 
 from .constants import OPENAPI_CONTEXT_REQUEST_KEY
@@ -15,6 +16,12 @@ from ..annotations import Decorator, Handler
 
 
 def openapi_operation(operation_id: str) -> Decorator:
+    """
+    Hidden decorator, that allows :class:`rororo.openapi.OperationTableDef`
+    to really ensure that registered view handler will receive data, that is
+    valid against requested OpenAPI schema.
+    """
+
     def wrapper(handler: Handler) -> Handler:
         @wraps(handler)
         async def decorator(request: web.Request) -> web.StreamResponse:
@@ -35,12 +42,10 @@ def openapi_operation(operation_id: str) -> Decorator:
             parameters = to_openapi_parameters(
                 validate_parameters(spec, core_request)
             )
-            valid_data = validate_body(spec, core_request)
+            data = validate_body(spec, core_request)
 
-            # TODO: Support request arrays as well
-            data = None
-            if valid_data is not None:
-                data = types.MappingProxyType(vars(valid_data))
+            if isinstance(data, Model):
+                data = types.MappingProxyType(vars(data))
 
             # Step 4. Provide OpenAPI context for the handler
             request[OPENAPI_CONTEXT_REQUEST_KEY] = OpenAPIContext(

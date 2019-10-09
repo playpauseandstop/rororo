@@ -1,6 +1,11 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0a3 (In Development)
+------------------------
+
+- feature: Support `type: array` request bodies as well
+
 2.0.0a2 (2019-10-08)
 --------------------
 

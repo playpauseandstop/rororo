@@ -24,6 +24,11 @@ operations = OperationTableDef()
 invalid_operations = OperationTableDef()
 
 
+@invalid_operations.register("does-not-exist")
+async def does_not_exist(request: web.Request) -> web.Response:
+    return web.Response(text="Hello, world!")
+
+
 @operations.register
 async def hello_world(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
@@ -31,9 +36,28 @@ async def hello_world(request: web.Request) -> web.Response:
         return web.json_response({"message": f"Hello, {name}!"})
 
 
-@invalid_operations.register("does-not-exist")
-async def does_not_exist(request: web.Request) -> web.Response:
-    return web.Response(text="Hello, world!")
+@operations.register
+async def retrieve_array_from_request_body(
+    request: web.Request
+) -> web.Response:
+    with openapi_context(request) as context:
+        return web.json_response(context.data)
+
+
+@pytest.mark.parametrize(
+    "data, expected_status",
+    (({}, 500), ([], 500), ([""], 500), (["Hello"], 200)),
+)
+async def test_array_request_body(aiohttp_client, data, expected_status):
+    app = web.Application()
+    setup_openapi(app, OPENAPI_YAML_PATH, operations, route_prefix="/api")
+
+    client = await aiohttp_client(app)
+    response = await client.post("/api/array", json=data)
+    assert response.status == expected_status
+
+    if expected_status == 200:
+        assert await response.json() == data
 
 
 def test_get_openapi_schema_no_schema():
