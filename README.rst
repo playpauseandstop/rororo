@@ -41,17 +41,16 @@ Python 3 & ``aiohttp.web``.
 Important
 =========
 
-**2.0.0** version still in development, to install it and give it a try,
+**2.0.0** version still in development, to install it use,
 
-```bash
-pip install rororo>=2.0.0a2
-```
+.. code-block:: bash
+
+    pip install rororo>=2.0.0a2
 
 or,
 
-```
-poetry add rororo^=2.0.0a2
-```
+.. code-block:: bash
+    poetry add rororo^=2.0.0a2
 
 Quick Start
 ===========
