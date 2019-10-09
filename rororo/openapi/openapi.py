@@ -9,7 +9,11 @@ from openapi_core.shortcuts import create_spec
 from openapi_spec_validator.exceptions import OpenAPIValidationError
 
 from . import views
-from .constants import OPENAPI_SCHEMA_APP_KEY, OPENAPI_SPEC_APP_KEY
+from .constants import (
+    OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY,
+    OPENAPI_SCHEMA_APP_KEY,
+    OPENAPI_SPEC_APP_KEY,
+)
 from .decorators import openapi_operation
 from .exceptions import ConfigurationError
 from .utils import add_prefix, get_openapi_operation
@@ -108,6 +112,7 @@ def setup_openapi(
     schema_path: Union[str, Path],
     *operations: OperationTableDef,
     route_prefix: str = None,
+    is_validate_response: bool = False,
     has_openapi_schema_handler: bool = True,
 ) -> None:
     """Setup OpenAPI schema to use with aiohttp.web application.
@@ -158,6 +163,10 @@ def setup_openapi(
     For that cases you need to pass ``'/api'`` as a ``route_prefix`` keyword
     argument.
 
+    By default, ``rororo`` will not validate operation responses against
+    OpenAPI schema due to performance reasons. To enable this feature, pass
+    ``is_validate_response`` truthy flag.
+
     By default, ``rororo`` will share the OpenAPI schema which is registered
     for your aiohttp.web application. In case if you don't want to share this
     schema, pass ``has_openapi_schema_handler=False`` on setting up OpenAPI.
@@ -199,6 +208,9 @@ def setup_openapi(
             "To get full details about errors run `openapi-spec-validator "
             f"{path}`"
         )
+
+    # Store whether rororo need to validate response or not. By default: not
+    app[OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY] = is_validate_response
 
     # Register all operation handlers to web application
     for item in operations:

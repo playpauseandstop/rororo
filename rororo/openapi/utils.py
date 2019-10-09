@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import Optional, Union
 
 from aiohttp import web
+from aiohttp.helpers import ChainMapProxy
 
 from .constants import (
     OPENAPI_CONTEXT_REQUEST_KEY,
@@ -35,14 +36,16 @@ def get_openapi_context(request: web.Request) -> OpenAPIContext:
         )
 
 
-def get_openapi_schema(app: web.Application) -> DictStrAny:
+def get_openapi_schema(
+    mixed: Union[web.Application, ChainMapProxy]
+) -> DictStrAny:
     """Shortcut to retrieve OpenAPI schema from ``aiohttp.web`` application.
 
     ``ConfigruationError`` raises if :class:`aiohttp.web.Application` does not
     contain registered OpenAPI schema.
     """
     try:
-        return app[OPENAPI_SCHEMA_APP_KEY]
+        return mixed[OPENAPI_SCHEMA_APP_KEY]
     except KeyError:
         raise ConfigurationError(
             "Seems like OpenAPI schema not registered to the application. Use "
@@ -51,14 +54,16 @@ def get_openapi_schema(app: web.Application) -> DictStrAny:
         )
 
 
-def get_openapi_spec(app: web.Application) -> DictStrAny:
+def get_openapi_spec(
+    mixed: Union[web.Application, ChainMapProxy]
+) -> DictStrAny:
     """Shortcut to retrieve OpenAPI spec from ``aiohttp.web`` application.
 
     ``ConfigruationError`` raises if :class:`aiohttp.web.Application` does not
     contain registered OpenAPI spec.
     """
     try:
-        return app[OPENAPI_SPEC_APP_KEY]
+        return mixed[OPENAPI_SPEC_APP_KEY]
     except KeyError:
         raise ConfigurationError(
             "Seems like OpenAPI spec not registered to the application. Use "

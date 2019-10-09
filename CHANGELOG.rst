@@ -5,6 +5,7 @@
 ------------------------
 
 - feature: Support `type: array` request bodies as well
+- feature: Allow to validate responses against OpenAPI schema
 
 2.0.0a2 (2019-10-08)
 --------------------

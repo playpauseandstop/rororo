@@ -3,8 +3,9 @@ from typing import Any, Dict, Optional
 
 import attr
 from aiohttp import web
+from aiohttp.helpers import ChainMapProxy
 from openapi_core.validation.request.models import RequestParameters
-from openapi_core.wrappers.base import BaseOpenAPIRequest
+from openapi_core.wrappers.base import BaseOpenAPIRequest, BaseOpenAPIResponse
 
 from ..annotations import DictStrAny, MappingStrAny, MappingStrStr
 
@@ -57,6 +58,26 @@ class OpenAPICoreRequest(BaseOpenAPIRequest):
         return formatter if formatter is not None else info.get("path")
 
 
+class OpenAPICoreResponse(BaseOpenAPIResponse):
+    def __init__(self, response: web.StreamResponse) -> None:
+        self.response = response
+
+    @property
+    def data(self) -> Optional[str]:
+        response = self.response
+        if isinstance(response, web.Response):
+            return response.text
+        return None
+
+    @property
+    def mimetype(self) -> str:
+        return self.response.content_type
+
+    @property
+    def status_code(self) -> int:
+        return self.response.status
+
+
 @attr.dataclass(frozen=True, slots=True)
 class OpenAPIOperation:
     #: Operation ID
@@ -104,6 +125,9 @@ class OpenAPIContext:
     #: Application instance
     app: web.Application
 
+    #: Config dict instance
+    config_dict: ChainMapProxy
+
     #: Operation instance
     operation: OpenAPIOperation
 
@@ -128,6 +152,13 @@ async def to_openapi_core_request(request: web.Request) -> OpenAPICoreRequest:
         body = await request.text()
 
     return OpenAPICoreRequest(request=request, body=body)
+
+
+def to_openapi_core_response(
+    response: web.StreamResponse
+) -> OpenAPICoreResponse:
+    """Convert aiohttp.web response to openapi-core response."""
+    return OpenAPICoreResponse(response)
 
 
 def to_openapi_parameters(

@@ -41,7 +41,7 @@ Python 3 & ``aiohttp.web``.
 Important
 =========
 
-**2.0.0** version still in development, to install it use,
+**2.0.0** version still in development. To install it use,
 
 .. code-block:: bash
 
@@ -50,6 +50,7 @@ Important
 or,
 
 .. code-block:: bash
+
     poetry add rororo^=2.0.0a2
 
 Quick Start

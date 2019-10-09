@@ -99,6 +99,23 @@ async def test_openapi(
     assert (await response.json())["message"] == expected_message
 
 
+@pytest.mark.parametrize("is_enabled", (False, True))
+async def test_openapi_validate_response(aiohttp_client, is_enabled):
+    app = web.Application()
+    setup_openapi(
+        app,
+        OPENAPI_YAML_PATH,
+        operations,
+        route_prefix="/api",
+        is_validate_response=is_enabled,
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/hello")
+    assert response.status == 200
+    assert await response.json() == {"message": "Hello, world!"}
+
+
 @pytest.mark.parametrize(
     "has_openapi_schema_handler, url, expected_status",
     (

@@ -3,12 +3,20 @@ from functools import wraps
 
 from aiohttp import web
 from openapi_core.extensions.models.models import Model
-from openapi_core.shortcuts import validate_body, validate_parameters
+from openapi_core.shortcuts import (
+    validate_body,
+    validate_data,
+    validate_parameters,
+)
 
-from .constants import OPENAPI_CONTEXT_REQUEST_KEY
+from .constants import (
+    OPENAPI_CONTEXT_REQUEST_KEY,
+    OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY,
+)
 from .data import (
     OpenAPIContext,
     to_openapi_core_request,
+    to_openapi_core_response,
     to_openapi_parameters,
 )
 from .utils import get_openapi_operation, get_openapi_schema, get_openapi_spec
@@ -26,16 +34,17 @@ def openapi_operation(operation_id: str) -> Decorator:
         @wraps(handler)
         async def decorator(request: web.Request) -> web.StreamResponse:
             app = request.app
+            config_dict = request.config_dict
 
             # Step 1. Ensure that OpenAPI schema exists as well as given
             # operation ID
             operation = get_openapi_operation(
-                get_openapi_schema(app), operation_id
+                get_openapi_schema(config_dict), operation_id
             )
 
             # Step 2. Ensure that OpenAPI spec exists and convert aiohttp.web
             # request to openapi-core request
-            spec = get_openapi_spec(app)
+            spec = get_openapi_spec(config_dict)
             core_request = await to_openapi_core_request(request)
 
             # Step 3. Validate request parameters & body
@@ -51,14 +60,20 @@ def openapi_operation(operation_id: str) -> Decorator:
             request[OPENAPI_CONTEXT_REQUEST_KEY] = OpenAPIContext(
                 request=request,
                 app=app,
+                config_dict=config_dict,
                 operation=operation,
                 parameters=parameters,
                 data=data,
             )
 
             # Step 5. Validate response if needed
-            # TODO: Implement response validation
-            return await handler(request)
+            response = await handler(request)
+            if config_dict[OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY]:
+                validate_data(
+                    spec, core_request, to_openapi_core_response(response)
+                )
+
+            return response
 
         return decorator
 
