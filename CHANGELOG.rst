@@ -1,11 +1,12 @@
 2.0.0 (In Development)
 ----------------------
 
-2.0.0a3 (In Development)
+2.0.0a3 (2019-10-09)
 ------------------------
 
 - feature: Support `type: array` request bodies as well
 - feature: Allow to validate responses against OpenAPI schema
+- chore: Do not directly depend on ``jsonschema``
 
 2.0.0a2 (2019-10-08)
 --------------------
