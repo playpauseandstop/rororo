@@ -12,19 +12,23 @@ Module helps you to prepare and read settings inside your web application.
 
 import calendar
 import locale
+import logging
 import os
 import time
 import types
 from importlib import import_module
-from logging.config import dictConfig as setup_logging  # noqa: N813
+from logging.config import dictConfig
 from typing import Any, Iterator, MutableMapping, Optional, Tuple, Union
 
-from .annotations import Settings, T
+from .annotations import DictStrAny, Settings, T
 from .utils import to_bool
 
 
 def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
     """Shortcut for safely reading environment variable.
+
+    .. deprecated:: 2.0
+        Use :func:`os.getenv` instead. Will be removed in **3.0**.
 
     :param key: Environment var key.
     :param default:
@@ -172,6 +176,31 @@ def setup_locale(
     locale.setlocale(locale.LC_TIME, lc_time or lc_all)
 
     return locale.setlocale(locale.LC_ALL, lc_all)
+
+
+def setup_logging(
+    config: DictStrAny, *, remove_root_handlers: bool = False
+) -> None:
+    """Wrapper around :func:`logging.config.dictConfig` function.
+
+    In most cases it is not necessary to use an additional wrapper for setting
+    up logging, but if your ``aiohttp.web`` application run as::
+
+        python -m aiohttp.web api.app:create_app
+
+    ``aiohttp`` `will setup
+    <https://github.com/aio-libs/aiohttp/blob/v3.6.2/aiohttp/web.py#L494>`_
+    logging via :func:`logging.basicConfig` call and it may result in
+    duplicated logging messages. To avoid duplication, it is needed to remove
+    ``logging.root`` handlers.
+
+    :param remove_root_handlers:
+        Remove ``logging.root`` handlers if any. By default: ``False``
+    """
+    if remove_root_handlers:
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+    return dictConfig(config)
 
 
 def setup_timezone(timezone: str) -> None:

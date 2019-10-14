@@ -1,18 +1,5 @@
 .. include:: ../README.rst
 
-Installation
-============
-
-.. code-block:: bash
-
-    pip install rororo
-
-Or with `poetry <https://poetry.eustace.io/>`_:
-
-.. code-block:: bash
-
-    poetry add rororo
-
 License
 =======
 
@@ -23,7 +10,8 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
+   openapi
    api
    changelog

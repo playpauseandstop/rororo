@@ -1,8 +1,14 @@
 2.0.0 (In Development)
 ----------------------
 
-2.0.0a3 (2019-10-09)
+2.0.0a4 (In Development)
 ------------------------
+
+- chore: Cover ``rororo.openapi`` with non-machine docs
+- feature: Allow to remove root handlers on setting up logging config
+
+2.0.0a3 (2019-10-09)
+--------------------
 
 - feature: Support `type: array` request bodies as well
 - feature: Allow to validate responses against OpenAPI schema

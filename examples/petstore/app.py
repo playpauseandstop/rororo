@@ -5,6 +5,8 @@ from aiohttp import web
 from aiohttp_middlewares import cors_middleware, error_middleware
 
 from rororo import setup_openapi
+from rororo.logger import default_logging_dict
+from rororo.settings import setup_logging
 from . import views
 
 
@@ -32,6 +34,14 @@ def create_app(argv: List[str] = None) -> web.Application:
     example app CORS headers allowed for all requests. **Please, avoid
     enabling CORS headers for all requests at production.**
     """
+    # Setup logging
+    setup_logging(
+        default_logging_dict(
+            "aiohttp", "aiohttp_middlewares", "petstore", "rororo"
+        ),
+        remove_root_handlers=True,
+    )
+
     # Create new aiohttp application with CORS & error middlewares
     app = web.Application(
         middlewares=(

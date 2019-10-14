@@ -23,6 +23,7 @@ Settings
 .. autofunction:: rororo.settings.iter_settings
 .. autofunction:: rororo.settings.from_env
 .. autofunction:: rororo.settings.setup_locale
+.. autofunction:: rororo.settings.setup_logging
 .. autofunction:: rororo.settings.setup_timezone
 
 Logger

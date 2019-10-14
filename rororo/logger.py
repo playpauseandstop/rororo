@@ -3,9 +3,7 @@
 rororo.logger
 =============
 
-Logging utilities.
-
-Module provides easy way to setup logging for your web application.
+Logging utilities to simplify setting up Python logging.
 
 """
 
@@ -17,7 +15,6 @@ from .annotations import DictStrAny
 
 
 class IgnoreErrorsFilter(object):
-
     """Ignore all warnings and errors from stdout handler."""
 
     def filter(self, record: logging.LogRecord) -> bool:  # noqa: A003
@@ -26,12 +23,24 @@ class IgnoreErrorsFilter(object):
 
 
 def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
-    r"""Prepare logging dict suitable with ``logging.config.dictConfig``.
+    r"""Prepare logging dict for :func:`logging.config.dictConfig`.
 
-    **Usage**::
+    ``rororo`` minds to simplify and unify logging configuration for
+    ``aiohttp.web`` applications and cause of that the resulted logging config
+    will:
+
+    - Only messages from ``loggers`` will be processed
+    - Pass all ``DEBUG`` & ``INFO`` logging messages to ``stdout``
+    - Pass all other messages to ``stderr``
+    - Any logging message will be formatted as:
+      ``"%(asctime)s [%(levelname)s:%(name)s] %(message)s"``
+
+    For example, to enable logging for ``aiohttp`` & ``api`` loggers,
+
+    .. code-block:: python
 
         from logging.config import dictConfig
-        dictConfig(default_logging_dict('yourlogger'))
+        dictConfig(default_logging_dict("aiohttp", "api"))
 
     :param \*loggers: Enable logging for each logger in sequence.
     :param \*\*kwargs: Setup additional logger params via keyword arguments.
@@ -78,11 +87,18 @@ def update_sentry_logging(
 ) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 
+    .. deprecated:: 2.0
+        Deprecated in favor of
+        `sentry-sdk <https://pypi.org/project/sentry-sdk>`_ and will be removed
+        in **3.0**.
+
     .. note::
-        Sentry logging requires `raven <http://pypi.python.org/pypi/raven>`_
+        Sentry logging requires `raven <http://pypi.org/project/raven>`_
         library to be installed.
 
-    **Usage**::
+    **Usage**
+
+    .. code-block:: python
 
         from logging.config import dictConfig
 
@@ -97,10 +113,14 @@ def update_sentry_logging(
     This will allow to use ``aiohttp.client`` for pushing data to Sentry in
     your ``aiohttp.web`` app, which means elimination of sync calls to Sentry.
 
-    ::
+    .. code-block:: python
 
         from raven_aiohttp import AioHttpTransport
-        update_sentry_logging(LOGGING, SENTRY_DSN, transport=AioHttpTransport)
+        update_sentry_logging(
+            LOGGING,
+            SENTRY_DSN,
+            transport=AioHttpTransport
+        )
 
     :param logging_dict: Logging dict.
     :param sentry_dsn:

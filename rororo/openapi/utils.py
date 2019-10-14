@@ -2,6 +2,7 @@ from typing import Optional, Union
 
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
+from openapi_core.schema.specs.models import Spec
 
 from .constants import (
     OPENAPI_CONTEXT_REQUEST_KEY,
@@ -54,9 +55,7 @@ def get_openapi_schema(
         )
 
 
-def get_openapi_spec(
-    mixed: Union[web.Application, ChainMapProxy]
-) -> DictStrAny:
+def get_openapi_spec(mixed: Union[web.Application, ChainMapProxy]) -> Spec:
     """Shortcut to retrieve OpenAPI spec from ``aiohttp.web`` application.
 
     ``ConfigruationError`` raises if :class:`aiohttp.web.Application` does not

@@ -1,15 +1,18 @@
 import calendar
 import datetime
+import logging
 import os
 
 import pytest
 
+from rororo.logger import default_logging_dict
 from rororo.settings import (
     from_env,
     immutable_settings,
     inject_settings,
     is_setting_key,
     setup_locale,
+    setup_logging,
     setup_timezone,
 )
 from . import settings as settings_module
@@ -171,6 +174,19 @@ def test_setup_locale_with_first_weekday():
     assert calendar.firstweekday() == 1
 
     setup_locale("en_US.UTF-8", first_weekday)
+
+
+def test_setup_logging():
+    setup_logging(default_logging_dict("rororo"))
+
+
+@pytest.mark.parametrize("remove, expected", ((False, 1), (True, 0)))
+def test_setup_logging_remove_root_handlers(remove, expected):
+    logging.basicConfig(level="INFO")
+    assert len(logging.root.handlers) == 1
+
+    setup_logging(default_logging_dict("rororo"), remove_root_handlers=remove)
+    assert len(logging.root.handlers) == expected
 
 
 def test_setup_timezone():
