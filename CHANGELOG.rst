@@ -1,8 +1,8 @@
 2.0.0 (In Development)
 ----------------------
 
-2.0.0a4 (In Development)
-------------------------
+2.0.0a4 (2019-10-22)
+--------------------
 
 - feature: Parse API Key & HTTP security data for OpenAPI operation
 - chore: Cover ``rororo.openapi`` with non-machine docs
