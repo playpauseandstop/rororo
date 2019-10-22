@@ -54,6 +54,5 @@ whitelist_externals = poetry
 commands_pre =
     poetry install
 commands =
-    poetry run python -m pytest examples/petstore/tests.py --cov=rororo --cov-branch --no-cov --no-cov-on-fail
-    poetry run python -m pytest tests/ --cov=rororo --cov-append --cov-branch --cov-fail-under=90 --cov-report=term-missing:skip-covered --no-cov-on-fail
+    poetry run python -m pytest examples/hobotnica/tests.py examples/petstore/tests.py tests/ --cov=rororo --cov-branch --cov-fail-under=90 --cov-report=term-missing:skip-covered --no-cov-on-fail
 """

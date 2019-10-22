@@ -1,0 +1,136 @@
+openapi: "3.0.2"
+
+info:
+  title: "Hobotnica API"
+  version: "1.0.0"
+  contact:
+    name: "Igor Davydenko (developer)"
+    url: "https://igordavydenko.com"
+    email: "iam@igordavydenko.com"
+  license:
+    name: "BSD-3-Clause"
+    url: "https://opensource.org/licenses/BSD-3-Clause"
+
+servers:
+  - url: "/api"
+
+paths:
+  "/repositories":
+    get:
+      operationId: "list_repositories"
+      tags:
+        - repositories
+      summary: "List user repositories registered in Hobotnica."
+      parameters:
+        - $ref: "#/components/parameters/GitHubUsername"
+      responses:
+        "200":
+          description: "Available repositories."
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Repository"
+      security:
+        - jwt: []
+        - personalToken: []
+
+  "/repositories/{owner}/{name}":
+    get:
+      operationId: "retrieve_repository"
+      tags:
+        - repositories
+      summary: "Retrieve details of user repository."
+      parameters:
+        - $ref: "#/components/parameters/GitHubUsername"
+        - $ref: "#/components/parameters/RepositoryOwner"
+        - $ref: "#/components/parameters/RepositoryName"
+      responses:
+        "200":
+          description: "Repository details."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+      security:
+        - basic: []
+        - jwt: []
+          personalToken: []
+
+components:
+  schemas:
+    RepositoryOwner:
+      type: "string"
+      minLength: 1
+
+    RepositoryName:
+      type: "string"
+      minLength: 1
+
+    RepositoryJob:
+      type: "string"
+      enum: ["test", "deploy"]
+
+    Repository:
+      type: "object"
+      properties:
+        uid:
+          type: "string"
+          format: "uuid"
+        owner:
+          $ref: "#/components/schemas/RepositoryOwner"
+        name:
+          $ref: "#/components/schemas/RepositoryName"
+        jobs:
+          type: "array"
+          description: "List of registered jobs for the repository."
+          items:
+            $ref: "#/components/schemas/RepositoryJob"
+          minItems: 1
+        status:
+          type: "string"
+          enum: ["cloning", "ready", "running"]
+      required: ["uid", "owner", "name", "jobs", "status"]
+
+  parameters:
+    GitHubUsername:
+      name: "X-GitHub-Username"
+      in: "header"
+      required: true
+      schema:
+        type: "string"
+        minLength: 1
+
+    RepositoryOwner:
+      name: "owner"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/RepositoryOwner"
+
+    RepositoryName:
+      name: "name"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/RepositoryName"
+
+  securitySchemes:
+    basic:
+      type: "http"
+      scheme: "basic"
+
+    personalToken:
+      type: "apiKey"
+      in: "header"
+      name: "X-GitHub-Personal-Token"
+
+    jwt:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+
+tags:
+  - name: "repositories"
+    description: "Repositories endpoints."

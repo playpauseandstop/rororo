@@ -19,6 +19,7 @@ from .data import (
     to_openapi_core_response,
     to_openapi_parameters,
 )
+from .security import validate_security
 from .utils import get_openapi_operation, get_openapi_schema, get_openapi_spec
 from ..annotations import Decorator, Handler
 
@@ -38,9 +39,8 @@ def openapi_operation(operation_id: str) -> Decorator:
 
             # Step 1. Ensure that OpenAPI schema exists as well as given
             # operation ID
-            operation = get_openapi_operation(
-                get_openapi_schema(config_dict), operation_id
-            )
+            schema = get_openapi_schema(config_dict)
+            operation = get_openapi_operation(schema, operation_id)
 
             # Step 2. Ensure that OpenAPI spec exists and convert aiohttp.web
             # request to openapi-core request
@@ -56,7 +56,10 @@ def openapi_operation(operation_id: str) -> Decorator:
             if isinstance(data, Model):
                 data = types.MappingProxyType(vars(data))
 
-            # Step 4. Provide OpenAPI context for the handler
+            # Step 4. Validate security data if any
+            security = validate_security(request, operation, oas=schema)
+
+            # Step 5. Provide OpenAPI context for the handler
             request[OPENAPI_CONTEXT_REQUEST_KEY] = OpenAPIContext(
                 request=request,
                 app=app,
@@ -64,6 +67,7 @@ def openapi_operation(operation_id: str) -> Decorator:
                 operation=operation,
                 parameters=parameters,
                 data=data,
+                security=security,
             )
 
             # Step 5. Validate response if needed

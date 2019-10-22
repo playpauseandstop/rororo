@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: make install
-      - run: make ci-lint
+      - run: make lint-ci
 
   test36:
     docker:
@@ -15,7 +15,7 @@ jobs:
       - checkout
       - run: mkdir -p test-results/pytest
       - run: make install
-      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py36 make ci-test
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py36 make test-ci
       - store_test_results:
           path: test-results
       - store_artifacts:
@@ -27,19 +27,18 @@ jobs:
       - checkout
       - run: mkdir -p test-results/pytest
       - run: make install
-      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py37 make ci-test
+      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py37 make test-ci
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
-      - run: make coveralls
 
   deploy:
     docker: *py37
     steps:
       - checkout
       - run: make install
-      - run: make ci-deploy
+      - run: make deploy-ci
 
 workflows:
   version: 2

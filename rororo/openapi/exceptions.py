@@ -12,3 +12,7 @@ class ContextError(OpenAPIError):
 
 class OperationError(OpenAPIError):
     """Invalid OpenAPI operation."""
+
+
+class SecurityError(OpenAPIError):
+    """Request is not secured, but should."""

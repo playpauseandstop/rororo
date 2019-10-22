@@ -4,7 +4,10 @@
 2.0.0a4 (In Development)
 ------------------------
 
+- feature: Parse API Key & HTTP security data for OpenAPI operation
 - chore: Cover ``rororo.openapi`` with non-machine docs
+- chore: Provide another example on using OpenAPI schema inside aiohttp web
+  application
 - feature: Allow to remove root handlers on setting up logging config
 
 2.0.0a3 (2019-10-09)
