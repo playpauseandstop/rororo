@@ -9,44 +9,21 @@ Various utilities for `aiohttp <https://aiohttp.rtfd.io/>`_ and other
 """
 
 from contextlib import contextmanager
-from typing import (  # noqa: F401
-    Any,
-    Callable,
-    Iterator,
-    Optional,
-    TYPE_CHECKING,
-    Union,
-)
+from typing import Any, Callable, Iterator, Optional, Union
 from urllib.parse import urlparse
 
-from .annotations import DictStrAny
+from aiohttp import web
 
-# Hack to load ``aiohttp.web`` only on mypy run
-if TYPE_CHECKING:  # pragma: no cover
-    from aiohttp import web
-else:
-    web = type(
-        "FakeModule",
-        (object,),
-        {
-            "Request": Any,
-            "Resource": Any,
-            "Response": Any,
-            "UrlDispatcher": Any,
-        },
-    )()
+from .annotations import DictStrAny, Handler
 
 
 __all__ = ("add_resource_context", "is_xhr_request", "parse_aioredis_url")
 
 
-Handler = Callable[[web.Request], web.Response]
-
-
 @contextmanager
 def add_resource_context(
     router: web.UrlDispatcher, url_prefix: str = None, name_prefix: str = None
-) -> Iterator[Any]:
+) -> Iterator[Callable[[str], web.Resource]]:
     """Context manager for adding resources for given router.
 
     Main goal of context manager to easify process of adding resources with
@@ -140,7 +117,7 @@ def parse_aioredis_url(url: str) -> DictStrAny:
     """
     parts = urlparse(url)
 
-    db = parts.path[1:] or None  # type: Optional[Union[str, int]]
+    db: Optional[Union[str, int]] = parts.path[1:] or None
     if db:
         db = int(db)
 

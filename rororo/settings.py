@@ -20,7 +20,7 @@ from importlib import import_module
 from logging.config import dictConfig
 from typing import Any, Iterator, MutableMapping, Optional, Tuple, Union
 
-from .annotations import DictStrAny, Settings, T
+from .annotations import DictStrAny, MappingStrAny, Settings, T
 from .utils import to_bool
 
 
@@ -38,9 +38,7 @@ def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
     return os.getenv(key, default)
 
 
-def immutable_settings(
-    defaults: Settings, **optionals: Any
-) -> types.MappingProxyType:
+def immutable_settings(defaults: Settings, **optionals: Any) -> MappingStrAny:
     r"""Initialize and return immutable Settings dictionary.
 
     Settings dictionary allows you to setup settings values from multiple

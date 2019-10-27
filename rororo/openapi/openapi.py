@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import overload, Union
+from typing import Dict, overload, Union
 
 import yaml
 from aiohttp import web
@@ -44,7 +44,7 @@ class OperationRegistrator:
         return decorator(mixed) if callable(mixed) else decorator
 
 
-class OperationTableDef(dict):
+class OperationTableDef(Dict[str, Handler]):
     """Map OpenAPI 3 operations to aiohttp.web view handlers.
 
     In short it is rororo's equialent to :class:`aiohttp.web.RouteTableDef`.
