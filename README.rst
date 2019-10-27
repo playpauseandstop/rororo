@@ -2,7 +2,7 @@
 rororo
 ======
 
-.. image:: https://img.shields.io/circleci/project/github/playpauseandstop/rororo/feature-openapi.svg
+.. image:: https://img.shields.io/circleci/project/github/playpauseandstop/rororo/master.svg
     :target: https://circleci.com/gh/playpauseandstop/rororo
     :alt: CircleCI
 
@@ -18,7 +18,7 @@ rororo
     :target: https://github.com/playpauseandstop/rororo/blob/master/LICENSE
     :alt: BSD License
 
-.. image:: https://coveralls.io/repos/playpauseandstop/rororo/badge.svg?branch=feature-openapi&service=github
+.. image:: https://coveralls.io/repos/playpauseandstop/rororo/badge.svg?branch=master&service=github
     :target: https://coveralls.io/github/playpauseandstop/rororo
     :alt: Coverage
 
