@@ -111,7 +111,7 @@ def parse_aioredis_url(url: str) -> DictStrAny:
 
         async def connect_redis(url=None):
             url = url or 'redis://localhost:6379/0'
-            return await create_redis(**get_aioredis_parts(url))
+            return await create_redis(**parse_aioredis_url(url))
 
     :param url: URL to access Redis instance, started with ``redis://``.
     """
