@@ -1,2 +1,6 @@
+aiohttp
+attrs
+openapi-core
+PyYAML
 sphinx
 sphinx_autodoc_typehints
