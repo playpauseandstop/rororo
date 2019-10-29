@@ -93,6 +93,6 @@ schema file.
         return app
 
 Check
-`examples <https://github.com/playpauseandstop/rororo/tree/feature-openapi/examples>`_
+`examples <https://github.com/playpauseandstop/rororo/tree/master/examples>`_
 folder to see other examples on how to use OpenAPI 3 schemas with aiohttp.web
 applications.
