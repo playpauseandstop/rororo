@@ -8,12 +8,13 @@
 	lint \
 	lint-ci \
 	list-outdated \
-	setup.py \
+	open-docs \
 	test \
 	test-ci
 
 # Project settings
 PROJECT = rororo
+DOCS_DIR = ./docs
 
 # Python commands
 POETRY ?= poetry
@@ -51,19 +52,15 @@ distclean: clean
 
 docs: install
 	$(PYTHON) -m pip install -r docs/requirements.txt
-	$(MAKE) -C docs/ SPHINXBUILD="$(SPHINXBUILD)" html
+	$(MAKE) -C $(DOCS_DIR)/ SPHINXBUILD="$(SPHINXBUILD)" html
 
 install: .install
 .install: pyproject.toml poetry.lock
-ifneq ($(CIRCLECI),)
-	$(POETRY) config settings.virtualenvs.create true
-endif
 	$(POETRY) config settings.virtualenvs.in-project true
 	$(POETRY) install
 	touch $@
 
-lint: install
-	SKIP=update-setup-py $(MAKE) lint-ci
+lint: install lint-ci
 
 lint-ci:
 	SKIP=$(SKIP) $(PRE_COMMIT) run --all $(HOOK)
@@ -72,15 +69,7 @@ list-outdated: install
 	$(POETRY) show -o
 
 open-docs: docs
-	open docs/_build/html/index.html
-
-setup.py:
-	@rm -rf dist/
-	$(POETRY) build
-	tar -xzf dist/$(PROJECT)-*.tar.gz --directory dist/
-	cp dist/$(PROJECT)-*/setup.py .
-	@rm -rf dist/
-	$(PYTHON) -c 'from pathlib import Path; setup_py = Path("setup.py"); setup_py.write_text(setup_py.read_text().replace("from distutils.core import setup", "from setuptools import setup"))'
+	open $(DOCS_DIR)/_build/html/index.html
 
 test: install clean lint test-ci
 

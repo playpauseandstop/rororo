@@ -38,7 +38,7 @@ async def hello_world(request: web.Request) -> web.Response:
 
 @operations.register
 async def retrieve_array_from_request_body(
-    request: web.Request
+    request: web.Request,
 ) -> web.Response:
     with openapi_context(request) as context:
         return web.json_response(context.data)
