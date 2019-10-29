@@ -155,14 +155,14 @@ async def to_openapi_core_request(request: web.Request) -> OpenAPICoreRequest:
 
 
 def to_openapi_core_response(
-    response: web.StreamResponse
+    response: web.StreamResponse,
 ) -> OpenAPICoreResponse:
     """Convert aiohttp.web response to openapi-core response."""
     return OpenAPICoreResponse(response)
 
 
 def to_openapi_parameters(
-    core_parameters: RequestParameters
+    core_parameters: RequestParameters,
 ) -> OpenAPIParameters:
     """Convert openapi-core parameters to internal parameters instance."""
     return OpenAPIParameters(
