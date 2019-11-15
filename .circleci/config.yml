@@ -1,8 +1,8 @@
 version: 2
 jobs:
   lint:
-    docker: &py37
-      - image: playpauseandstop/docker-python:2.0.0-py37
+    docker: &py38
+      - image: playpauseandstop/docker-python:3.0.0b0-py38
     steps:
       - checkout
       - run: make install
@@ -10,31 +10,54 @@ jobs:
 
   test36:
     docker:
-      - image: playpauseandstop/docker-python:2.0.0-py36
+      - image: playpauseandstop/docker-python:3.0.0b0-py36
     steps:
       - checkout
       - run: mkdir -p test-results/pytest
-      - run: make install
-      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py36 make test-ci
+      - run:
+          command: make test-ci
+          environment:
+            PYTEST_ADDOPTS: --junitxml=test-results/pytest/junit.xml
+            TOXENV: py36
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
 
   test37:
-    docker: *py37
+    docker:
+      - image: playpauseandstop/docker-python:3.0.0b0-py37
     steps:
       - checkout
       - run: mkdir -p test-results/pytest
-      - run: make install
-      - run: PYTEST_ADDOPTS=--junitxml=test-results/pytest/junit.xml TOXENV=py37 make test-ci
+      - run:
+          command: make test-ci
+          environment:
+            PYTEST_ADDOPTS: --junitxml=test-results/pytest/junit.xml
+            TOXENV: py37
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+
+  test38:
+    docker: *py38
+    steps:
+      - checkout
+      - run: mkdir -p test-results/pytest
+      - run:
+          command: make test-ci
+          environment:
+            PYTEST_ADDOPTS: --junitxml=test-results/pytest/junit.xml
+            TOXENV: py38
+      - run: make coveralls
       - store_test_results:
           path: test-results
       - store_artifacts:
           path: test-results
 
   deploy:
-    docker: *py37
+    docker: *py38
     steps:
       - checkout
       - run: make install
@@ -59,10 +82,16 @@ workflows:
             - lint
           filters: *all_tags_and_branches
 
+      - test38:
+          requires:
+            - lint
+          filters: *all_tags_and_branches
+
       - deploy:
           requires:
             - test36
             - test37
+            - test38
           filters:
             tags:
               only: /^v.*/

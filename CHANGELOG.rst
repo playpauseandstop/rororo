@@ -1,6 +1,11 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0b0 (2019-11-15)
+--------------------
+
+- feature: Ensure Python 3.8 support. Move `2.0.0` release to beta phase
+
 2.0.0a4 (2019-10-22)
 --------------------
 
