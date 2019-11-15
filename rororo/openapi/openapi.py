@@ -29,7 +29,7 @@ class OperationRegistrator:
         ...  # pragma: no cover
 
     @overload  # noqa: F811
-    def __call__(self, operation_id: str) -> Decorator:
+    def __call__(self, operation_id: str) -> Decorator:  # noqa: F811
         ...  # pragma: no cover
 
     def __call__(self, mixed):  # type: ignore  # noqa: F811
