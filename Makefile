@@ -56,7 +56,7 @@ docs: install
 
 install: .install
 .install: pyproject.toml poetry.lock
-	$(POETRY) config settings.virtualenvs.in-project true || $(POETRY) config virtualenvs.in-project true
+	$(POETRY) config virtualenvs.in-project true
 	$(POETRY) install
 	touch $@
 
