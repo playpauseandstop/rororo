@@ -1,6 +1,11 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0b1 (2019-11-20)
+--------------------
+
+- fix: Fix type annotation for `add_resource_context` context manage
+
 2.0.0b0 (2019-11-15)
 --------------------
 

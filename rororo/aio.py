@@ -9,10 +9,15 @@ Various utilities for `aiohttp <https://aiohttp.rtfd.io/>`_ and other
 """
 
 from contextlib import contextmanager
-from typing import Any, Callable, Iterator, Optional, Union
+from typing import Iterator, Optional, Union
 from urllib.parse import urlparse
 
 from aiohttp import web
+
+try:
+    from typing_extensions import Protocol
+except ImportError:
+    from typing import Protocol  # type: ignore
 
 from .annotations import DictStrAny, Handler
 
@@ -20,10 +25,22 @@ from .annotations import DictStrAny, Handler
 __all__ = ("add_resource_context", "is_xhr_request", "parse_aioredis_url")
 
 
+class AddResourceFunc(Protocol):
+    def __call__(
+        self,
+        url: str,
+        get: Handler = None,
+        *,
+        name: str = None,
+        **kwargs: Handler
+    ) -> web.Resource:
+        ...
+
+
 @contextmanager
 def add_resource_context(
     router: web.UrlDispatcher, url_prefix: str = None, name_prefix: str = None
-) -> Iterator[Callable[[str], web.Resource]]:
+) -> Iterator[AddResourceFunc]:
     """Context manager for adding resources for given router.
 
     Main goal of context manager to easify process of adding resources with
@@ -36,11 +53,12 @@ def add_resource_context(
         resource = router.add_resource(url, name)
         resource.add_route(method, handler)
 
-    **Usage**::
+    For example to add index view handler and view handlers to list and create
+    news::
 
-        with add_resource_context(app.router, '/api', 'api') as add_resource:
-            add_resource('/', get=views.index)
-            add_resource('/news', get=views.list_news, post=views.create_news)
+        with add_resource_context(app.router, "/api", "api") as add_resource:
+            add_resource("/", get=views.index)
+            add_resource("/news", get=views.list_news, post=views.create_news)
 
     :param router: Route to add resources to.
     :param url_prefix: If supplied prepend this prefix to each resource URL.
@@ -48,7 +66,7 @@ def add_resource_context(
     """
 
     def add_resource(
-        url: str, get: Handler = None, *, name: str = None, **kwargs: Any
+        url: str, get: Handler = None, *, name: str = None, **kwargs: Handler
     ) -> web.Resource:
         """Inner function to create resource and add necessary routes to it.
 
@@ -67,10 +85,9 @@ def add_resource_context(
         :param get:
             GET handler. Only handler to be setup without explicit call.
         :param name: Resource name.
-        :type name: str
-        :rtype: aiohttp.web.Resource
         """
-        kwargs["get"] = get
+        if get:
+            kwargs["get"] = get
 
         if url_prefix:
             url = "/".join((url_prefix.rstrip("/"), url.lstrip("/")))
@@ -107,10 +124,10 @@ def parse_aioredis_url(url: str) -> DictStrAny:
     Convert Redis URL string to dict suitable to pass to
     ``aioredis.create_redis(...)`` call.
 
-    **Usage**::
+    ::
 
         async def connect_redis(url=None):
-            url = url or 'redis://localhost:6379/0'
+            url = url or "redis://localhost:6379/0"
             return await create_redis(**parse_aioredis_url(url))
 
     :param url: URL to access Redis instance, started with ``redis://``.
