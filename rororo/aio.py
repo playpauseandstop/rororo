@@ -25,6 +25,10 @@ from .annotations import DictStrAny, Handler
 __all__ = ("add_resource_context", "is_xhr_request", "parse_aioredis_url")
 
 
+#: Default access log format to use within aiohttp applications
+ACCESS_LOG_FORMAT = '%a "%r" %s %b "%{Referer}i" "%{User-Agent}i" %Tf'
+
+
 class AddResourceFunc(Protocol):
     def __call__(
         self,

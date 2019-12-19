@@ -2,7 +2,7 @@ version: 2
 jobs:
   lint:
     docker: &py38
-      - image: playpauseandstop/docker-python:3.0.0b0-py38
+      - image: playpauseandstop/docker-python:3.0.0-py38
     steps:
       - checkout
       - run: make install
@@ -10,7 +10,7 @@ jobs:
 
   test36:
     docker:
-      - image: playpauseandstop/docker-python:3.0.0b0-py36
+      - image: playpauseandstop/docker-python:3.0.0-py36
     steps:
       - checkout
       - run: mkdir -p test-results/pytest
@@ -26,7 +26,7 @@ jobs:
 
   test37:
     docker:
-      - image: playpauseandstop/docker-python:3.0.0b0-py37
+      - image: playpauseandstop/docker-python:3.0.0-py37
     steps:
       - checkout
       - run: mkdir -p test-results/pytest

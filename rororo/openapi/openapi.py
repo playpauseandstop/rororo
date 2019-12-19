@@ -114,7 +114,7 @@ def setup_openapi(
     route_prefix: str = None,
     is_validate_response: bool = False,
     has_openapi_schema_handler: bool = True,
-) -> None:
+) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
 
     Unlike `aiohttp-apispec <https://aiohttp-apispec.readthedocs.io/>`_ and
@@ -225,3 +225,5 @@ def setup_openapi(
             add_prefix("/openapi.{schema_format}", route_prefix),
             views.openapi_schema,
         )
+
+    return app

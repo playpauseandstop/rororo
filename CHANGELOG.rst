@@ -1,10 +1,16 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0b2 (2019-12-19)
+--------------------
+
+- chore: `setup_openapi` function returns `web.Applicaiton` instead of None
+- chore: Provide `ACCESS_LOG_FORMAT` for `aiohttp` applications
+
 2.0.0b1 (2019-11-20)
 --------------------
 
-- fix: Fix type annotation for `add_resource_context` context manage
+- fix: Fix type annotation for `add_resource_context` context manager
 
 2.0.0b0 (2019-11-15)
 --------------------
