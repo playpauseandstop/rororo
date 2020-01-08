@@ -177,6 +177,22 @@ class BaseSettings:
         setup_locale(self.locale, self.first_weekday)
         setup_timezone(self.time_zone)
 
+    @property
+    def is_dev(self) -> bool:
+        return self.level == "dev"
+
+    @property
+    def is_prod(self) -> bool:
+        return self.level == "prod"
+
+    @property
+    def is_staging(self) -> bool:
+        return self.level == "staging"
+
+    @property
+    def is_test(self) -> bool:
+        return self.level == "test"
+
 
 def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
     """Shortcut for safely reading environment variable.

@@ -87,6 +87,32 @@ def test_base_settings_inheritance(monkeypatch):
 
 
 @pytest.mark.parametrize(
+    "level, expected_is_test, expected_is_dev, expected_is_staging, "
+    "expected_is_prod",
+    (
+        ("dev", False, True, False, False),
+        ("test", True, False, False, False),
+        ("prod", False, False, False, True),
+        ("staging", False, False, True, False),
+    ),
+)
+def test_base_settings_is_properties(
+    monkeypatch,
+    level,
+    expected_is_test,
+    expected_is_dev,
+    expected_is_staging,
+    expected_is_prod,
+):
+    monkeypatch.setenv("LEVEL", level)
+    settings = BaseSettings()
+    assert settings.is_test is expected_is_test
+    assert settings.is_dev is expected_is_dev
+    assert settings.is_staging is expected_is_staging
+    assert settings.is_prod is expected_is_prod
+
+
+@pytest.mark.parametrize(
     "name, expected", (("LEVEL", "test"), ("dOesNotExist", None))
 )
 def test_env_factory(name, expected):
