@@ -17,14 +17,16 @@ Settings
 ========
 
 .. automodule:: rororo.settings
+.. autoclass:: rororo.settings.BaseSettings
+.. autofunction:: rororo.settings.env_factory
+.. autofunction:: rororo.settings.setup_locale
+.. autofunction:: rororo.settings.setup_logging
+.. autofunction:: rororo.settings.setup_timezone
 .. autofunction:: rororo.settings.immutable_settings
 .. autofunction:: rororo.settings.is_setting_key
 .. autofunction:: rororo.settings.inject_settings
 .. autofunction:: rororo.settings.iter_settings
 .. autofunction:: rororo.settings.from_env
-.. autofunction:: rororo.settings.setup_locale
-.. autofunction:: rororo.settings.setup_logging
-.. autofunction:: rororo.settings.setup_timezone
 
 Logger
 ======

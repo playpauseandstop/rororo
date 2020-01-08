@@ -5,9 +5,8 @@ from aiohttp import web
 from aiohttp_middlewares import cors_middleware, error_middleware
 
 from rororo import setup_openapi
-from rororo.logger import default_logging_dict
-from rororo.settings import setup_logging
 from . import views
+from .settings import Settings
 
 
 def create_app(argv: List[str] = None) -> web.Application:
@@ -34,11 +33,10 @@ def create_app(argv: List[str] = None) -> web.Application:
     example app CORS headers allowed for all requests. **Please, avoid
     enabling CORS headers for all requests at production.**
     """
-    # Setup logging
-    setup_logging(
-        default_logging_dict(
-            "aiohttp", "aiohttp_middlewares", "petstore", "rororo"
-        ),
+    # Instantiate settings and apply them by setting up logging
+    settings = Settings()
+    settings.apply(
+        loggers=("aiohttp", "aiohttp_middlewares", "petstore", "rororo"),
         remove_root_handlers=True,
     )
 
@@ -54,8 +52,11 @@ def create_app(argv: List[str] = None) -> web.Application:
         )
     )
 
+    # Store the settings within the app
+    app["settings"] = settings
+
     # Create the "storage" for the pets
-    app["pets"] = []
+    app[settings.pets_app_key] = []
 
     # Setup OpenAPI schema support for aiohttp application
     setup_openapi(

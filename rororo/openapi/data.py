@@ -31,7 +31,7 @@ class OpenAPICoreRequest(BaseOpenAPIRequest):
 
     @property
     def method(self) -> str:
-        return self.request.method.lower()
+        return self.request.method.lower()  # type: ignore
 
     @property
     def mimetype(self) -> str:
@@ -49,13 +49,15 @@ class OpenAPICoreRequest(BaseOpenAPIRequest):
 
     @property
     def path(self) -> str:
-        return self.request.path
+        return self.request.path  # type: ignore
 
     @property
     def path_pattern(self) -> str:
         info = self.request.match_info.route.get_info()
         formatter = info.get("formatter")
-        return formatter if formatter is not None else info.get("path")
+        return (  # type: ignore
+            formatter if formatter is not None else info.get("path")
+        )
 
 
 class OpenAPICoreResponse(BaseOpenAPIResponse):

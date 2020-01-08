@@ -18,14 +18,13 @@ repos:
     hooks:
       - id: flake8
         name: Lint code (flake8)
-        exclude: ^docs/.*$
         additional_dependencies:
           - flake8==3.7.9
           - flake8-broken-line==0.1.1
-          - flake8-bugbear==19.8.0
-          - flake8-builtins==1.4.1
-          - flake8-comprehensions==3.1.3
-          - flake8-eradicate==0.2.3
+          - flake8-bugbear==20.1.0
+          - flake8-builtins==1.4.2
+          - flake8-comprehensions==3.1.4
+          - flake8-eradicate==0.2.4
           - flake8-import-order==0.18.1
           - flake8-mutable==1.2.0
           - flake8-pie==0.4.2
@@ -33,9 +32,10 @@ repos:
           - flake8-string-format==0.2.3
           - flake8-tidy-imports==3.1.0
           - pep8-naming==0.9.1
+        exclude: ^docs/.*$
 
   - repo: "https://github.com/pre-commit/mirrors-mypy"
-    rev: "v0.740"
+    rev: "v0.761"
     hooks:
       - id: mypy
         name: Lint code (mypy)

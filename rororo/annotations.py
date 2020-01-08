@@ -11,8 +11,15 @@ place.
 import types
 from typing import Any, Callable, Dict, Mapping, TypeVar, Union
 
+try:
+    from typing_extensions import Literal, Protocol
+except ImportError:
+    from typing import Literal, Protocol  # type: ignore
+
 from aiohttp.web_middlewares import _Handler
 
+
+Level = Literal["test", "dev", "staging", "prod"]
 
 Handler = _Handler
 Decorator = Callable[[Handler], Handler]
@@ -26,3 +33,6 @@ MappingStrStr = Mapping[str, str]
 
 Settings = Union[types.ModuleType, DictStrAny]
 T = TypeVar("T")
+
+
+(Protocol,)  # Make flake8 happy

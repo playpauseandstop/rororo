@@ -1,21 +1,30 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0b3 (In Development)
+------------------------
+
+- feature: Provide ``BaseSettings`` and ``env_factory`` helpers to work with
+  settings within ``aiohttp.web`` applications. Cover how to work with settings
+  at docs as well
+- chore: Stricter ``mypy`` config to ensure `@operations.register` is a typed
+  decorator
+
 2.0.0b2 (2019-12-19)
 --------------------
 
-- chore: `setup_openapi` function returns `web.Applicaiton` instead of None
-- chore: Provide `ACCESS_LOG_FORMAT` for `aiohttp` applications
+- chore: ``setup_openapi`` function returns ``web.Applicaiton`` instead of None
+- chore: Provide ``ACCESS_LOG_FORMAT`` for ``aiohttp`` applications
 
 2.0.0b1 (2019-11-20)
 --------------------
 
-- fix: Fix type annotation for `add_resource_context` context manager
+- fix: Fix type annotation for ``add_resource_context`` context manager
 
 2.0.0b0 (2019-11-15)
 --------------------
 
-- feature: Ensure Python 3.8 support. Move `2.0.0` release to beta phase
+- feature: Ensure Python 3.8 support. Move ``2.0.0`` release to beta phase
 
 2.0.0a4 (2019-10-22)
 --------------------

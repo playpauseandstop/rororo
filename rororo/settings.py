@@ -3,10 +3,14 @@
 rororo.settings
 ===============
 
-Immutable Settings dictionary and various utilities to read settings values
-from environment.
+Useful functions to work with application settings such as,
 
-Module helps you to prepare and read settings inside your web application.
+- Locale
+- Logging
+- Time zone
+
+As well as provide attrib factory helper to read settings from environment to
+use within Settings data structures.
 
 """
 
@@ -18,10 +22,160 @@ import time
 import types
 from importlib import import_module
 from logging.config import dictConfig
-from typing import Any, Iterator, MutableMapping, Optional, Tuple, Union
+from typing import (
+    Any,
+    Iterable,
+    Iterator,
+    MutableMapping,
+    Optional,
+    overload,
+    Tuple,
+    Union,
+)
 
-from .annotations import DictStrAny, MappingStrAny, Settings, T
+import attr
+
+from .annotations import DictStrAny, Level, MappingStrAny, Settings, T
+from .logger import default_logging_dict
 from .utils import to_bool
+
+
+@overload
+def env_factory(name: str) -> Optional[str]:
+    ...  # pragma: no cover
+
+
+@overload
+def env_factory(name: str, default: T) -> T:
+    ...  # pragma: no cover
+
+
+def env_factory(name: str, default: T = None) -> Union[Optional[str], T]:
+    """Helper to read attribute value from environment.
+
+    It is designed to use, when settings is implemented as ``@attr.dataclass``
+    data structure and there is a need to read value from environment via
+    :func:`os.getenv` function.
+
+    This factory function helps to:
+
+    1. Eliminate necessity of using ``lambda`` functions when mixing
+       ``os.getenv`` with ``attr``, like:
+       ``attr.Factory(lambda: os.getenv("USER"))``
+    2. Exclude ``# type: ignore`` from settings data structures
+    3. Convert ``str`` values from environment to required type
+
+    Example belows demonstrates ``env_factory`` usage variants,
+
+    .. code-block:: python
+
+        import attr
+
+
+        @attr.dataclass
+        class Settings:
+            # As ``os.getenv(key)`` returns ``Optional[str]`` you need
+            # to provide default value for each non-optional env attribs
+            user: str = env_factory("USER", "default-user")
+
+            # Convert string value from environment to ``Path``
+            user_path: Path = env_factory("USER_PATH", Path("~"))
+
+            # Or to integer
+            user_level: int = env_factory("USER_LEVEL", 1)
+
+            # When default value is omit env attrib is **optional**
+            sentry_dsn: Optional[str] = env_factory("SENTRY_DSN")
+
+    """
+
+    def getenv() -> Union[Optional[str], T]:
+        value = os.getenv(name)
+        if default is None:
+            return value
+
+        if value is None:
+            return default
+
+        expected_type = type(default)
+        if isinstance(value, expected_type):
+            return value
+
+        try:
+            if expected_type is bool:
+                return to_bool(value)  # type: ignore
+            return expected_type(value)  # type: ignore
+        except (TypeError, ValueError):
+            raise ValueError(
+                f"Unable to convert {name} env var to {expected_type}."
+            )
+
+    return attr.Factory(getenv)
+
+
+@attr.dataclass(frozen=True, slots=True)
+class BaseSettings:
+    """Base Settings data structure for configuring ``aiohttp.web`` apps.
+
+    Provides common attribs, which covers most of settings requires for
+    run and configure ``aiohttp.web`` app. In same time it is designed to be
+    inherited and completed with missed values in application as,
+
+    .. code-block:: python
+
+        import attr
+        from rororo.settings import BaseSettings, env_factory
+
+
+        @attr.dataclass(frozen=True, slots=True)
+        class Settings(BaseSettings):
+            other_name: str = env_factory("OTHER_NAME", "other-value")
+
+    """
+
+    # Base aiohttp settings
+    host: str = env_factory("AIOHTTP_HOST", "localhost")
+    port: int = env_factory("AIOHTTP_PORT", 8080)
+
+    # Base application settings
+    debug: bool = env_factory("DEBUG", False)
+    level: Level = env_factory("LEVEL", "dev")
+
+    # Date & time settings
+    time_zone: str = env_factory("TIME_ZONE", "UTC")
+
+    # Locale settings
+    first_weekday: int = env_factory("FIRST_WEEKDAY", 0)
+    locale: str = env_factory("LOCALE", "en_US.UTF-8")
+
+    # Sentry settings
+    sentry_dsn: Optional[str] = env_factory("SENTRY_DSN")
+    sentry_release: Optional[str] = env_factory("SENTRY_RELEASE")
+
+    def apply(
+        self,
+        *,
+        loggers: Iterable[str] = None,
+        remove_root_handlers: bool = False,
+    ) -> None:
+        """
+        Apply settings by calling setup logging, locale & timezone functions.
+
+        Should be called once on application lifecycle. Best way to do it, to
+        call right after settings instantiation.
+
+        When ``loggers`` is passed, setup default logging dict for given
+        iterable and call setup logging function. When ``loggers`` is omit do
+        nothing.
+        """
+        if loggers:
+            setup_logging(
+                default_logging_dict(*loggers),
+                remove_root_handlers=remove_root_handlers,
+            )
+
+        setup_locale(self.locale, self.first_weekday)
+        setup_timezone(self.time_zone)
 
 
 def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
@@ -45,6 +199,11 @@ def immutable_settings(defaults: Settings, **optionals: Any) -> MappingStrAny:
     sources and make sure that values cannot be changed, updated by anyone else
     after initialization. This helps keep things clear and not worry about
     hidden settings change somewhere around your web application.
+
+    .. deprecated:: 2.0
+        Function deprecated in favor or using `attrs <https://www.attrs.org>`_
+        or `dataclasses <https://docs.python.org/3/library/dataclasses.html>`_
+        for declaring settings classes. Will be removed in **3.0**.
 
     :param defaults:
        Read settings values from module or dict-like instance.
@@ -132,10 +291,10 @@ def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
     :param mixed: Settings instance to iterate.
     """
     if isinstance(mixed, types.ModuleType):
-        for attr in dir(mixed):
-            if not is_setting_key(attr):
+        for item in dir(mixed):
+            if not is_setting_key(item):
                 continue
-            yield (attr, getattr(mixed, attr))
+            yield (item, getattr(mixed, item))
     else:
         yield from filter(lambda item: is_setting_key(item[0]), mixed.items())
 
@@ -149,7 +308,7 @@ def setup_locale(
     lc_messages: str = None,
     lc_monetary: str = None,
     lc_numeric: str = None,
-    lc_time: str = None
+    lc_time: str = None,
 ) -> str:
     """Shortcut helper to setup locale for backend application.
 

@@ -3,7 +3,7 @@ line_length = 79
 
 [tool.poetry]
 name = "rororo"
-version = "2.0.0b2"
+version = "2.0.0b3"
 description = "OpenAPI 3 schema support for aiohttp.web applications."
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
@@ -36,11 +36,12 @@ coveralls = "^1.7"
 pytest = "^5.0"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.7"
+pytest-env = "^0.6.2"
 
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py36,py37
+envlist = py36,py37,py38
 skipsdist = True
 
 [testenv]

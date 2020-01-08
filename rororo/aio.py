@@ -14,12 +14,7 @@ from urllib.parse import urlparse
 
 from aiohttp import web
 
-try:
-    from typing_extensions import Protocol
-except ImportError:
-    from typing import Protocol  # type: ignore
-
-from .annotations import DictStrAny, Handler
+from .annotations import DictStrAny, Handler, Protocol
 
 
 __all__ = ("add_resource_context", "is_xhr_request", "parse_aioredis_url")
@@ -120,7 +115,8 @@ def is_xhr_request(request: web.Request) -> bool:
 
     :param request: Request instance.
     """
-    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    value = request.headers.get("X-Requested-With")
+    return value == "XMLHttpRequest"  # type: ignore
 
 
 def parse_aioredis_url(url: str) -> DictStrAny:

@@ -20,30 +20,6 @@ from .utils import add_prefix, get_openapi_operation
 from ..annotations import Decorator, DictStrAny, Handler
 
 
-class OperationRegistrator:
-    def __init__(self, operations: "OperationTableDef") -> None:
-        self.operations = operations
-
-    @overload
-    def __call__(self, handler: Handler) -> Handler:
-        ...  # pragma: no cover
-
-    @overload  # noqa: F811
-    def __call__(self, operation_id: str) -> Decorator:  # noqa: F811
-        ...  # pragma: no cover
-
-    def __call__(self, mixed):  # type: ignore  # noqa: F811
-        operation_id = mixed if isinstance(mixed, str) else mixed.__name__
-
-        def decorator(handler: Handler) -> Handler:
-            openapi_handler = openapi_operation(operation_id)(handler)
-
-            self.operations[operation_id] = openapi_handler
-            return openapi_handler
-
-        return decorator(mixed) if callable(mixed) else decorator
-
-
 class OperationTableDef(Dict[str, Handler]):
     """Map OpenAPI 3 operations to aiohttp.web view handlers.
 
@@ -86,8 +62,24 @@ class OperationTableDef(Dict[str, Handler]):
     :func:`rororo.openapi.setup_openapi` call raises an ``OperationError``.
     """
 
-    def __init__(self) -> None:
-        self.register = OperationRegistrator(self)
+    @overload
+    def register(self, handler: Handler) -> Handler:
+        ...
+
+    @overload
+    def register(self, operation_id: str) -> Decorator:  # noqa: F811
+        ...
+
+    def register(self, mixed):  # type: ignore  # noqa: F811
+        operation_id = mixed if isinstance(mixed, str) else mixed.__name__
+
+        def decorator(handler: Handler) -> Handler:
+            openapi_handler = openapi_operation(operation_id)(handler)
+
+            self[operation_id] = openapi_handler
+            return openapi_handler
+
+        return decorator(mixed) if callable(mixed) else decorator
 
 
 def convert_operations_to_routes(
@@ -175,10 +167,10 @@ def setup_openapi(
     def read_schema(path: Path) -> DictStrAny:
         content = path.read_text()
         if path.suffix == ".json":
-            return json.loads(content)
+            return json.loads(content)  # type: ignore
 
         if path.suffix in {".yml", ".yaml"}:
-            return yaml.safe_load(content)
+            return yaml.safe_load(content)  # type: ignore
 
         raise ConfigurationError(
             f"Unsupported OpenAPI schema file: {path}. At a moment rororo "

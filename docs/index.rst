@@ -13,5 +13,6 @@ Contents
    :maxdepth: 2
 
    openapi
+   settings
    api
    changelog

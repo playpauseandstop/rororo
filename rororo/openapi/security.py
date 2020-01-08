@@ -32,13 +32,13 @@ def get_security_data(
 
         # API Key from query string
         if location == "query":
-            return request.rel_url.query.get(name)
+            return request.rel_url.query.get(name)  # type: ignore
         # API Key from headers
         if location == "header":
-            return request.headers.get(name)
+            return request.headers.get(name)  # type: ignore
         # API Key from cookies
         if location == "cookie":
-            return request.cookies.get(name)
+            return request.cookies.get(name)  # type: ignore
     elif security_type == OPENAPI_SECURITY_HTTP:
         authorization_header = request.headers.get(AUTHORIZATION_HEADER)
         scheme = schema["scheme"]
@@ -59,7 +59,7 @@ def get_security_data(
             ):
                 return None
 
-            return authorization_header[stop:]
+            return authorization_header[stop:]  # type: ignore
 
     return None
 

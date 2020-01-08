@@ -28,7 +28,7 @@ def get_openapi_context(request: web.Request) -> OpenAPIContext:
     valid OpenAPI request context.
     """
     try:
-        return request[OPENAPI_CONTEXT_REQUEST_KEY]
+        return request[OPENAPI_CONTEXT_REQUEST_KEY]  # type: ignore
     except KeyError:
         raise ContextError(
             "Request instance does not contain valid OpenAPI context. In "
@@ -46,7 +46,7 @@ def get_openapi_schema(
     contain registered OpenAPI schema.
     """
     try:
-        return mixed[OPENAPI_SCHEMA_APP_KEY]
+        return mixed[OPENAPI_SCHEMA_APP_KEY]  # type: ignore
     except KeyError:
         raise ConfigurationError(
             "Seems like OpenAPI schema not registered to the application. Use "
