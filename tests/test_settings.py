@@ -57,6 +57,14 @@ def test_base_settings():
     assert settings.sentry_release is None
 
 
+def test_base_settings_apply():
+    BaseSettings().apply()
+
+
+def test_base_settings_apply_with_loggers():
+    BaseSettings().apply(loggers=("aiohttp", "rororo"))
+
+
 def test_base_settings_from_env(monkeypatch):
     monkeypatch.setenv("DEBUG", "on")
     assert BaseSettings().debug is True
