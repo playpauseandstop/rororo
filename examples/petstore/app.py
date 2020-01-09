@@ -4,12 +4,14 @@ from typing import List
 from aiohttp import web
 from aiohttp_middlewares import cors_middleware, error_middleware
 
-from rororo import setup_openapi
+from rororo import setup_openapi, setup_settings
 from . import views
 from .settings import Settings
 
 
-def create_app(argv: List[str] = None) -> web.Application:
+def create_app(
+    argv: List[str] = None, *, settings: Settings = None
+) -> web.Application:
     """Create aiohttp applicaiton for OpenAPI 3 Schema.
 
     The ``petstore-expanded.yaml`` schema taken from OpenAPI 3 Specification
@@ -33,12 +35,9 @@ def create_app(argv: List[str] = None) -> web.Application:
     example app CORS headers allowed for all requests. **Please, avoid
     enabling CORS headers for all requests at production.**
     """
-    # Instantiate settings and apply them by setting up logging
-    settings = Settings()
-    settings.apply(
-        loggers=("aiohttp", "aiohttp_middlewares", "petstore", "rororo"),
-        remove_root_handlers=True,
-    )
+    # Instantiate settings
+    if settings is None:
+        settings = Settings()
 
     # Create new aiohttp application with CORS & error middlewares
     app = web.Application(
@@ -53,7 +52,12 @@ def create_app(argv: List[str] = None) -> web.Application:
     )
 
     # Store the settings within the app
-    app["settings"] = settings
+    setup_settings(
+        app,
+        settings,
+        loggers=("aiohttp", "aiohttp_middlewares", "petstore", "rororo"),
+        remove_root_handlers=True,
+    )
 
     # Create the "storage" for the pets
     app[settings.pets_app_key] = []

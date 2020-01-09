@@ -34,10 +34,14 @@ from typing import (
 )
 
 import attr
+from aiohttp import web
 
 from .annotations import DictStrAny, Level, MappingStrAny, Settings, T
 from .logger import default_logging_dict
 from .utils import to_bool
+
+
+SETTINGS_APP_KEY = "settings"
 
 
 @overload
@@ -374,6 +378,23 @@ def setup_logging(
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
     return dictConfig(config)
+
+
+def setup_settings(
+    app: web.Application,
+    settings: BaseSettings,
+    *,
+    loggers: Iterable[str] = None,
+    remove_root_handlers: bool = False,
+) -> web.Application:
+    """Shortcut for applying settings for given ``aiohttp.web`` app.
+
+    After applying, put settings to :class:`aiohttp.web.Application` dict as
+    ``"settings"`` key.
+    """
+    settings.apply(loggers=loggers, remove_root_handlers=remove_root_handlers)
+    app[SETTINGS_APP_KEY] = settings
+    return app
 
 
 def setup_timezone(timezone: str) -> None:

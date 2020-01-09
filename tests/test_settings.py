@@ -7,6 +7,7 @@ from typing import Optional
 
 import attr
 import pytest
+from aiohttp import web
 
 from rororo.logger import default_logging_dict
 from rororo.settings import (
@@ -18,6 +19,7 @@ from rororo.settings import (
     is_setting_key,
     setup_locale,
     setup_logging,
+    setup_settings,
     setup_timezone,
 )
 from . import settings as settings_module
@@ -324,6 +326,14 @@ def test_setup_logging_remove_root_handlers(remove, expected):
 
     setup_logging(default_logging_dict("rororo"), remove_root_handlers=remove)
     assert len(logging.root.handlers) == expected
+
+
+def test_setup_settings():
+    app = web.Application()
+    assert "settings" not in app
+
+    setup_settings(app, BaseSettings())
+    assert "settings" in app
 
 
 def test_setup_timezone():

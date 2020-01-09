@@ -135,7 +135,7 @@ yourself like,
     from sentry_sdk.integrations.logging import LoggingIntegartion
 
 
-    def create_app(argv: List[str] = None, **options: Any) -> web.Application:
+    def create_app(argv: List[str] = None) -> web.Application:
         settings = Settings()
 
         if settings.sentry_dsn:
@@ -150,6 +150,20 @@ yourself like,
             )
 
         ...
+
+Setup shortcut
+--------------
+
+There is a :func:`rororo.settings.setup_settings` shortcut, which apply given
+Settings data structure and put given instance into
+:class:`aiohttp.web.Application` dict as ``"settings"`` key.
+
+In other words given function is a literally shortcut to,
+
+.. code-block:: python
+
+    settings.apply(...)
+    app["settings"] = settings
 
 Step 3. Using the settings
 ==========================
@@ -171,6 +185,7 @@ In most cases that ``__main__.py`` will look like,
 
     from aiohttp import web
     from rororo.aio import ACCESS_LOG_FORMAT
+    from rororo.settings import SETTINGS_APP_KEY
 
     from app.app import create_app, logger
     from app.settings import Settings
@@ -179,7 +194,7 @@ In most cases that ``__main__.py`` will look like,
     if __name__ == "__main__":
         app = create_app()
 
-        settings: Settings = app["settings"]
+        settings: Settings = app[SETTINGS_APP_KEY]
         is_dev = settings.level == "dev"
 
         if is_dev:
@@ -204,18 +219,19 @@ the view as,
 .. code-block:: python
 
     from aiohttp import web
+    from rororo.settings import SETTINGS_APP_KEY
 
 
     async def index(request: web.Request) -> web.Response:
-        if request.app["settings"].debug:
+        if request.app[SETTINGS_APP_KEY].debug:
             print("Hello, world!")
         return web.json_response(True)
 
-However, as ``aiohttp>=3`` supports sub-app it is considred to more robust
+However, as ``aiohttp>=3`` supports sub-apps it is considred to more robust
 using :attr:`aiohttp.web.Request.config_dict` for accessing Settings data
 structure,
 
 .. code-block:: python
 
-    if request.config_dict["settings"].debug:
+    if request.config_dict[SETTINGS_APP_KEY].debug:
         print("Hello, world!")

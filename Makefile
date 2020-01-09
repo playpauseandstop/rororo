@@ -54,6 +54,13 @@ docs: install
 	$(PYTHON) -m pip install -r docs/requirements.txt
 	$(MAKE) -C $(DOCS_DIR)/ SPHINXBUILD="$(SPHINXBUILD)" html
 
+example: install
+ifeq ($(EXAMPLE),)
+	# USAGE: make EXAMPLE=(hobotnica|petstore) example
+else
+	PYTHONPATH=examples $(PYTHON) -m aiohttp.web $(EXAMPLE).app:create_app
+endif
+
 install: .install
 .install: pyproject.toml poetry.lock
 	$(POETRY) config virtualenvs.in-project true

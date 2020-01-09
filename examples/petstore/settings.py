@@ -1,6 +1,6 @@
 import attr
 
-from rororo.settings import BaseSettings, env_factory
+from rororo import BaseSettings, env_factory
 
 
 @attr.dataclass(frozen=True, slots=True)
