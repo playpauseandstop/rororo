@@ -1,6 +1,19 @@
 import pytest
 
-from rororo.utils import to_bool, to_int
+from rororo.utils import ensure_collection, to_bool, to_int
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    (
+        ("string", ("string",)),
+        (("string",), ("string",)),
+        ({"string"}, {"string"}),
+        (["one", "two"], ["one", "two"]),
+    ),
+)
+def test_ensure_collection(value, expected):
+    assert ensure_collection(value) == expected
 
 
 @pytest.mark.parametrize(

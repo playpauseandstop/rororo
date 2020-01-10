@@ -5,9 +5,9 @@ from aiohttp.helpers import ChainMapProxy
 from openapi_core.schema.specs.models import Spec
 
 from .constants import (
-    OPENAPI_CONTEXT_REQUEST_KEY,
-    OPENAPI_SCHEMA_APP_KEY,
-    OPENAPI_SPEC_APP_KEY,
+    APP_OPENAPI_SCHEMA_KEY,
+    APP_OPENAPI_SPEC_KEY,
+    REQUEST_OPENAPI_CONTEXT_KEY,
 )
 from .data import OpenAPIContext, OpenAPIOperation
 from .exceptions import ConfigurationError, ContextError, OperationError
@@ -28,7 +28,7 @@ def get_openapi_context(request: web.Request) -> OpenAPIContext:
     valid OpenAPI request context.
     """
     try:
-        return request[OPENAPI_CONTEXT_REQUEST_KEY]  # type: ignore
+        return request[REQUEST_OPENAPI_CONTEXT_KEY]  # type: ignore
     except KeyError:
         raise ContextError(
             "Request instance does not contain valid OpenAPI context. In "
@@ -46,7 +46,7 @@ def get_openapi_schema(
     contain registered OpenAPI schema.
     """
     try:
-        return mixed[OPENAPI_SCHEMA_APP_KEY]  # type: ignore
+        return mixed[APP_OPENAPI_SCHEMA_KEY]  # type: ignore
     except KeyError:
         raise ConfigurationError(
             "Seems like OpenAPI schema not registered to the application. Use "
@@ -62,7 +62,7 @@ def get_openapi_spec(mixed: Union[web.Application, ChainMapProxy]) -> Spec:
     contain registered OpenAPI spec.
     """
     try:
-        return mixed[OPENAPI_SPEC_APP_KEY]
+        return mixed[APP_OPENAPI_SPEC_KEY]
     except KeyError:
         raise ConfigurationError(
             "Seems like OpenAPI spec not registered to the application. Use "

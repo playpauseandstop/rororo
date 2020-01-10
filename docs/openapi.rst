@@ -174,12 +174,6 @@ follows,
         setup_openapi(app, OPENAPI_YAML_PATH, opeartions)
         return app
 
-.. important::
-    By default, due to performance considerations, *rororo* will not enable
-    response validation. But to ensure, that all views result valid responses
-    according to OpenAPI 3 schema, pass ``is_validate_response`` truthy flag to
-    :func:`rororo.openapi.setup_openapi`
-
 .. note::
     It is recommended to store OpenAPI 3 schema file next to main application
     module, which semantically will mean: this is an OpenAPI 3 schema file for
@@ -263,7 +257,7 @@ to access OpenAPI Schema & Spec inside of any view handler as follows,
 How it Works?
 =============
 
-Under the hood *rororo* heavily uses
+Under the hood *rororo* heavily relies on
 `openapi-core <https://pypi.org/project/openapi-core>`_ library.
 
 1. :func:`rororo.openapi.setup_openapi` creates the spec instance

@@ -24,7 +24,7 @@ from importlib import import_module
 from logging.config import dictConfig
 from typing import (
     Any,
-    Iterable,
+    Collection,
     Iterator,
     MutableMapping,
     Optional,
@@ -38,7 +38,7 @@ from aiohttp import web
 
 from .annotations import DictStrAny, Level, MappingStrAny, Settings, T
 from .logger import default_logging_dict
-from .utils import to_bool
+from .utils import ensure_collection, to_bool
 
 
 APP_SETTINGS_KEY = "settings"
@@ -159,7 +159,7 @@ class BaseSettings:
     def apply(
         self,
         *,
-        loggers: Iterable[str] = None,
+        loggers: Collection[str] = None,
         remove_root_handlers: bool = False,
     ) -> None:
         """
@@ -174,7 +174,7 @@ class BaseSettings:
         """
         if loggers:
             setup_logging(
-                default_logging_dict(*loggers),
+                default_logging_dict(*ensure_collection(loggers)),
                 remove_root_handlers=remove_root_handlers,
             )
 
@@ -384,7 +384,7 @@ def setup_settings(
     app: web.Application,
     settings: BaseSettings,
     *,
-    loggers: Iterable[str] = None,
+    loggers: Collection[str] = None,
     remove_root_handlers: bool = False,
 ) -> web.Application:
     """Shortcut for applying settings for given ``aiohttp.web`` app.

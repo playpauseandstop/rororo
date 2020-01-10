@@ -15,7 +15,6 @@ async def test_add_pet(aiohttp_client):
     assert await response.json() == {
         "id": 1,
         "name": TEST_PET_NAME,
-        "tag": None,
     }
 
 
@@ -47,7 +46,6 @@ async def test_get_pet(aiohttp_client):
     assert await response.json() == {
         "id": 1,
         "name": TEST_PET_NAME,
-        "tag": None,
     }
 
 
@@ -64,9 +62,7 @@ async def test_list_pets(aiohttp_client):
 
     response = await client.get("/api/pets")
     assert response.status == 200
-    assert await response.json() == [
-        {"id": 1, "name": TEST_PET_NAME, "tag": None}
-    ]
+    assert await response.json() == [{"id": 1, "name": TEST_PET_NAME}]
 
 
 async def test_list_pets_empty(aiohttp_client):

@@ -9,9 +9,22 @@ converting string to int or bool.
 """
 
 from distutils.util import strtobool
-from typing import Any, Optional, Union
+from typing import Any, Collection, Optional, Union
 
 from .annotations import T
+
+
+def ensure_collection(value: Collection[str]) -> Collection[str]:
+    """Ensure that given value is a collection, not a single string.
+
+    As passing single string validates ``Collection[str]`` type annotation,
+    this function converts given single string to a tuple with one item.
+
+    In all other cases return given value.
+    """
+    if isinstance(value, str):
+        return (value,)
+    return value
 
 
 def to_bool(value: Any) -> bool:

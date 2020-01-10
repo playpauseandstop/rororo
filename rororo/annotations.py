@@ -12,9 +12,9 @@ import types
 from typing import Any, Callable, Dict, Mapping, TypeVar, Union
 
 try:
-    from typing_extensions import Literal, Protocol
+    from typing_extensions import Literal, Protocol, TypedDict
 except ImportError:
-    from typing import Literal, Protocol  # type: ignore
+    from typing import Literal, Protocol, TypedDict  # type: ignore
 
 from aiohttp.web_middlewares import _Handler
 
@@ -35,4 +35,4 @@ Settings = Union[types.ModuleType, DictStrAny]
 T = TypeVar("T")
 
 
-(Protocol,)  # Make flake8 happy
+(Protocol, TypedDict)  # Make flake8 happy

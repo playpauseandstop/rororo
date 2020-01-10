@@ -2,6 +2,8 @@ from typing import Optional
 
 import attr
 
+from rororo.annotations import DictStrAny
+
 
 @attr.dataclass(frozen=True, slots=True)
 class NewPet:
@@ -15,3 +17,8 @@ class NewPet:
 @attr.dataclass(frozen=True, slots=True)
 class Pet(NewPet):
     id: int
+
+    def to_dict(self) -> DictStrAny:
+        if self.tag:
+            return {"id": self.id, "name": self.name, "tag": self.tag}
+        return {"id": self.id, "name": self.name}

@@ -1,6 +1,5 @@
 import logging
 
-import attr
 from aiohttp import web
 from aiohttp_middlewares.error import error_context
 
@@ -26,7 +25,7 @@ async def create_pet(request: web.Request) -> web.Response:
         pet = new_pet.to_pet(len(request.app["pets"]) + 1)
         request.app["pets"].append(pet)
 
-    return web.json_response(attr.asdict(pet))
+        return web.json_response(pet.to_dict())
 
 
 @operations.register("deletePet")
@@ -62,7 +61,7 @@ async def list_pets(request: web.Request) -> web.Response:
             if not tags or (tags and item.tag in tags)
         ]
 
-        return web.json_response([attr.asdict(item) for item in found[:limit]])
+        return web.json_response([item.to_dict() for item in found[:limit]])
 
 
 @operations.register("find pet by id")
@@ -71,4 +70,4 @@ async def retrieve_pet(request: web.Request) -> web.Response:
         pet = get_pet_or_404(
             request.app["pets"], context.parameters.path["id"]
         )
-        return web.json_response(attr.asdict(pet))
+        return web.json_response(pet.to_dict())

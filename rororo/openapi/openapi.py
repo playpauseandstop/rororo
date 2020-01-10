@@ -10,9 +10,9 @@ from openapi_spec_validator.exceptions import OpenAPIValidationError
 
 from . import views
 from .constants import (
-    OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY,
-    OPENAPI_SCHEMA_APP_KEY,
-    OPENAPI_SPEC_APP_KEY,
+    APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY,
+    APP_OPENAPI_SCHEMA_KEY,
+    APP_OPENAPI_SPEC_KEY,
 )
 from .decorators import openapi_operation
 from .exceptions import ConfigurationError
@@ -104,7 +104,7 @@ def setup_openapi(
     schema_path: Union[str, Path],
     *operations: OperationTableDef,
     route_prefix: str = None,
-    is_validate_response: bool = False,
+    is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
 ) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
@@ -155,9 +155,8 @@ def setup_openapi(
     For that cases you need to pass ``'/api'`` as a ``route_prefix`` keyword
     argument.
 
-    By default, ``rororo`` will not validate operation responses against
-    OpenAPI schema due to performance reasons. To enable this feature, pass
-    ``is_validate_response`` truthy flag.
+    By default, ``rororo`` will validate operation responses against OpenAPI
+    schema. To disable this feature, pass ``is_validate_response`` falsy flag.
 
     By default, ``rororo`` will share the OpenAPI schema which is registered
     for your aiohttp.web application. In case if you don't want to share this
@@ -188,11 +187,11 @@ def setup_openapi(
         )
 
     # Store OpenAPI schema dict in the application dict
-    app[OPENAPI_SCHEMA_APP_KEY] = oas = read_schema(path)
+    app[APP_OPENAPI_SCHEMA_KEY] = oas = read_schema(path)
 
     # Create the spec and put it to the application dict as well
     try:
-        app[OPENAPI_SPEC_APP_KEY] = create_spec(oas)
+        app[APP_OPENAPI_SPEC_KEY] = create_spec(oas)
     except OpenAPIValidationError:
         raise ConfigurationError(
             f"Unable to load valid OpenAPI schema in {path}. In most cases "
@@ -202,7 +201,7 @@ def setup_openapi(
         )
 
     # Store whether rororo need to validate response or not. By default: not
-    app[OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY] = is_validate_response
+    app[APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY] = is_validate_response
 
     # Register all operation handlers to web application
     for item in operations:

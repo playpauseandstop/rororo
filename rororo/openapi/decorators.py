@@ -10,8 +10,8 @@ from openapi_core.shortcuts import (
 )
 
 from .constants import (
-    OPENAPI_CONTEXT_REQUEST_KEY,
-    OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY,
+    APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY,
+    REQUEST_OPENAPI_CONTEXT_KEY,
 )
 from .data import (
     OpenAPIContext,
@@ -42,12 +42,15 @@ def openapi_operation(operation_id: str) -> Decorator:
             schema = get_openapi_schema(config_dict)
             operation = get_openapi_operation(schema, operation_id)
 
-            # Step 2. Ensure that OpenAPI spec exists and convert aiohttp.web
+            # Step 2. Validate security data if any
+            security = validate_security(request, operation, oas=schema)
+
+            # Step 3. Ensure that OpenAPI spec exists and convert aiohttp.web
             # request to openapi-core request
             spec = get_openapi_spec(config_dict)
             core_request = await to_openapi_core_request(request)
 
-            # Step 3. Validate request parameters & body
+            # Step 4. Validate request parameters & body
             parameters = to_openapi_parameters(
                 validate_parameters(spec, core_request)
             )
@@ -56,11 +59,8 @@ def openapi_operation(operation_id: str) -> Decorator:
             if isinstance(data, Model):
                 data = types.MappingProxyType(vars(data))
 
-            # Step 4. Validate security data if any
-            security = validate_security(request, operation, oas=schema)
-
             # Step 5. Provide OpenAPI context for the handler
-            request[OPENAPI_CONTEXT_REQUEST_KEY] = OpenAPIContext(
+            request[REQUEST_OPENAPI_CONTEXT_KEY] = OpenAPIContext(
                 request=request,
                 app=app,
                 config_dict=config_dict,
@@ -72,7 +72,7 @@ def openapi_operation(operation_id: str) -> Decorator:
 
             # Step 5. Validate response if needed
             response = await handler(request)
-            if config_dict[OPENAPI_IS_VALIDATE_RESPONSE_APP_KEY]:
+            if config_dict[APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY]:
                 validate_data(
                     spec, core_request, to_openapi_core_response(response)
                 )
