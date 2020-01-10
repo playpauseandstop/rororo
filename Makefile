@@ -4,6 +4,7 @@
 	deploy-ci \
 	distclean \
 	docs \
+	example \
 	install \
 	lint \
 	lint-ci \
@@ -12,11 +13,11 @@
 	test \
 	test-ci
 
-# Project settings
+# Project constants
 PROJECT = rororo
 DOCS_DIR = ./docs
 
-# Python commands
+# Project vars
 POETRY ?= poetry
 PRE_COMMIT ?= pre-commit
 PYTHON ?= $(POETRY) run python
