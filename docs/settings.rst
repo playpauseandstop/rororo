@@ -185,7 +185,7 @@ In most cases that ``__main__.py`` will look like,
 
     from aiohttp import web
     from rororo.aio import ACCESS_LOG_FORMAT
-    from rororo.settings import SETTINGS_APP_KEY
+    from rororo.settings import APP_SETTINGS_KEY
 
     from app.app import create_app, logger
     from app.settings import Settings
@@ -194,7 +194,7 @@ In most cases that ``__main__.py`` will look like,
     if __name__ == "__main__":
         app = create_app()
 
-        settings: Settings = app[SETTINGS_APP_KEY]
+        settings: Settings = app[APP_SETTINGS_KEY]
         is_dev = settings.level == "dev"
 
         if is_dev:
@@ -219,11 +219,11 @@ the view as,
 .. code-block:: python
 
     from aiohttp import web
-    from rororo.settings import SETTINGS_APP_KEY
+    from rororo.settings import APP_SETTINGS_KEY
 
 
     async def index(request: web.Request) -> web.Response:
-        if request.app[SETTINGS_APP_KEY].debug:
+        if request.app[APP_SETTINGS_KEY].debug:
             print("Hello, world!")
         return web.json_response(True)
 
@@ -233,5 +233,5 @@ structure,
 
 .. code-block:: python
 
-    if request.config_dict[SETTINGS_APP_KEY].debug:
+    if request.config_dict[APP_SETTINGS_KEY].debug:
         print("Hello, world!")

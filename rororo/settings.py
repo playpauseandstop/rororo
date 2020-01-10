@@ -41,7 +41,7 @@ from .logger import default_logging_dict
 from .utils import to_bool
 
 
-SETTINGS_APP_KEY = "settings"
+APP_SETTINGS_KEY = "settings"
 
 
 @overload
@@ -393,7 +393,7 @@ def setup_settings(
     ``"settings"`` key.
     """
     settings.apply(loggers=loggers, remove_root_handlers=remove_root_handlers)
-    app[SETTINGS_APP_KEY] = settings
+    app[APP_SETTINGS_KEY] = settings
     return app
 
 
