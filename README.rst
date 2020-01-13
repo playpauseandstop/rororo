@@ -60,7 +60,7 @@ Quick Start
 supported).
 
 Example below, illustrates on how to handle operation ``hello_world`` from
-`openapi.yaml <https://github.com/playpauseandstop/rororo/blob/feature-openapi/tests/openapi.yaml>`_
+`openapi.yaml <https://github.com/playpauseandstop/rororo/blob/master/tests/openapi.yaml>`_
 schema file.
 
 .. code-block:: python
