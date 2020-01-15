@@ -19,7 +19,7 @@ def create_app(
             web.Application(
                 middlewares=(
                     cors_middleware(allow_all=True),
-                    error_middleware(default_handler=views.error),
+                    error_middleware(),
                 )
             ),
             settings,

@@ -1,7 +1,6 @@
 import logging
 
 from aiohttp import web
-from aiohttp_middlewares.error import error_context
 
 from rororo import openapi_context, OperationTableDef
 from .data import NewPet
@@ -38,15 +37,6 @@ async def delete_pet(request: web.Request) -> web.Response:
             item for item in request.app["pets"] if item != pet
         ]
         return web.json_response(status=204)
-
-
-async def error(request: web.Request) -> web.Response:
-    with error_context(request) as context:
-        logger.error(context.message, exc_info=True)
-        return web.json_response(
-            {"code": context.status, "message": context.message},
-            status=context.status,
-        )
 
 
 @operations.register("findPets")

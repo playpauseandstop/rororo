@@ -1,7 +1,6 @@
 import logging
 
 from aiohttp import web
-from aiohttp_middlewares.error import error_context
 
 from rororo import openapi_context, OperationTableDef
 from .data import GITHUB_REPOSITORIES
@@ -11,12 +10,6 @@ from .exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 operations = OperationTableDef()
-
-
-async def error(request: web.Request) -> web.Response:
-    with error_context(request) as context:
-        logger.error(context.message, exc_info=True)
-        return web.json_response(context.data, status=context.status)
 
 
 @operations.register
