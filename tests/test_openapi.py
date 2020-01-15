@@ -2,13 +2,16 @@ from pathlib import Path
 
 import pytest
 from aiohttp import web
+from yarl import URL
 
 from rororo import (
+    BaseSettings,
     get_openapi_schema,
     get_openapi_spec,
     openapi_context,
     OperationTableDef,
     setup_openapi,
+    setup_settings,
 )
 from rororo.openapi.exceptions import ConfigurationError, OperationError
 
@@ -50,7 +53,7 @@ async def retrieve_array_from_request_body(
 )
 async def test_array_request_body(aiohttp_client, data, expected_status):
     app = web.Application()
-    setup_openapi(app, OPENAPI_YAML_PATH, operations, route_prefix="/api")
+    setup_openapi(app, OPENAPI_YAML_PATH, operations, server_url=URL("/api"))
 
     client = await aiohttp_client(app)
     response = await client.post("/api/array", json=data)
@@ -87,7 +90,7 @@ async def test_openapi(
     aiohttp_client, schema_path, query_string, expected_message
 ):
     app = web.Application()
-    setup_openapi(app, schema_path, operations, route_prefix="/api")
+    setup_openapi(app, schema_path, operations, server_url="/api")
 
     client = await aiohttp_client(app)
     url = "/api/hello"
@@ -106,7 +109,7 @@ async def test_openapi_validate_response(aiohttp_client, is_enabled):
         app,
         OPENAPI_YAML_PATH,
         operations,
-        route_prefix="/api",
+        server_url="/api",
         is_validate_response=is_enabled,
     )
 
@@ -135,7 +138,7 @@ async def test_openapi_schema_handler(
         app,
         OPENAPI_YAML_PATH,
         operations,
-        route_prefix="/api",
+        server_url=URL("/api"),
         has_openapi_schema_handler=has_openapi_schema_handler,
     )
 
@@ -144,9 +147,15 @@ async def test_openapi_schema_handler(
     assert response.status == expected_status
 
 
-def test_setup_openapi_invalid_operation():
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+def test_setup_openapi_invalid_operation(schema_path):
     with pytest.raises(OperationError):
-        setup_openapi(web.Application(), OPENAPI_YAML_PATH, invalid_operations)
+        setup_openapi(
+            web.Application(),
+            schema_path,
+            invalid_operations,
+            server_url="/api",
+        )
 
 
 def test_setup_openapi_invalid_path():
@@ -165,5 +174,52 @@ def test_setup_openapi_invalid_file():
     "schema_path", (INVALID_OPENAPI_JSON_PATH, INVALID_OPENAPI_YAML_PATH)
 )
 def test_setup_openapi_invalid_spec(schema_path):
+    with pytest.raises(ConfigurationError):
+        setup_openapi(web.Application(), schema_path, operations)
+
+
+@pytest.mark.parametrize(
+    "schema_path, level, url, expected_status",
+    (
+        (OPENAPI_JSON_PATH, "test", "/api/hello", 200),
+        (OPENAPI_JSON_PATH, "test", "/dev-api/hello", 404),
+        (OPENAPI_YAML_PATH, "test", "/api/hello", 200),
+        (OPENAPI_YAML_PATH, "test", "/dev-api/hello", 404),
+        (OPENAPI_JSON_PATH, "dev", "/api/hello", 404),
+        (OPENAPI_JSON_PATH, "dev", "/dev-api/hello", 200),
+        (OPENAPI_YAML_PATH, "dev", "/api/hello", 404),
+        (OPENAPI_YAML_PATH, "dev", "/dev-api/hello", 200),
+    ),
+)
+async def test_setup_openapi_server_url_from_settings(
+    monkeypatch, aiohttp_client, schema_path, level, url, expected_status
+):
+    monkeypatch.setenv("LEVEL", level)
+
+    app = setup_openapi(
+        setup_settings(web.Application(), BaseSettings()),
+        schema_path,
+        operations,
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get(url)
+    assert response.status == expected_status
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
+    monkeypatch.setenv("LEVEL", "prod")
+
+    with pytest.raises(ConfigurationError):
+        setup_openapi(
+            setup_settings(web.Application(), BaseSettings()),
+            schema_path,
+            operations,
+        )
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+def test_setup_openapi_server_url_does_not_set(schema_path):
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), schema_path, operations)

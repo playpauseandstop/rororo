@@ -70,9 +70,6 @@ def create_app(
         Path(__file__).parent / "petstore-expanded.yaml",
         # And after list of operations
         views.operations,
-        # Need to add route prefix if server URL in OpenAPI schema ended with
-        # a path, like "http://localhost:8080/api"
-        route_prefix="/api",
     )
 
     return app

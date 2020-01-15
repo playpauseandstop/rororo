@@ -28,5 +28,4 @@ def create_app(
         ),
         Path(__file__).parent / "openapi.yaml",
         views.operations,
-        route_prefix="/api",
     )

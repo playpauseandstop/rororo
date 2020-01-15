@@ -7,6 +7,7 @@ import yaml
 from aiohttp import web
 from openapi_core.shortcuts import create_spec
 from openapi_spec_validator.exceptions import OpenAPIValidationError
+from yarl import URL
 
 from . import views
 from .constants import (
@@ -18,6 +19,10 @@ from .decorators import openapi_operation
 from .exceptions import ConfigurationError
 from .utils import add_prefix, get_openapi_operation
 from ..annotations import Decorator, DictStrAny, Handler
+from ..settings import APP_SETTINGS_KEY, BaseSettings
+
+
+Url = Union[str, URL]
 
 
 class OperationTableDef(Dict[str, Handler]):
@@ -64,11 +69,11 @@ class OperationTableDef(Dict[str, Handler]):
 
     @overload
     def register(self, handler: Handler) -> Handler:
-        ...
+        ...  # pragma: no cover
 
     @overload
     def register(self, operation_id: str) -> Decorator:  # noqa: F811
-        ...
+        ...  # pragma: no cover
 
     def register(self, mixed):  # type: ignore  # noqa: F811
         operation_id = mixed if isinstance(mixed, str) else mixed.__name__
@@ -99,11 +104,49 @@ def convert_operations_to_routes(
     return routes
 
 
+def find_route_prefix(
+    oas: DictStrAny,
+    *,
+    server_url: Union[str, URL] = None,
+    settings: BaseSettings = None,
+) -> str:
+    if server_url is not None:
+        return get_route_prefix(server_url)
+
+    servers = oas["servers"]
+    if len(servers) == 1:
+        return get_route_prefix(servers[0]["url"])
+
+    if settings is None:
+        raise ConfigurationError(
+            "Unable to guess route prefix as OpenAPI schema contains "
+            "multiple servers and aiohttp.web has no settings instance "
+            "configured."
+        )
+
+    for server in servers:
+        mixed = server.get("x-rororo-level")
+        if isinstance(mixed, list):
+            if settings.level in mixed:
+                return get_route_prefix(server["url"])
+        elif mixed == settings.level:
+            return get_route_prefix(server["url"])
+
+    raise ConfigurationError(
+        "Unable to guess route prefix as no server in OpenAPI schema has "
+        f'defined "x-rororo-level" key of "{settings.level}".'
+    )
+
+
+def get_route_prefix(mixed: Url) -> str:
+    return (URL(mixed) if isinstance(mixed, str) else mixed).path
+
+
 def setup_openapi(
     app: web.Application,
     schema_path: Union[str, Path],
     *operations: OperationTableDef,
-    route_prefix: str = None,
+    server_url: Url = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
 ) -> web.Application:
@@ -142,18 +185,54 @@ def setup_openapi(
 
 
         def create_app(argv: List[str] = None) -> web.Application:
-            app = web.Application()
-            setup_openapi(
-                app,
-                Path(__file__).parent / 'openapi.yaml',
-                operations
+            return setup_openapi(
+                web.Application(),
+                Path(__file__).parent / "openapi.yaml",
+                operations,
             )
-            return app
 
-    It is also possible to setup route prefix to use if server URL inside of
-    your OpenAPI schema ends with path, like ``http://yourserver.url/api``.
-    For that cases you need to pass ``'/api'`` as a ``route_prefix`` keyword
-    argument.
+    If your OpenAPI schema contains multiple servers schemas, like,
+
+    .. code-block:: yaml
+
+        servers:
+        - url: "/api/"
+          description: "Test environment"
+        - url: "http://localhost:8080/api/"
+          description: "Dev environment"
+        - url: "http://prod.url/api/"
+          description: "Prod environment"
+
+    you have 2 options of telling ``rororo`` to use specific server URL.
+
+    First, is passing ``server_url``, while setting up OpenAPI, for example,
+
+    .. code-block:: python
+
+        setup_openapi(
+            web.Application(),
+            Path(__file__).parent / "openapi.yaml",
+            operations,
+            server_url=URL("http://prod.url/api/"),
+        )
+
+    Second, is more complicated as you need to wrap ``aiohttp.web`` application
+    into :func:`rororo.settings.setup_settings` and mark each server with
+    ``x-rororo-level`` special key in server schema definition as,
+
+    .. code-block:: yaml
+
+        servers:
+        - url: "/api/"
+          x-rororo-level: "test"
+        - url: "http://localhost:8080/api/"
+          x-rororo-level: "dev"
+        - url: "http://prod.url/api/"
+          x-rororo-level: "prod"
+
+    After, ``rororo`` will try to equal current app settings level with the
+    schema and if URL matched, will use given server URL for finding out
+    route prefix.
 
     By default, ``rororo`` will validate operation responses against OpenAPI
     schema. To disable this feature, pass ``is_validate_response`` falsy flag.
@@ -204,6 +283,9 @@ def setup_openapi(
     app[APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY] = is_validate_response
 
     # Register all operation handlers to web application
+    route_prefix = find_route_prefix(
+        oas, server_url=server_url, settings=app.get(APP_SETTINGS_KEY)
+    )
     for item in operations:
         app.router.add_routes(
             convert_operations_to_routes(item, oas, prefix=route_prefix)

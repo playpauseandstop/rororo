@@ -13,6 +13,10 @@ info:
 
 servers:
   - url: "/api"
+    x-rororo-level: "test"
+
+  - url: "/dev-api"
+    x-rororo-level: ["dev"]
 
 paths:
   "/hello":
