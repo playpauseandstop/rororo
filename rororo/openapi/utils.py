@@ -15,7 +15,11 @@ from ..annotations import DictStrAny
 
 
 def add_prefix(path: str, prefix: Optional[str]) -> str:
-    return f"{prefix}{path}" if prefix else path
+    if prefix:
+        if prefix[-1] == "/":
+            prefix = prefix[:-1]
+        return f"{prefix}{path}"
+    return path
 
 
 def get_openapi_context(request: web.Request) -> OpenAPIContext:
