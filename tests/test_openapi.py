@@ -16,6 +16,7 @@ from rororo import (
     setup_settings,
 )
 from rororo.openapi.exceptions import ConfigurationError, OperationError
+from rororo.openapi.mappings import enforce_dicts
 
 
 ROOT_PATH = Path(__file__).parent
@@ -25,12 +26,17 @@ INVALID_OPENAPI_YAML_PATH = ROOT_PATH / "invalid-openapi.yaml"
 OPENAPI_JSON_PATH = ROOT_PATH / "openapi.json"
 OPENAPI_YAML_PATH = ROOT_PATH / "openapi.yaml"
 TEST_NESTED_OBJECT = {
+    "uid": "6fccda1b-0873-4c8a-bceb-a2acfe5851da",
     "type": "nested-object",
     "data": {
-        "data_item": {"key": "value1"},
-        "data_items": [{"key": "value2"}, {"key": "value3"}],
+        "data_item": {"key": "value1", "any_data": {}},
+        "data_items": [
+            {"key": "value2", "any_data": {"two": 2}},
+            {"key": "value3", "any_data": {"three": 3}},
+        ],
         "str_items": ["1", "2", "3"],
     },
+    "any_data": {"key1": "value1", "key2": "value2", "list": [1, 2, 3]},
 }
 
 operations = OperationTableDef()
@@ -47,6 +53,14 @@ async def hello_world(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
         name = context.parameters.query.get("name") or "world"
         return web.json_response({"message": f"Hello, {name}!"})
+
+
+@operations.register
+async def retrieve_any_object_from_request_body(
+    request: web.Request,
+) -> web.Response:
+    with openapi_context(request) as context:
+        return web.json_response(enforce_dicts(context.data))
 
 
 @operations.register
@@ -68,20 +82,11 @@ async def retrieve_nested_object_from_request_body(
 ) -> web.Response:
     with openapi_context(request) as context:
         return web.json_response(
-            {
-                "type": context.data["type"],
-                "data": {
-                    "data_item": {
-                        "key": context.data["data"]["data_item"]["key"],
-                    },
-                    "data_items": [
-                        {"key": item["key"]}
-                        for item in context.data["data"]["data_items"]
-                    ],
-                    "str_items": context.data["data"]["str_items"],
-                },
+            {**enforce_dicts(context.data), "uid": str(context.data["uid"])},
+            headers={
+                "X-Content-Data-Type": str(type(context.data)),
+                "X-UID-Data-Type": str(type(context.data["uid"])),
             },
-            headers={"X-Content-Data-Type": str(type(context.data))},
         )
 
 
@@ -100,13 +105,29 @@ async def retrieve_zip(request: web.Request) -> web.Response:
     )
 
 
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_any_object_request_body(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url=URL("/api/")
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.post("/api/any-object", json=TEST_NESTED_OBJECT)
+    assert response.status == 200
+    assert await response.json() == TEST_NESTED_OBJECT
+
+
 @pytest.mark.parametrize(
     "data, expected_status",
     (({}, 500), ([], 500), ([""], 500), (["Hello"], 200)),
 )
 async def test_array_request_body(aiohttp_client, data, expected_status):
-    app = web.Application()
-    setup_openapi(app, OPENAPI_YAML_PATH, operations, server_url=URL("/api"))
+    app = setup_openapi(
+        web.Application(),
+        OPENAPI_YAML_PATH,
+        operations,
+        server_url=URL("/api"),
+    )
 
     client = await aiohttp_client(app)
     response = await client.post("/api/array", json=data)
@@ -210,6 +231,7 @@ async def test_request_body_nested_obejct(aiohttp_client, schema_path):
     response = await client.post("/api/nested-object", json=TEST_NESTED_OBJECT)
     assert response.status == 200
     assert response.headers["X-Content-Data-Type"] == "<class 'mappingproxy'>"
+    assert response.headers["X-UID-Data-Type"] == "<class 'uuid.UUID'>"
     assert await response.json() == TEST_NESTED_OBJECT
 
 

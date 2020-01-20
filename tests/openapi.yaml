@@ -79,13 +79,11 @@ paths:
   "/nested-object":
     post:
       operationId: "retrieve_nested_object_from_request_body"
-
       requestBody:
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/NestedObject"
-
       responses:
         "200":
           description: "Nested object from request."
@@ -98,9 +96,33 @@ paths:
               schema:
                 type: "string"
                 minLength: 1
+            X-UID-Data-Type:
+              schema:
+                type: "string"
+                minLength: 1
+
+  "/any-object":
+    post:
+      operationId: "retrieve_any_object_from_request_body"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnyObject"
+      responses:
+        "200":
+          description: "Free form object from request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnyObject"
 
 components:
   schemas:
+    AnyObject:
+      type: "object"
+      additionalProperties: true
+
     UniqueStrArray:
       type: "array"
       items:
@@ -115,7 +137,9 @@ components:
         key:
           type: "string"
           enum: ["value1", "value2", "value3"]
-      required: ["key"]
+        any_data:
+          $ref: "#/components/schemas/AnyObject"
+      required: ["key", "any_data"]
 
     NestedObjectData:
       type: "object"
@@ -133,9 +157,14 @@ components:
     NestedObject:
       type: "object"
       properties:
+        uid:
+          type: "string"
+          format: "uuid"
         type:
           type: "string"
           minLength: 1
         data:
           $ref: "#/components/schemas/NestedObjectData"
-      required: ["type", "data"]
+        any_data:
+          $ref: "#/components/schemas/AnyObject"
+      required: ["uid", "type", "data", "any_data"]
