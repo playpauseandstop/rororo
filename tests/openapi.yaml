@@ -76,6 +76,29 @@ paths:
         "204":
           description: "Empty response."
 
+  "/nested-object":
+    post:
+      operationId: "retrieve_nested_object_from_request_body"
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NestedObject"
+
+      responses:
+        "200":
+          description: "Nested object from request."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NestedObject"
+          headers:
+            X-Content-Data-Type:
+              schema:
+                type: "string"
+                minLength: 1
+
 components:
   schemas:
     UniqueStrArray:
@@ -85,3 +108,34 @@ components:
         minLength: 1
       minItems: 1
       uniqueItems: true
+
+    NestedObjectDataItem:
+      type: "object"
+      properties:
+        key:
+          type: "string"
+          enum: ["value1", "value2", "value3"]
+      required: ["key"]
+
+    NestedObjectData:
+      type: "object"
+      properties:
+        data_item:
+          $ref: "#/components/schemas/NestedObjectDataItem"
+        data_items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/NestedObjectDataItem"
+        str_items:
+          $ref: "#/components/schemas/UniqueStrArray"
+      required: ["data_item", "data_items", "str_items"]
+
+    NestedObject:
+      type: "object"
+      properties:
+        type:
+          type: "string"
+          minLength: 1
+        data:
+          $ref: "#/components/schemas/NestedObjectData"
+      required: ["type", "data"]

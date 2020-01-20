@@ -24,6 +24,14 @@ INVALID_OPENAPI_JSON_PATH = ROOT_PATH / "invalid-openapi.json"
 INVALID_OPENAPI_YAML_PATH = ROOT_PATH / "invalid-openapi.yaml"
 OPENAPI_JSON_PATH = ROOT_PATH / "openapi.json"
 OPENAPI_YAML_PATH = ROOT_PATH / "openapi.yaml"
+TEST_NESTED_OBJECT = {
+    "type": "nested-object",
+    "data": {
+        "data_item": {"key": "value1"},
+        "data_items": [{"key": "value2"}, {"key": "value3"}],
+        "str_items": ["1", "2", "3"],
+    },
+}
 
 operations = OperationTableDef()
 invalid_operations = OperationTableDef()
@@ -52,6 +60,29 @@ async def retrieve_array_from_request_body(
 @operations.register
 async def retrieve_empty(request: web.Request) -> web.Response:
     return web.Response(status=204)
+
+
+@operations.register
+async def retrieve_nested_object_from_request_body(
+    request: web.Request,
+) -> web.Response:
+    with openapi_context(request) as context:
+        return web.json_response(
+            {
+                "type": context.data["type"],
+                "data": {
+                    "data_item": {
+                        "key": context.data["data"]["data_item"]["key"],
+                    },
+                    "data_items": [
+                        {"key": item["key"]}
+                        for item in context.data["data"]["data_items"]
+                    ],
+                    "str_items": context.data["data"]["str_items"],
+                },
+            },
+            headers={"X-Content-Data-Type": str(type(context.data))},
+        )
 
 
 @operations.register
@@ -167,6 +198,19 @@ async def test_openapi_schema_handler(
     client = await aiohttp_client(app)
     response = await client.get(url)
     assert response.status == expected_status
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_request_body_nested_obejct(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.post("/api/nested-object", json=TEST_NESTED_OBJECT)
+    assert response.status == 200
+    assert response.headers["X-Content-Data-Type"] == "<class 'mappingproxy'>"
+    assert await response.json() == TEST_NESTED_OBJECT
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
