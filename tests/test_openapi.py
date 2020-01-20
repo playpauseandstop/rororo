@@ -1,3 +1,5 @@
+import io
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -45,6 +47,26 @@ async def retrieve_array_from_request_body(
 ) -> web.Response:
     with openapi_context(request) as context:
         return web.json_response(context.data)
+
+
+@operations.register
+async def retrieve_empty(request: web.Request) -> web.Response:
+    return web.Response(status=204)
+
+
+@operations.register
+async def retrieve_zip(request: web.Request) -> web.Response:
+    output = io.BytesIO()
+
+    with zipfile.ZipFile(output, "w") as handler:
+        handler.writestr("hello.txt", "Hello, world!")
+
+    output.seek(0)
+    return web.Response(
+        body=output,
+        content_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=hello.zip"},
+    )
 
 
 @pytest.mark.parametrize(
@@ -223,3 +245,39 @@ def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
 def test_setup_openapi_server_url_does_not_set(schema_path):
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), schema_path, operations)
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_validate_binary_response(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api",
+        is_validate_response=True,
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/download.zip")
+    assert response.status == 200
+    assert response.content_type == "application/zip"
+
+    content = io.BytesIO(await response.read())
+    with zipfile.ZipFile(content) as handler:
+        with handler.open("hello.txt") as item:
+            assert item.read() == b"Hello, world!"
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_validate_empty_response(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api",
+        is_validate_response=True,
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/empty")
+    assert response.status == 204

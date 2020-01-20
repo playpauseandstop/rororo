@@ -2,20 +2,20 @@ version: 2
 jobs:
   lint:
     docker: &py38
-      - image: playpauseandstop/docker-python:3.0.0-py38
+      - image: playpauseandstop/docker-python:3.1.0-py38
     steps:
       - checkout
       - run: make install
-      - run: make lint-ci
+      - run: make lint-only
 
   test36:
     docker:
-      - image: playpauseandstop/docker-python:3.0.0-py36
+      - image: playpauseandstop/docker-python:3.1.0-py36
     steps:
       - checkout
       - run: mkdir -p test-results/pytest
       - run:
-          command: make test-ci
+          command: make test-only
           environment:
             PYTEST_ADDOPTS: --junitxml=test-results/pytest/junit.xml
             TOXENV: py36
@@ -26,12 +26,12 @@ jobs:
 
   test37:
     docker:
-      - image: playpauseandstop/docker-python:3.0.0-py37
+      - image: playpauseandstop/docker-python:3.1.0-py37
     steps:
       - checkout
       - run: mkdir -p test-results/pytest
       - run:
-          command: make test-ci
+          command: make test-only
           environment:
             PYTEST_ADDOPTS: --junitxml=test-results/pytest/junit.xml
             TOXENV: py37
@@ -46,7 +46,7 @@ jobs:
       - checkout
       - run: mkdir -p test-results/pytest
       - run:
-          command: make test-ci
+          command: make test-only
           environment:
             PYTEST_ADDOPTS: --junitxml=test-results/pytest/junit.xml
             TOXENV: py38

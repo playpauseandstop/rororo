@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 import attr
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
+from aiohttp.payload import IOBasePayload, Payload
 from openapi_core.validation.request.models import RequestParameters
 from openapi_core.wrappers.base import BaseOpenAPIRequest, BaseOpenAPIResponse
 
@@ -20,7 +21,7 @@ def immutable_dict_factory() -> MappingStrAny:
 
 
 class OpenAPICoreRequest(BaseOpenAPIRequest):
-    def __init__(self, request: web.Request, body: Optional[str]) -> None:
+    def __init__(self, request: web.Request, body: Optional[bytes]) -> None:
         self.request = request
         self.body = body
 
@@ -65,10 +66,21 @@ class OpenAPICoreResponse(BaseOpenAPIResponse):
         self.response = response
 
     @property
-    def data(self) -> Optional[str]:
+    def data(self) -> Optional[bytes]:
         response = self.response
         if isinstance(response, web.Response):
-            return response.text
+            body = response.body
+            if not body:
+                return None
+
+            # TODO: Find better way to provide response from payload
+            if isinstance(body, IOBasePayload):
+                return body._value.getvalue()  # type: ignore
+
+            if isinstance(body, Payload):
+                return body._value  # type: ignore
+
+            return body
         return None
 
     @property
@@ -149,9 +161,9 @@ async def to_openapi_core_request(request: web.Request) -> OpenAPICoreRequest:
     Afterwards opeanpi-core request can be used for validation request data
     against spec.
     """
-    body: Optional[str] = None
+    body: Optional[bytes] = None
     if request.body_exists and request.can_read_body:
-        body = await request.text()
+        body = await request.read()
 
     return OpenAPICoreRequest(request=request, body=body)
 

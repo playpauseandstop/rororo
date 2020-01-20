@@ -83,6 +83,34 @@
           }
         }
       }
+    },
+    "/download.zip": {
+      "get": {
+        "operationId": "retrieve_zip",
+        "responses": {
+          "200": {
+            "description": "ZIP file content.",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/empty": {
+      "get": {
+        "operationId": "retrieve_empty",
+        "responses": {
+          "204": {
+            "description": "Empty response."
+          }
+        }
+      }
     }
   },
   "components": {

@@ -7,11 +7,11 @@
 	example \
 	install \
 	lint \
-	lint-ci \
+	lint-only \
 	list-outdated \
 	open-docs \
 	test \
-	test-ci
+	test-only
 
 # Project constants
 PROJECT = rororo
@@ -68,9 +68,9 @@ install: .install
 	$(POETRY) install
 	touch $@
 
-lint: install lint-ci
+lint: install lint-only
 
-lint-ci:
+lint-only:
 	SKIP=$(SKIP) $(PRE_COMMIT) run --all $(HOOK)
 
 list-outdated: install
@@ -79,7 +79,7 @@ list-outdated: install
 open-docs: docs
 	open $(DOCS_DIR)/_build/html/index.html
 
-test: install clean lint test-ci
+test: install clean lint test-only
 
-test-ci:
+test-only:
 	TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)

@@ -73,5 +73,9 @@ whitelist_externals = poetry
 commands_pre =
     poetry install
 commands =
+    poetry run python -m openapi_spec_validator examples/hobotnica/openapi.yaml
+    poetry run python -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
+    poetry run python -m openapi_spec_validator tests/openapi.json
+    poetry run python -m openapi_spec_validator tests/openapi.yaml
     poetry run python -m pytest examples/hobotnica/tests.py examples/petstore/tests.py tests/ --cov=rororo --no-cov-on-fail
 """

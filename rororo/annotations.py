@@ -29,6 +29,7 @@ DictStrInt = Dict[str, int]
 DictStrStr = Dict[str, str]
 
 MappingStrAny = Mapping[str, Any]
+MappingStrInt = Mapping[str, int]
 MappingStrStr = Mapping[str, str]
 
 Settings = Union[types.ModuleType, DictStrAny]
