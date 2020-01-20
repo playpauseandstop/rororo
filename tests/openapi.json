@@ -36,6 +36,15 @@
               "type": "string",
               "minLength": 1
             }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
           }
         ],
         "responses": {
@@ -49,8 +58,13 @@
                     "message": {
                       "type": "string",
                       "minLength": 1
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email"
                     }
-                  }
+                  },
+                  "required": ["message", "email"]
                 }
               }
             }

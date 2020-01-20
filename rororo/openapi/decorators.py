@@ -1,7 +1,6 @@
 from functools import wraps
 
 from aiohttp import web
-from openapi_core.shortcuts import validate_data
 
 from .constants import (
     APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY,
@@ -18,7 +17,10 @@ from .utils import (
     get_openapi_schema,
     get_openapi_spec,
 )
-from .validators import validate_parameters_and_body
+from .validators import (
+    validate_request_parameters_and_body,
+    validate_response_data,
+)
 from ..annotations import Decorator, Handler
 
 
@@ -49,7 +51,9 @@ def openapi_operation(operation_id: str) -> Decorator:
             core_request = await to_openapi_core_request(request)
 
             # Step 4. Validate request parameters & body
-            parameters, data = validate_parameters_and_body(spec, core_request)
+            parameters, data = validate_request_parameters_and_body(
+                spec, core_request
+            )
 
             # Step 5. Provide OpenAPI context for the handler
             request[REQUEST_OPENAPI_CONTEXT_KEY] = OpenAPIContext(
@@ -65,7 +69,7 @@ def openapi_operation(operation_id: str) -> Decorator:
             # Step 5. Validate response if needed
             response = await handler(request)
             if config_dict[APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY]:
-                validate_data(
+                validate_response_data(
                     spec, core_request, to_openapi_core_response(response)
                 )
 

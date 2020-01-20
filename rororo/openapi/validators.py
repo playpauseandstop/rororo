@@ -5,11 +5,18 @@ from openapi_core.schema.specs.models import Spec
 from openapi_core.validation.request.validators import (
     RequestValidator as BaseRequestValidator,
 )
+from openapi_core.validation.response.validators import ResponseValidator
 
-from .data import OpenAPICoreRequest, OpenAPIParameters, to_openapi_parameters
+from .data import (
+    OpenAPICoreRequest,
+    OpenAPICoreResponse,
+    OpenAPIParameters,
+    to_openapi_parameters,
+)
 from .mappings import convert_dict_to_mapping_proxy, enforce_dicts, merge_data
 
 
+CUSTOM_FORMATTERS = {"email": str}
 ROOT_PATH = "."
 
 
@@ -41,14 +48,14 @@ class RequestValidator(BaseRequestValidator):
         )
 
 
-def validate_parameters_and_body(
+def validate_request_parameters_and_body(
     spec: Spec, core_request: OpenAPICoreRequest
 ) -> Tuple[OpenAPIParameters, Any]:
     """
     Instead of validating request parameters & body in two calls, validate them
-    at once.
+    at once with passing custom formatters.
     """
-    validator = RequestValidator(spec)
+    validator = RequestValidator(spec, custom_formatters=CUSTOM_FORMATTERS)
     result = validator.validate(core_request)
 
     result.raise_for_errors()
@@ -56,3 +63,16 @@ def validate_parameters_and_body(
         to_openapi_parameters(result.parameters),
         result.body,
     )
+
+
+def validate_response_data(
+    spec: Spec,
+    core_request: OpenAPICoreRequest,
+    core_response: OpenAPICoreResponse,
+) -> Any:
+    """Pass custom formatters on validating response data."""
+    validator = ResponseValidator(spec, custom_formatters=CUSTOM_FORMATTERS)
+    result = validator.validate(core_request, core_response)
+
+    result.raise_for_errors()
+    return result.data

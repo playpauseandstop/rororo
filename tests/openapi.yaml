@@ -23,12 +23,18 @@ paths:
     get:
       operationId: "hello_world"
       parameters:
-        - name: name
-          in: query
+        - name: "name"
+          in: "query"
           required: false
           schema:
-            type: string
+            type: "string"
             minLength: 1
+        - name: "email"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "email"
       responses:
         "200":
           description: "Dummy response."
@@ -40,6 +46,10 @@ paths:
                   message:
                     type: "string"
                     minLength: 1
+                  email:
+                    type: "string"
+                    format: "email"
+                required: ["message", "email"]
 
   "/array":
     post:

@@ -52,7 +52,10 @@ async def does_not_exist(request: web.Request) -> web.Response:
 async def hello_world(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
         name = context.parameters.query.get("name") or "world"
-        return web.json_response({"message": f"Hello, {name}!"})
+        email = context.parameters.query.get("email") or "world@example.com"
+        return web.json_response(
+            {"message": f"Hello, {name}!", "email": email}
+        )
 
 
 @operations.register
@@ -137,6 +140,20 @@ async def test_array_request_body(aiohttp_client, data, expected_status):
         assert await response.json() == data
 
 
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_email_format(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get(
+        "/api/hello", params={"email": "email@example.com"}
+    )
+    assert response.status == 200
+    assert (await response.json())["email"] == "email@example.com"
+
+
 def test_get_openapi_schema_no_schema():
     with pytest.raises(ConfigurationError):
         get_openapi_schema(web.Application())
@@ -190,7 +207,10 @@ async def test_openapi_validate_response(aiohttp_client, is_enabled):
     client = await aiohttp_client(app)
     response = await client.get("/api/hello")
     assert response.status == 200
-    assert await response.json() == {"message": "Hello, world!"}
+    assert await response.json() == {
+        "message": "Hello, world!",
+        "email": "world@example.com",
+    }
 
 
 @pytest.mark.parametrize(
