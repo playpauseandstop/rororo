@@ -73,10 +73,14 @@ class ObjectDoesNotExist(OpenAPIError):
     status = 404
 
     def __init__(
-        self, label: str = OBJECT_LABEL, *, headers: MappingStrStr = None
+        self,
+        label: str = OBJECT_LABEL,
+        *,
+        message: str = None,
+        headers: MappingStrStr = None
     ) -> None:
         super().__init__(
-            NOT_FOUND_TEMPLATE.format(label=label), headers=headers,
+            message or NOT_FOUND_TEMPLATE.format(label=label), headers=headers,
         )
         self.label = label
 

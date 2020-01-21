@@ -34,7 +34,7 @@ async def test_delete_pet_does_not_exist(aiohttp_client):
     client = await aiohttp_client(create_app())
     response = await client.delete("/api/pets/1")
     assert response.status == 404
-    assert await response.json() == {"detail": "Pet not found"}
+    assert await response.json() == {"detail": "Requested Pet not found"}
 
 
 async def test_get_pet(aiohttp_client):
@@ -53,7 +53,7 @@ async def test_get_pet_does_not_exist(aiohttp_client):
     client = await aiohttp_client(create_app())
     response = await client.get("/api/pets/1")
     assert response.status == 404
-    assert await response.json() == {"detail": "Pet not found"}
+    assert await response.json() == {"detail": "Requested Pet not found"}
 
 
 async def test_list_pets(aiohttp_client):
