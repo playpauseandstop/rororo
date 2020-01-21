@@ -1,3 +1,4 @@
+import pytest
 from petstore.app import create_app
 from petstore.data import Pet
 
@@ -8,7 +9,7 @@ TEST_PET = Pet(id=1, name=TEST_PET_NAME, tag=None)
 ADD_PET_JSON = {"name": TEST_PET_NAME}
 
 
-async def test_add_pet(aiohttp_client):
+async def test_add_pet_200(aiohttp_client):
     client = await aiohttp_client(create_app())
     response = await client.post("/api/pets", json=ADD_PET_JSON)
     assert response.status == 200
@@ -16,6 +17,24 @@ async def test_add_pet(aiohttp_client):
         "id": 1,
         "name": TEST_PET_NAME,
     }
+
+
+@pytest.mark.parametrize(
+    "invalid_data, expected",
+    (
+        (None, [["body"]]),
+        ({}, [["body", "name"]]),
+        ({"name": None}, [["body", "name"]]),
+        ({"name": 42}, [["body", "name"]]),
+    ),
+)
+async def test_add_pet_422(aiohttp_client, invalid_data, expected):
+    client = await aiohttp_client(create_app())
+    response = await client.post("/api/pets", json=invalid_data)
+    assert response.status == 422
+
+    data = await response.json()
+    assert [item["loc"] for item in data["detail"]] == expected
 
 
 async def test_delete_pet(aiohttp_client):

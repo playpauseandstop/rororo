@@ -129,10 +129,36 @@ async def test_any_object_request_body(aiohttp_client, schema_path):
 
 
 @pytest.mark.parametrize(
-    "data, expected_status",
-    (({}, 500), ([], 500), ([""], 500), (["Hello"], 200)),
+    "data, expected_status, expected_response",
+    (
+        (
+            {},
+            422,
+            {
+                "detail": [
+                    {
+                        "loc": ["body"],
+                        "message": "{} is not of type array",  # noqa: P103
+                    }
+                ]
+            },
+        ),
+        (
+            [],
+            422,
+            {"detail": [{"loc": ["body"], "message": "[] is too short"}]},
+        ),
+        (
+            [""],
+            422,
+            {"detail": [{"loc": ["body", 0], "message": "'' is too short"}]},
+        ),
+        (["Hello", "world!"], 200, ["Hello", "world!"]),
+    ),
 )
-async def test_array_request_body(aiohttp_client, data, expected_status):
+async def test_array_request_body(
+    aiohttp_client, data, expected_status, expected_response
+):
     app = setup_openapi(
         web.Application(),
         OPENAPI_YAML_PATH,
@@ -143,9 +169,7 @@ async def test_array_request_body(aiohttp_client, data, expected_status):
     client = await aiohttp_client(app)
     response = await client.post("/api/array", json=data)
     assert response.status == expected_status
-
-    if expected_status == 200:
-        assert await response.json() == data
+    assert await response.json() == expected_response
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
@@ -172,6 +196,29 @@ def test_get_openapi_spec_no_spec():
         get_openapi_spec(web.Application())
 
 
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_multiple_request_errors(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/hello?name=&email=")
+    assert response.status == 422
+    assert await response.json() == {
+        "detail": [
+            {
+                "loc": ["parameters", "name"],
+                "message": "Empty parameter value",
+            },
+            {
+                "loc": ["parameters", "email"],
+                "message": "Empty parameter value",
+            },
+        ]
+    }
+
+
 @pytest.mark.parametrize(
     "schema_path, query_string, expected_message",
     (
@@ -188,8 +235,9 @@ def test_get_openapi_spec_no_spec():
 async def test_openapi(
     aiohttp_client, schema_path, query_string, expected_message
 ):
-    app = web.Application()
-    setup_openapi(app, schema_path, operations, server_url="/api")
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api"
+    )
 
     client = await aiohttp_client(app)
     url = "/api/hello"
