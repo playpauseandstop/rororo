@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from openapi_core.schema.exceptions import OpenAPIMappingError
@@ -29,6 +29,7 @@ ERROR_PARAMETER_REQUIRED = "Parameter required"
 OBJECT_LABEL = "Object"
 
 PathItem = Union[int, str]
+DictPathItemAny = Dict[PathItem, Any]
 
 logger = logging.getLogger(__name__)
 required_message_re = re.compile(
@@ -122,7 +123,32 @@ class ValidationErrorItem(TypedDict):
 
 
 class ValidationError(OpenAPIError):
-    """Request / response validation error."""
+    """Request / response validation error.
+
+    There is an ability to wrap ``openapi-core`` request / response validation
+    errors via :func:`.from_request_errors` class method as in same time to
+    create a validation error from the dict, like:
+
+    .. code-block:: python
+
+        raise ValidationError.from_dict(body={"name": "Name is not unique"})
+        raise ValidationError.from_dict(
+            parameters={"X-Api-Key": "Outdated API key"}
+        )
+        raise ValidationError.from_dict(
+            body={
+                0: {
+                    "data": {
+                        0: {"name": "Field required"},
+                        1: {"description": "Field required"},
+                    },
+                },
+            },
+        )
+
+    Given interface is recommended for end users, who want to raise a
+    custom validation errors within their operation handlers.
+    """
 
     default_message = "Validation error"
     status = 422
@@ -134,6 +160,23 @@ class ValidationError(OpenAPIError):
 
         self.errors = errors
         self.data = {"detail": errors} if errors else None
+
+    @classmethod
+    def from_dict(cls, data: DictPathItemAny) -> "ValidationError":
+        def dict_walker(
+            loc: List[PathItem],
+            data: DictPathItemAny,
+            errors: List[ValidationErrorItem],
+        ) -> None:
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    dict_walker(loc + [key], value, errors)
+                else:
+                    errors.append({"loc": loc + [key], "message": value})
+
+        errors: List[ValidationErrorItem] = []
+        dict_walker([], data, errors)
+        return cls(errors=errors)
 
     @classmethod
     def from_request_errors(  # type: ignore

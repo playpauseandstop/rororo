@@ -32,6 +32,47 @@ def test_openapi_error_headers(headers, expected):
     assert err.headers == expected
 
 
+@pytest.mark.parametrize(
+    "data, expected",
+    (
+        ({}, []),
+        (
+            {"body": "Validation error"},
+            [{"loc": ["body"], "message": "Validation error"}],
+        ),
+        (
+            {
+                0: {
+                    "item": {
+                        "data": {
+                            "tags": {
+                                0: {"name": "Field required"},
+                                1: {"description": "Is not unique"},
+                            }
+                        }
+                    }
+                },
+                10: {"item": "Is empty"},
+            },
+            [
+                {
+                    "loc": [0, "item", "data", "tags", 0, "name"],
+                    "message": "Field required",
+                },
+                {
+                    "loc": [0, "item", "data", "tags", 1, "description"],
+                    "message": "Is not unique",
+                },
+                {"loc": [10, "item"], "message": "Is empty"},
+            ],
+        ),
+    ),
+)
+def test_validation_error_from_dict(data, expected):
+    err = ValidationError.from_dict(data)
+    assert err.errors == expected
+
+
 def test_validation_error_from_dummy_mapping_error():
     err = ValidationError.from_request_errors([OpenAPIMappingError()])
     assert err.errors == []
