@@ -10,10 +10,10 @@ trim_trailing_whitespace = true
 [{.babelrc,.compressrc,.eslintrc}]
 indent_size = 2
 
-[*.{css,html,js,json,md,rst,yaml,yml}]
+[*.{css,html,js,json,md,yaml,yml}]
 indent_size = 2
 
-[*.{elm,py}]
+[*.{elm,py,rst}]
 indent_size = 4
 
 [Makefile]

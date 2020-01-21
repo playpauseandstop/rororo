@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from aiohttp import web
+from aiohttp_middlewares import cors_middleware, error_middleware
 from yarl import URL
 
 from rororo import (
@@ -41,6 +42,13 @@ TEST_NESTED_OBJECT = {
 
 operations = OperationTableDef()
 invalid_operations = OperationTableDef()
+
+
+def has_middleware(app, middleware):
+    for item in app.middlewares:
+        if item.__module__ == middleware.__module__:
+            return True
+    return False
 
 
 @invalid_operations.register("does-not-exist")
@@ -331,6 +339,60 @@ def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
 def test_setup_openapi_server_url_does_not_set(schema_path):
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), schema_path, operations)
+
+
+@pytest.mark.parametrize(
+    "schema_path, is_enabled, kwargs",
+    (
+        (OPENAPI_JSON_PATH, False, None),
+        (OPENAPI_YAML_PATH, False, None),
+        (OPENAPI_JSON_PATH, True, {"allow_all": True}),
+        (OPENAPI_YAML_PATH, True, {"origins": (URL("http://localhost:8000"))}),
+    ),
+)
+def test_setup_openapi_use_cors_middleware(schema_path, is_enabled, kwargs):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api/",
+        use_cors_middleware=is_enabled,
+        cors_middleware_kwargs=kwargs,
+    )
+    assert has_middleware(app, cors_middleware) is is_enabled
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+def test_setup_openapi_use_invalid_cors_middleware_kwargs(schema_path):
+    with pytest.raises(ConfigurationError):
+        setup_openapi(
+            web.Application(),
+            schema_path,
+            operations,
+            server_url="/api/",
+            use_cors_middleware=True,
+            cors_middleware_kwargs={"does_not_exist": True},
+        )
+
+
+@pytest.mark.parametrize(
+    "schema_path, is_enabled",
+    (
+        (OPENAPI_JSON_PATH, False),
+        (OPENAPI_YAML_PATH, False),
+        (OPENAPI_JSON_PATH, True),
+        (OPENAPI_YAML_PATH, True),
+    ),
+)
+def test_setup_openapi_use_error_middleware(schema_path, is_enabled):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api/",
+        use_error_middleware=is_enabled,
+    )
+    assert has_middleware(app, error_middleware) is is_enabled
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))

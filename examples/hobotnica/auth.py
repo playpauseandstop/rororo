@@ -1,5 +1,5 @@
+from rororo.openapi.exceptions import InvalidCredentials
 from .data import GITHUB_PERSONAL_TOKEN, GITHUB_USERNAME
-from .exceptions import InvalidCredentials
 
 
 def authenticate(*, username: str, personal_token: str) -> None:

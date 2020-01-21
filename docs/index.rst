@@ -13,6 +13,7 @@ Contents
    :maxdepth: 2
 
    openapi
+   openapi_errors
    settings
    api
    changelog

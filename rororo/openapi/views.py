@@ -1,8 +1,31 @@
+import logging
+
 import yaml
 from aiohttp import web
+from aiohttp_middlewares import error_context
 
-from .exceptions import ConfigurationError
+from .exceptions import ConfigurationError, OpenAPIError
 from .utils import get_openapi_schema
+from ..annotations import MappingStrStr
+
+
+logger = logging.getLogger(__name__)
+
+
+async def default_error_handler(request: web.Request) -> web.Response:
+    """Default error handler which will ignore logging OpenAPI errors."""
+    with error_context(request) as context:
+        err = context.err
+        headers: MappingStrStr = {}
+
+        if isinstance(err, OpenAPIError):
+            headers = err.headers
+        else:
+            logger.error(context.message, exc_info=True)
+
+        return web.json_response(
+            context.data, status=context.status, headers=headers,
+        )
 
 
 async def openapi_schema(request: web.Request) -> web.Response:

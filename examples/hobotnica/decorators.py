@@ -11,12 +11,12 @@ def login_required(handler: Handler) -> Handler:
     @wraps(handler)
     async def decorator(request: web.Request) -> web.StreamResponse:
         with openapi_context(request) as context:
-            username = context.parameters.header["X-GitHub-Username"]
-
             basic_auth = context.security.get("basic")
             if basic_auth is not None:
+                username = basic_auth.login
                 personal_token = basic_auth.password
             else:
+                username = context.parameters.header["X-GitHub-Username"]
                 personal_token = (
                     context.security.get("personalToken")
                     or context.security["jwt"]

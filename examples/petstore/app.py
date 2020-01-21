@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List
 
 from aiohttp import web
-from aiohttp_middlewares import cors_middleware, error_middleware
 
 from rororo import setup_openapi, setup_settings
 from . import views
@@ -39,21 +38,9 @@ def create_app(
     if settings is None:
         settings = Settings()
 
-    # Create new aiohttp application with CORS & error middlewares
-    app = web.Application(
-        middlewares=(
-            # CORS middleware should be the first one as it ensures that every
-            # aiohttp response use proper CORS headers
-            cors_middleware(allow_all=True),
-            # It's good practice to enable error middleware right after the
-            # CORS one to catch as many errors as possible
-            error_middleware(),
-        )
-    )
-
     # Store the settings within the app
-    setup_settings(
-        app,
+    app = setup_settings(
+        web.Application(),
         settings,
         loggers=("aiohttp", "aiohttp_middlewares", "petstore", "rororo"),
         remove_root_handlers=True,
@@ -63,13 +50,14 @@ def create_app(
     app[settings.pets_app_key] = []
 
     # Setup OpenAPI schema support for aiohttp application
-    setup_openapi(
+    return setup_openapi(
         # Where first param is an application instance
         app,
         # Second is path to OpenAPI 3 Schema
         Path(__file__).parent / "petstore-expanded.yaml",
         # And after list of operations
         views.operations,
+        # Enable CORS middleware as it ensures that every aiohttp response
+        # will use proper CORS headers
+        cors_middleware_kwargs={"allow_all": True},
     )
-
-    return app

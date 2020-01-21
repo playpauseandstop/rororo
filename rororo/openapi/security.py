@@ -5,7 +5,7 @@ from aiohttp import BasicAuth, hdrs, web
 
 from .constants import OPENAPI_SECURITY_API_KEY, OPENAPI_SECURITY_HTTP
 from .data import OpenAPIOperation
-from .exceptions import SecurityError
+from .exceptions import BasicSecurityError, SecurityError
 from ..annotations import DictStrAny, MappingStrAny
 
 
@@ -47,7 +47,7 @@ def get_security_data(
         if scheme == "basic":
             try:
                 return BasicAuth.decode(auth_header=authorization_header)
-            except ValueError:
+            except (AttributeError, ValueError):
                 return None
 
         # Bearer authorization (JWT)
@@ -86,7 +86,20 @@ def validate_security(
         if all(value for value in data.values()):
             return types.MappingProxyType(data)
 
-    raise SecurityError(
-        "Operation is not secured, but should be due to OpenAPI Schema "
-        "definition."
-    )
+    # To supply proper security error need to check how many security schemas
+    # should be applied for given operation
+    #
+    # If there is only one security schema with one security schema item and
+    # it is a HTTP basic - raise BasicSecurityError (401 Unauthenticated). In
+    # all other cases - raise a SecurityError (403 Access Denied)
+    if len(security_list) == 1 and len(security_list[0]) == 1:
+        security_key = list(security_list[0].keys())[0]
+        schema = oas["components"]["securitySchemes"].get(security_key)
+
+        if (
+            schema["type"] == OPENAPI_SECURITY_HTTP
+            and schema["scheme"] == "basic"
+        ):
+            raise BasicSecurityError()
+
+    raise SecurityError()

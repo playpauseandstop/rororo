@@ -100,4 +100,5 @@ texinfo_documents = [
 intersphinx_mapping = {
     "https://docs.python.org/3/": None,
     "https://aiohttp.readthedocs.io/en/stable/": None,
+    "https://aiohttp-middlewares.readthedocs.io/en/stable/": None,
 }

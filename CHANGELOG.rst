@@ -4,6 +4,10 @@
 2.0.0b3 (In Development)
 ------------------------
 
+- feature: Provide human readable security & request parameter validation
+  errors
+- feature: Allow to enable CORS / error middleware on setting up OpenAPI
+  support for ``aiohttp.web`` application
 - feature: Provide ``BaseSettings`` and ``env_factory`` helpers to work with
   settings within ``aiohttp.web`` applications. Cover how to work with settings
   at docs as well

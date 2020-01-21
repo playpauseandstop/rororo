@@ -1,6 +1,13 @@
 from typing import Any, List, Tuple
 
 from openapi_core.schema.operations.models import Operation
+from openapi_core.schema.parameters.exceptions import (
+    EmptyParameterValue,
+    InvalidParameterValue,
+    MissingParameter,
+    MissingRequiredParameter,
+    OpenAPIParameterError,
+)
 from openapi_core.schema.specs.models import Spec
 from openapi_core.validation.request.validators import (
     RequestValidator as BaseRequestValidator,
@@ -13,6 +20,7 @@ from .data import (
     OpenAPIParameters,
     to_openapi_parameters,
 )
+from .exceptions import ValidationError
 from .mappings import convert_dict_to_mapping_proxy, enforce_dicts, merge_data
 
 
@@ -48,6 +56,22 @@ class RequestValidator(BaseRequestValidator):
         )
 
 
+def convert_parameter_error_to_validation_error(
+    err: OpenAPIParameterError,
+) -> ValidationError:
+    label = "Request parameter"
+    message = {
+        EmptyParameterValue: "Empty parameter value",
+        InvalidParameterValue: "Invalid parameter value",
+        MissingParameter: "Missing parameter",
+        MissingRequiredParameter: "Parameter required",
+    }.get(type(err))
+    if message:
+        return ValidationError(label, **{f"parameters.{err.name}": message})
+
+    return ValidationError(label)
+
+
 def validate_request_parameters_and_body(
     spec: Spec, core_request: OpenAPICoreRequest
 ) -> Tuple[OpenAPIParameters, Any]:
@@ -58,7 +82,11 @@ def validate_request_parameters_and_body(
     validator = RequestValidator(spec, custom_formatters=CUSTOM_FORMATTERS)
     result = validator.validate(core_request)
 
-    result.raise_for_errors()
+    try:
+        result.raise_for_errors()
+    except OpenAPIParameterError as err:
+        raise convert_parameter_error_to_validation_error(err)
+
     return (
         to_openapi_parameters(result.parameters),
         result.body,

@@ -5,6 +5,7 @@ from typing import Dict, overload, Union
 
 import yaml
 from aiohttp import web
+from aiohttp_middlewares import cors_middleware, error_middleware
 from openapi_core.shortcuts import create_spec
 from openapi_spec_validator.exceptions import OpenAPIValidationError
 from yarl import URL
@@ -149,6 +150,9 @@ def setup_openapi(
     server_url: Url = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
+    use_error_middleware: bool = True,
+    use_cors_middleware: bool = True,
+    cors_middleware_kwargs: DictStrAny = None,
 ) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
 
@@ -240,6 +244,20 @@ def setup_openapi(
     By default, ``rororo`` will share the OpenAPI schema which is registered
     for your aiohttp.web application. In case if you don't want to share this
     schema, pass ``has_openapi_schema_handler=False`` on setting up OpenAPI.
+
+    By default, ``rororo`` will enable
+    :func:`aiohttp_middlewares.cors.cors_middleware` without any settings and
+    :func:`aiohttp_middlewares.error.error_middleware` with custom error
+    handler to ensure that security / validation errors does not provide any
+    mess to command line. Pass ``use_cors_middleware`` /
+    ``use_error_middleware`` to change or entirely disable this default
+    behaviour.
+
+    For passing custom options to CORS middleware, use
+    ``cors_middleware_kwargs`` mapping. If kwarg does not support by CORS
+    middleware - ``rororo`` will raise a ``ConfigurationError``. All list of
+    options available at documentation for
+    :func:`aiohttp_middlewares.cors.cors_middleware`.
     """
 
     def read_schema(path: Path) -> DictStrAny:
@@ -298,5 +316,24 @@ def setup_openapi(
             add_prefix("/openapi.{schema_format}", route_prefix),
             views.openapi_schema,
         )
+
+    # Add error middleware if necessary
+    if use_error_middleware:
+        app.middlewares.insert(
+            0, error_middleware(default_handler=views.default_error_handler)
+        )
+
+    # Add CORS middleware if necessary
+    if use_cors_middleware:
+        try:
+            app.middlewares.insert(
+                0, cors_middleware(**(cors_middleware_kwargs or {}))
+            )
+        except TypeError:
+            raise ConfigurationError(
+                "Unsupported kwargs passed to CORS middleware. Please check "
+                "given kwargs and remove unsupported ones: "
+                "{cors_middleware_kwargs!r}"
+            )
 
     return app
