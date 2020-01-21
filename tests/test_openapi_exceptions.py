@@ -68,9 +68,28 @@ def test_openapi_error_headers(headers, expected):
         ),
     ),
 )
-def test_validation_error_from_dict(data, expected):
+def test_validation_error_from_dict_data(data, expected):
     err = ValidationError.from_dict(data)
     assert err.errors == expected
+
+
+@pytest.mark.parametrize(
+    "kwargs, expected",
+    (
+        ({}, []),
+        ({"body": "Missed"}, [{"loc": ["body"], "message": "Missed"}]),
+    ),
+)
+def test_validation_error_from_dict_kwargs(kwargs, expected):
+    err = ValidationError.from_dict(**kwargs)
+    assert err.errors == expected
+
+
+def test_validation_error_from_dict_value_error():
+    with pytest.raises(ValueError):
+        ValidationError.from_dict(
+            {"body": "Missed"}, parameters={"name": "Parameter required"}
+        )
 
 
 def test_validation_error_from_dummy_mapping_error():

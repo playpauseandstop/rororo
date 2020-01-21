@@ -17,7 +17,7 @@ from openapi_core.schema.parameters.exceptions import (
     OpenAPIParameterError,
 )
 
-from ..annotations import MappingStrStr, TypedDict
+from ..annotations import DictStrAny, MappingStrStr, TypedDict
 
 
 ERROR_FIELD_REQUIRED = "Field required"
@@ -162,10 +162,17 @@ class ValidationError(OpenAPIError):
         self.data = {"detail": errors} if errors else None
 
     @classmethod
-    def from_dict(cls, data: DictPathItemAny) -> "ValidationError":
+    def from_dict(  # type: ignore
+        cls, data: DictPathItemAny = None, **kwargs: Any
+    ) -> "ValidationError":
+        if data and kwargs:
+            raise ValueError(
+                "Please supply only data dict or kwargs, not both"
+            )
+
         def dict_walker(
             loc: List[PathItem],
-            data: DictPathItemAny,
+            data: Union[DictPathItemAny, DictStrAny],
             errors: List[ValidationErrorItem],
         ) -> None:
             for key, value in data.items():
@@ -175,7 +182,7 @@ class ValidationError(OpenAPIError):
                     errors.append({"loc": loc + [key], "message": value})
 
         errors: List[ValidationErrorItem] = []
-        dict_walker([], data, errors)
+        dict_walker([], data or kwargs, errors)
         return cls(errors=errors)
 
     @classmethod
@@ -201,7 +208,7 @@ class ValidationError(OpenAPIError):
                 )
 
         return cls(
-            message="Request parameters or body validatione error",
+            message="Request parameters or body validation error",
             errors=parameters + body,
         )
 
