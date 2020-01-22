@@ -16,6 +16,7 @@ from rororo import (
     setup_openapi,
     setup_settings,
 )
+from rororo.openapi import get_validated_data
 from rororo.openapi.exceptions import ConfigurationError, OperationError
 from rororo.openapi.mappings import enforce_dicts
 
@@ -70,8 +71,7 @@ async def hello_world(request: web.Request) -> web.Response:
 async def retrieve_any_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
-    with openapi_context(request) as context:
-        return web.json_response(enforce_dicts(context.data))
+    return web.json_response(enforce_dicts(get_validated_data(request)))
 
 
 @operations.register

@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
@@ -9,7 +9,7 @@ from .constants import (
     APP_OPENAPI_SPEC_KEY,
     REQUEST_OPENAPI_CONTEXT_KEY,
 )
-from .data import OpenAPIContext, OpenAPIOperation
+from .data import OpenAPIContext, OpenAPIOperation, OpenAPIParameters
 from .exceptions import ConfigurationError, ContextError, OperationError
 from ..annotations import DictStrAny
 
@@ -101,3 +101,21 @@ def get_openapi_operation(
         f'Unable to find operation "{operation_id}" in provided OpenAPI '
         "Schema."
     )
+
+
+def get_validated_data(request: web.Request) -> Any:
+    """Shortcut to get validated data (request body) for given request.
+
+    In case when current request has no valid OpenAPI context attached -
+    ``ContextError`` will be raised.
+    """
+    return get_openapi_context(request).data
+
+
+def get_validated_parameters(request: web.Request) -> OpenAPIParameters:
+    """Shortcut to get validated parameters for given request.
+
+    In case when current request has no valid OpenAPI context attached -
+    ``ContextError`` will be raised.
+    """
+    return get_openapi_context(request).parameters

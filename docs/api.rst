@@ -12,6 +12,8 @@ OpenAPI
 .. autofunction:: rororo.openapi.get_openapi_context
 .. autofunction:: rororo.openapi.get_openapi_schema
 .. autofunction:: rororo.openapi.get_openapi_spec
+.. autofunction:: rororo.openapi.get_validated_data
+.. autofunction:: rororo.openapi.get_validated_parameters
 
 Settings
 ========
