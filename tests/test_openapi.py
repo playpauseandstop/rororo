@@ -100,8 +100,14 @@ async def retrieve_nested_object_from_request_body(
         return web.json_response(
             {**enforce_dicts(context.data), "uid": str(context.data["uid"])},
             headers={
-                "X-Content-Data-Type": str(type(context.data)),
-                "X-UID-Data-Type": str(type(context.data["uid"])),
+                "X-Data-Type": str(type(context.data)),
+                "X-Data-Data-Data-Items-Type": str(
+                    type(context.data["data"]["data_items"])
+                ),
+                "X-Data-Data-Str-Items-Type": str(
+                    type(context.data["data"]["str_items"])
+                ),
+                "X-Data-UID-Type": str(type(context.data["uid"])),
             },
         )
 
@@ -311,8 +317,10 @@ async def test_request_body_nested_obejct(aiohttp_client, schema_path):
     client = await aiohttp_client(app)
     response = await client.post("/api/nested-object", json=TEST_NESTED_OBJECT)
     assert response.status == 200
-    assert response.headers["X-Content-Data-Type"] == "<class 'mappingproxy'>"
-    assert response.headers["X-UID-Data-Type"] == "<class 'uuid.UUID'>"
+    assert response.headers["X-Data-Type"] == "<class 'mappingproxy'>"
+    assert response.headers["X-Data-Data-Data-Items-Type"] == "<class 'tuple'>"
+    assert response.headers["X-Data-Data-Str-Items-Type"] == "<class 'tuple'>"
+    assert response.headers["X-Data-UID-Type"] == "<class 'uuid.UUID'>"
     assert await response.json() == TEST_NESTED_OBJECT
 
 

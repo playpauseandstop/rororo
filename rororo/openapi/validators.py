@@ -14,7 +14,7 @@ from .data import (
     to_openapi_parameters,
 )
 from .exceptions import ValidationError
-from .mappings import convert_dict_to_mapping_proxy, enforce_dicts, merge_data
+from .mappings import enforce_dicts, enforce_immutable_data, merge_data
 
 
 CUSTOM_FORMATTERS = {"email": str}
@@ -42,7 +42,7 @@ class RequestValidator(BaseRequestValidator):
         raw_body = operation.request_body.get_value(request)
 
         return (
-            convert_dict_to_mapping_proxy(
+            enforce_immutable_data(
                 merge_data(body_with_dicts, media_type.cast(raw_body))
             ),
             errors,

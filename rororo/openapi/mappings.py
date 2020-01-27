@@ -7,25 +7,9 @@ from openapi_core.extensions.models.models import Model
 from ..annotations import T
 
 
-def convert_dict_to_mapping_proxy(data: Any) -> Any:
-    """Convert all dicts to mapping proxy types."""
-    if isinstance(data, list):
-        return [convert_dict_to_mapping_proxy(item) for item in data]
-
-    if isinstance(data, Mapping):
-        return types.MappingProxyType(
-            {
-                key: convert_dict_to_mapping_proxy(value)
-                for key, value in data.items()
-            }
-        )
-
-    return data
-
-
 def enforce_dicts(data: Any) -> Any:
     """Deep convert openapi-core Models to dicts."""
-    if isinstance(data, list):
+    if isinstance(data, (list, tuple)):
         return [enforce_dicts(item) for item in data]
 
     if isinstance(data, Mapping):
@@ -33,6 +17,22 @@ def enforce_dicts(data: Any) -> Any:
 
     if isinstance(data, Model):
         return {key: enforce_dicts(value) for key, value in vars(data).items()}
+
+    return data
+
+
+def enforce_immutable_data(data: Any) -> Any:
+    """Deep convert all dicts to mapping proxies & lists to tuples.
+
+    This ensure that all request body data is immutable.
+    """
+    if isinstance(data, list):
+        return tuple(enforce_immutable_data(item) for item in data)
+
+    if isinstance(data, Mapping):
+        return types.MappingProxyType(
+            {key: enforce_immutable_data(value) for key, value in data.items()}
+        )
 
     return data
 

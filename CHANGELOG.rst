@@ -4,8 +4,9 @@
 2.0.0b3 (In Development)
 ------------------------
 
-- feature: Provide human readable security & request parameter validation
+- feature: Provide human readable security, request & response validation
   errors
+- feature: Support free form objects in request body
 - feature: Allow to enable CORS / error middleware on setting up OpenAPI
   support for ``aiohttp.web`` application
 - feature: Provide ``BaseSettings`` and ``env_factory`` helpers to work with
