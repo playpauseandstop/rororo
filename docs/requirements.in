@@ -4,3 +4,4 @@ openapi-core
 PyYAML
 sphinx
 sphinx_autodoc_typehints
+typing-extensions; python_version <= "3.8"
