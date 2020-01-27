@@ -151,6 +151,7 @@ def setup_openapi(
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
     use_error_middleware: bool = True,
+    error_middleware_kwargs: DictStrAny = None,
     use_cors_middleware: bool = True,
     cors_middleware_kwargs: DictStrAny = None,
 ) -> web.Application:
@@ -319,9 +320,17 @@ def setup_openapi(
 
     # Add error middleware if necessary
     if use_error_middleware:
-        app.middlewares.insert(
-            0, error_middleware(default_handler=views.default_error_handler)
-        )
+        kwargs = error_middleware_kwargs or {}
+        kwargs["default_handler"] = views.default_error_handler
+
+        try:
+            app.middlewares.insert(0, error_middleware(**kwargs))
+        except TypeError:
+            raise ConfigurationError(
+                "Unsupported kwargs passed to error middleware. Please check "
+                "given kwargs and remove unsupported ones: "
+                f"{error_middleware_kwargs!r}"
+            )
 
     # Add CORS middleware if necessary
     if use_cors_middleware:
@@ -333,7 +342,7 @@ def setup_openapi(
             raise ConfigurationError(
                 "Unsupported kwargs passed to CORS middleware. Please check "
                 "given kwargs and remove unsupported ones: "
-                "{cors_middleware_kwargs!r}"
+                f"{cors_middleware_kwargs!r}"
             )
 
     return app

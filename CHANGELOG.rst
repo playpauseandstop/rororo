@@ -1,6 +1,11 @@
 2.0.0 (In Development)
 ----------------------
 
+2.0.0rc0 (In Development)
+-------------------------
+
+- feature: Allow to pass kwargs to error middleware as done for CORS middleware
+
 2.0.0b3 (2020-01-27)
 --------------------
 

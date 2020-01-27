@@ -436,6 +436,19 @@ def test_setup_openapi_use_invalid_cors_middleware_kwargs(schema_path):
         )
 
 
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+def test_setup_openapi_use_invalid_error_middleware_kwargs(schema_path):
+    with pytest.raises(ConfigurationError):
+        setup_openapi(
+            web.Application(),
+            schema_path,
+            operations,
+            server_url="/api/",
+            use_error_middleware=True,
+            error_middleware_kwargs={"does_not_exist": True},
+        )
+
+
 @pytest.mark.parametrize(
     "schema_path, is_enabled",
     (

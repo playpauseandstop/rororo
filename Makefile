@@ -64,7 +64,7 @@ endif
 
 install: .install
 .install: pyproject.toml poetry.lock
-	$(POETRY) config virtualenvs.in-project true
+	$(POETRY) config virtualenvs.in-project true --local
 	$(POETRY) install
 	touch $@
 
