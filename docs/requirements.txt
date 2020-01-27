@@ -4,9 +4,10 @@
 #
 #    pip-compile docs/requirements.in
 #
+aiohttp-middlewares==1.0.0
 aiohttp==3.6.2
 alabaster==0.7.12         # via sphinx
-async-timeout==3.0.1      # via aiohttp
+async-timeout==3.0.1      # via aiohttp, aiohttp-middlewares
 attrs==19.3.0
 babel==2.8.0              # via sphinx
 certifi==2019.11.28       # via requests
