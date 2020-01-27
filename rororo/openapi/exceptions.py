@@ -212,6 +212,20 @@ class ValidationError(OpenAPIError):
             errors=parameters + body,
         )
 
+    @classmethod
+    def from_response_errors(  # type: ignore
+        cls, errors: List[OpenAPIMappingError]
+    ) -> "ValidationError":
+        result = []
+
+        for err in errors:
+            if isinstance(err, OpenAPIMediaTypeError):
+                details = get_media_type_error_details(["response"], err)
+                if details:
+                    result.append(details)
+
+        return cls(message="Response data validation error", errors=result)
+
 
 def ensure_loc(loc: List[PathItem]) -> List[PathItem]:
     return [item for item in loc if item != ""]

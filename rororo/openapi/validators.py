@@ -77,5 +77,7 @@ def validate_response_data(
     validator = ResponseValidator(spec, custom_formatters=CUSTOM_FORMATTERS)
     result = validator.validate(core_request, core_response)
 
-    result.raise_for_errors()
+    if result.errors:
+        raise ValidationError.from_response_errors(result.errors)
+
     return result.data

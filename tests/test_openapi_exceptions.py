@@ -92,19 +92,18 @@ def test_validation_error_from_dict_value_error():
         )
 
 
-def test_validation_error_from_dummy_mapping_error():
-    err = ValidationError.from_request_errors([OpenAPIMappingError()])
-    assert err.errors == []
-    assert err.data is None
-
-
-def test_validation_error_from_dummy_media_type_error():
-    err = ValidationError.from_request_errors([OpenAPIMediaTypeError()])
-    assert err.errors == []
-    assert err.data is None
-
-
-def test_validation_error_from_dummy_operation_error():
-    err = ValidationError.from_request_errors([OpenAPIParameterError()])
+@pytest.mark.parametrize(
+    "method, error",
+    (
+        (ValidationError.from_request_errors, OpenAPIMappingError()),
+        (ValidationError.from_response_errors, OpenAPIMappingError()),
+        (ValidationError.from_request_errors, OpenAPIMediaTypeError()),
+        (ValidationError.from_response_errors, OpenAPIMediaTypeError()),
+        (ValidationError.from_request_errors, OpenAPIParameterError()),
+        (ValidationError.from_response_errors, OpenAPIParameterError()),
+    ),
+)
+def test_validation_error_from_dummy_error(method, error):
+    err = method([error])
     assert err.errors == []
     assert err.data is None

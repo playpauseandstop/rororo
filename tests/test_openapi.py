@@ -88,6 +88,11 @@ async def retrieve_empty(request: web.Request) -> web.Response:
 
 
 @operations.register
+async def retrieve_invalid_response(request: web.Request) -> web.Response:
+    return web.json_response({})
+
+
+@operations.register
 async def retrieve_nested_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
@@ -477,3 +482,46 @@ async def test_validate_empty_response(aiohttp_client, schema_path):
     client = await aiohttp_client(app)
     response = await client.get("/api/empty")
     assert response.status == 204
+
+
+@pytest.mark.parametrize(
+    "schema_path, is_validate_response, expected_status",
+    (
+        (OPENAPI_JSON_PATH, False, 200),
+        (OPENAPI_JSON_PATH, True, 422),
+        (OPENAPI_YAML_PATH, False, 200),
+        (OPENAPI_JSON_PATH, True, 422),
+    ),
+)
+async def test_validate_response(
+    aiohttp_client, schema_path, is_validate_response, expected_status
+):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api",
+        is_validate_response=is_validate_response,
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/invalid-response")
+    assert response.status == expected_status
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_validate_response_error(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api",
+        is_validate_response=True,
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/invalid-response")
+    assert response.status == 422
+    assert await response.json() == {
+        "detail": [{"loc": ["response", "uid"], "message": "Field required"}]
+    }

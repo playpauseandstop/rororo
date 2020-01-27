@@ -126,6 +126,23 @@
         }
       }
     },
+    "/invalid-response": {
+      "get": {
+        "operationId": "retrieve_invalid_response",
+        "responses": {
+          "200": {
+            "description": "Expected response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NestedObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/nested-object": {
       "post": {
         "operationId": "retrieve_nested_object_from_request_body",
