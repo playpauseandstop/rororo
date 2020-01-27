@@ -45,13 +45,13 @@ Important
 
 .. code-block:: bash
 
-    pip install rororo>=2.0.0a3
+    pip install rororo==2.0.0b3
 
 or,
 
 .. code-block:: bash
 
-    poetry add rororo^=2.0.0a3
+    poetry add rororo==2.0.0b3
 
 Quick Start
 ===========

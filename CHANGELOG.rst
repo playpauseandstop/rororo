@@ -1,8 +1,8 @@
 2.0.0 (In Development)
 ----------------------
 
-2.0.0b3 (In Development)
-------------------------
+2.0.0b3 (2020-01-27)
+--------------------
 
 - feature: Provide human readable security, request & response validation
   errors
@@ -12,7 +12,7 @@
 - feature: Provide ``BaseSettings`` and ``env_factory`` helpers to work with
   settings within ``aiohttp.web`` applications. Cover how to work with settings
   at docs as well
-- chore: Stricter ``mypy`` config to ensure `@operations.register` is a typed
+- chore: Stricter ``mypy`` config to ensure ``@operations.register`` is a typed
   decorator
 
 2.0.0b2 (2019-12-19)
