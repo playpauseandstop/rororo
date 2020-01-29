@@ -85,6 +85,9 @@ paths:
       responses:
         "204":
           description: "Empty response."
+      security:
+        - {}
+        - apiKey: []
 
   "/invalid-response":
     get:
@@ -189,3 +192,9 @@ components:
         any_data:
           $ref: "#/components/schemas/AnyObject"
       required: ["uid", "type", "data", "any_data"]
+
+  securitySchemes:
+    apiKey:
+      type: "apiKey"
+      in: "header"
+      name: "X-API-Key"

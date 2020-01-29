@@ -81,6 +81,14 @@ def validate_security(
     if not security_list:
         return types.MappingProxyType({})
 
+    # If operation "secured" with an empty object it means the whole security
+    # rules are optional. However to not return empty security details it is
+    # needed to move given security scheme to the bottom
+    has_empty_security = {} in security_list
+    if has_empty_security:
+        security_list.remove({})
+        security_list.append({})
+
     for item in security_list:
         data = {key: get_security_data(request, key, oas=oas) for key in item}
         if all(value for value in data.values()):

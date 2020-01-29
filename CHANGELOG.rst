@@ -5,6 +5,7 @@
 -------------------------
 
 - feature: Allow to pass kwargs to error middleware as done for CORS middleware
+- feature: Ensure support optional security schemes
 
 2.0.0b3 (2020-01-27)
 --------------------

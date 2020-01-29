@@ -9,6 +9,7 @@ from yarl import URL
 
 from rororo import (
     BaseSettings,
+    get_openapi_context,
     get_openapi_schema,
     get_openapi_spec,
     openapi_context,
@@ -84,7 +85,10 @@ async def retrieve_array_from_request_body(
 
 @operations.register
 async def retrieve_empty(request: web.Request) -> web.Response:
-    return web.Response(status=204)
+    context = get_openapi_context(request)
+    return web.Response(
+        status=204, headers={"X-API-Key": context.security.get("apiKey") or ""}
+    )
 
 
 @operations.register
@@ -306,6 +310,28 @@ async def test_openapi_schema_handler(
     client = await aiohttp_client(app)
     response = await client.get(url)
     assert response.status == expected_status
+
+
+@pytest.mark.parametrize(
+    "schema_path, headers, expected",
+    (
+        (OPENAPI_JSON_PATH, {}, ""),
+        (OPENAPI_JSON_PATH, {"X-API-Key": "apiKey"}, "apiKey"),
+        (OPENAPI_YAML_PATH, {}, ""),
+        (OPENAPI_YAML_PATH, {"X-API-Key": "apiKey"}, "apiKey"),
+    ),
+)
+async def test_optional_security_scheme(
+    aiohttp_client, schema_path, headers, expected
+):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/empty", headers=headers)
+    assert response.status == 204
+    assert response.headers["X-API-Key"] == expected
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
