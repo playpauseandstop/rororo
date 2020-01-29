@@ -58,6 +58,12 @@ async def does_not_exist(request: web.Request) -> web.Response:
     return web.Response(text="Hello, world!")
 
 
+@operations.register("create-post")
+async def create_post(request: web.Request) -> web.Response:
+    data = get_validated_data(request)
+    return web.json_response({**data, "id": 1}, status=201)
+
+
 @operations.register
 async def hello_world(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
@@ -185,6 +191,61 @@ async def test_array_request_body(
     response = await client.post("/api/array", json=data)
     assert response.status == expected_status
     assert await response.json() == expected_response
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_create_post_201(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.post(
+        "/api/create-post",
+        json={"title": "Post", "slug": "post", "content": "Post Content"},
+    )
+    assert response.status == 201
+    assert await response.json() == {
+        "id": 1,
+        "title": "Post",
+        "slug": "post",
+        "description": None,
+        "content": "Post Content",
+        "tags": None,
+    }
+
+
+@pytest.mark.parametrize(
+    "schema_path, invalid_data, expected_detail",
+    (
+        (
+            OPENAPI_JSON_PATH,
+            {},
+            [{"loc": ["body", "title"], "message": "Field required"}],
+        ),
+        (
+            OPENAPI_YAML_PATH,
+            {"title": "Title"},
+            [{"loc": ["body", "slug"], "message": "Field required"}],
+        ),
+        (
+            OPENAPI_JSON_PATH,
+            {"title": "Title", "slug": "slug"},
+            [{"loc": ["body", "content"], "message": "Field required"}],
+        ),
+    ),
+)
+async def test_create_post_422(
+    aiohttp_client, schema_path, invalid_data, expected_detail
+):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url=URL("/dev-api"),
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.post("/dev-api/create-post", json=invalid_data)
+    assert response.status == 422
+    assert (await response.json())["detail"] == expected_detail
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))

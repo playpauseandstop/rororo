@@ -21,7 +21,7 @@ paths:
     get:
       operationId: "list_repositories"
       tags:
-        - repositories
+        - "repositories"
       summary: "List user repositories registered in Hobotnica."
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
@@ -36,6 +36,28 @@ paths:
                   $ref: "#/components/schemas/Repository"
       security:
         - jwt: []
+        - personalToken: []
+
+    post:
+      operationId: "create_repository"
+      tags:
+        - "repositories"
+      summary: "Add new user repository to Hobotnica."
+      parameters:
+        - $ref: "#/components/parameters/GitHubUsername"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewRepository"
+      responses:
+        "201":
+          description: "Added repository details."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+      security:
         - personalToken: []
 
   "/repositories/{owner}":
@@ -92,6 +114,15 @@ components:
     RepositoryJob:
       type: "string"
       enum: ["test", "deploy"]
+
+    NewRepository:
+      type: "object"
+      properties:
+        owner:
+          $ref: "#/components/schemas/RepositoryOwner"
+        name:
+          $ref: "#/components/schemas/RepositoryName"
+      required: ["owner", "name"]
 
     Repository:
       type: "object"

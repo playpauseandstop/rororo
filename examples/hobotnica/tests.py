@@ -13,6 +13,19 @@ OWNER_REPOSITORIES_URL = f"{REPOSITORIES_URL}/{GITHUB_USERNAME}"
 REPOSITORY_URL = f"{REPOSITORIES_URL}/{GITHUB_USERNAME}/{GITHUB_REPOSITORY}"
 
 
+async def test_create_repository_201(aiohttp_client):
+    client = await aiohttp_client(create_app())
+    response = await client.post(
+        REPOSITORIES_URL,
+        json={"owner": GITHUB_USERNAME, "name": GITHUB_REPOSITORY},
+        headers={
+            "X-GitHub-Username": GITHUB_USERNAME,
+            "X-GitHub-Personal-Token": GITHUB_PERSONAL_TOKEN,
+        },
+    )
+    assert response.status == 201
+
+
 async def test_list_owner_repositories_200(aiohttp_client):
     client = await aiohttp_client(create_app())
     response = await client.get(

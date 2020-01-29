@@ -1,3 +1,5 @@
+import uuid
+
 from aiohttp import web
 
 from rororo import openapi_context, OperationTableDef
@@ -7,6 +9,21 @@ from .decorators import login_required
 
 
 operations = OperationTableDef()
+
+
+@operations.register
+@login_required
+async def create_repository(request: web.Request) -> web.Response:
+    with openapi_context(request) as context:
+        return web.json_response(
+            {
+                **context.data,
+                "uid": str(uuid.uuid4()),
+                "jobs": ["test", "deploy"],
+                "status": "cloning",
+            },
+            status=201,
+        )
 
 
 @operations.register
