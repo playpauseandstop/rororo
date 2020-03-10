@@ -1,0 +1,125 @@
+name: "ci"
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  dev:
+    name: "Verify package is installed well"
+
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+
+    runs-on: "${{ matrix.os }}"
+
+    steps:
+      - uses: "actions/checkout@v2.0.0"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v1.2.0"
+        with:
+          python-version: "3.8"
+
+      - name: "Install poetry"
+        uses: "dschep/install-poetry-action@v1.3"
+        with:
+          version: "1.0.5"
+
+      - name: "Install package"
+        run: "poetry install --no-dev"
+
+      - name: "Import package"
+        run: "poetry run python -c 'import rororo'"
+
+  test:
+    name: "Python ${{ matrix.python-version }}"
+
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8"]
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v2.0.0"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v1.2.0"
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Install poetry"
+        uses: "dschep/install-poetry-action@v1.3"
+        with:
+          version: "1.0.5"
+          create_virtualenvs: true
+
+      - name: "Install package"
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install --no-dev
+          python -m pip install tox==3.14.5 tox-gh-actions==1.1.0
+
+      - name: "Cache pre-commit"
+        if: "matrix.python-version == '3.8'"
+        uses: "actions/cache@v1.1.2"
+        with:
+          path: "~/.cache/pre-commit"
+          key: "pre-commit-${{ matrix.python-version }}-${{ hashFiles('.pre-commit-config.yaml') }}"
+
+      - name: "Run pre-commit"
+        if: "matrix.python-version == '3.8'"
+        uses: "pre-commit/action@v1.0.1"
+
+      - name: "Run tests"
+        run: |
+          python -m tox
+
+      - name: "Send report to coveralls"
+        if: "matrix.python-version == '3.8'"
+        env:
+          COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
+        run: |
+          python -m pip install coveralls==1.11.1
+          python -m coveralls
+
+  package:
+    name: "Build & deploy package"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "actions/setup-python@v1"
+        with:
+          python-version: "3.8"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v1.2.0"
+        with:
+          python-version: "3.8"
+
+      - name: "Install poetry"
+        uses: "dschep/install-poetry-action@v1.3"
+        with:
+          version: "1.0.5"
+          create_virtualenvs: true
+
+      - name: "Build package"
+        run: "poetry build"
+
+      - name: "Check package"
+        run: |
+          python -m pip install twine==3.1.1
+          python -m twine check dist/*
+
+      - name: "Publish package"
+        if: "github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')"
+        uses: "pypa/gh-action-pypi-publish@v1.1.0"
+        with:
+          user: "${{ secrets.PYPI_USERNAME }}"
+          password: "${{ secrets.PYPI_PASSWORD }}"

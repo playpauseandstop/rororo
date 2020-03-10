@@ -2,9 +2,9 @@
 rororo
 ======
 
-.. image:: https://img.shields.io/circleci/project/github/playpauseandstop/rororo/master.svg
-    :target: https://circleci.com/gh/playpauseandstop/rororo
-    :alt: CircleCI
+.. image:: https://github.com/playpauseandstop/rororo/workflows/ci/badge.svg
+   :target: https://github.com/playpauseandstop/rororo/actions?query=workflow%3A%22ci%22
+   :alt: CI Workflow
 
 .. image:: https://img.shields.io/pypi/v/rororo.svg
     :target: https://pypi.org/project/rororo/
