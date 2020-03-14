@@ -62,6 +62,12 @@ legacy_tox_ini = """
 envlist = py36,py37,py38
 skipsdist = True
 
+[gh-actions]
+python =
+    3.6: py36
+    3.7: py37
+    3.8: py38
+
 [testenv]
 passenv =
     PYTHONPATH
