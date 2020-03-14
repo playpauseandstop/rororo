@@ -3,41 +3,46 @@ repos:
   - repo: "https://github.com/psf/black"
     rev: "19.10b0"
     hooks:
-      - id: black
-        name: Format code (black)
+      - id: "black"
+        name: "Format code (black)"
+        language_version: "python3.8"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v2.4.0"
     hooks:
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
+      - id: "end-of-file-fixer"
+      - id: "trailing-whitespace"
 
   - repo: "https://gitlab.com/PyCQA/flake8"
     rev: "3.7.9"
     hooks:
-      - id: flake8
-        name: Lint code (flake8)
+      - id: "flake8"
+        name: "Lint code (flake8)"
+        language_version: "python3.8"
         additional_dependencies:
-          - flake8==3.7.9
-          - flake8-broken-line==0.1.1
-          - flake8-bugbear==20.1.0
-          - flake8-builtins==1.4.2
-          - flake8-comprehensions==3.1.4
-          - flake8-eradicate==0.2.4
-          - flake8-import-order==0.18.1
-          - flake8-mutable==1.2.0
-          - flake8-pie==0.4.2
-          - flake8-quotes==2.1.1
-          - flake8-string-format==0.2.3
-          - flake8-tidy-imports==3.1.0
-          - pep8-naming==0.9.1
+          - "flake8==3.7.9"
+          - "flake8-broken-line==0.2.0"
+          - "flake8-bugbear==20.1.4"
+          - "flake8-builtins==1.4.2"
+          - "flake8-comprehensions==3.2.2"
+          - "flake8-eradicate==0.3.0"
+          - "flake8-import-order==0.18.1"
+          - "flake8-mutable==1.2.0"
+          - "flake8-pie==0.5.0"
+          - "flake8-quotes==2.1.1"
+          - "flake8-string-format==0.3.0"
+          - "flake8-tidy-imports==4.0.0"
+          - "pep8-naming==0.9.1"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/pre-commit/mirrors-mypy"
-    rev: "v0.761"
+    rev: "v0.770"
     hooks:
-      - id: mypy
-        name: Lint code (mypy)
-        args: [--python-executable=.venv/bin/python]
+      - id: "mypy"
+        name: "Lint code (mypy)"
+        language_version: "python3.8"
+        args: [
+          "--python-executable=.venv/bin/python"
+        ]
         exclude: ^docs/.*$

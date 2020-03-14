@@ -36,6 +36,7 @@ jobs:
         run: "poetry run python -c 'import rororo'"
 
   test:
+    needs: "dev"
     name: "Python ${{ matrix.python-version }}"
 
     strategy:
@@ -88,6 +89,7 @@ jobs:
           python -m coveralls
 
   package:
+    needs: "test"
     name: "Build & deploy package"
 
     runs-on: "ubuntu-latest"
