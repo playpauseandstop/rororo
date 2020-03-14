@@ -65,6 +65,10 @@ jobs:
           poetry install --no-dev
           python -m pip install tox==3.14.5 tox-gh-actions==1.1.0
 
+      - name: "Install depencencies"
+        run: |
+          sudo apt install -y locales-all
+
       - name: "Cache pre-commit"
         if: "matrix.python-version == '3.8'"
         uses: "actions/cache@v1.1.2"
