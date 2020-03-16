@@ -95,7 +95,7 @@ class OpenAPICoreResponse(BaseOpenAPIResponse):
 @attr.dataclass(frozen=True, slots=True)
 class OpenAPIOperation:
     #: Operation ID
-    id: str
+    id: str  # noqa: A003
 
     #: Operation path
     path: str
