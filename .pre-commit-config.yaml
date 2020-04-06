@@ -8,6 +8,16 @@ repos:
         language_version: "python3.8"
         exclude: ^docs/.*$
 
+  - repo: "https://github.com/asottile/blacken-docs"
+    rev: "v1.6.0"
+    hooks:
+      - id: "blacken-docs"
+        name: "Format docs (blacken-docs)"
+        language_version: "python3.8"
+        args: ["-l", "64"]
+        additional_dependencies:
+          - "black==19.10b0"
+
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v2.5.0"
     hooks:

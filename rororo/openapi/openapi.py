@@ -59,6 +59,7 @@ class OperationTableDef(Dict[str, Handler]):
         async def hello_world(request: web.Request) -> web.Response:
             ...
 
+
         # Explicitly use operationId: helloWorld
         @operations.register("helloWorld")
         async def hello_world(request: web.Request) -> web.Response:

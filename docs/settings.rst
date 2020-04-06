@@ -88,7 +88,9 @@ In most cases, it should looks like,
     from .settings import Settings
 
 
-    def create_app(argv: List[str] = None, **options: Any) -> web.Application:
+    def create_app(
+        argv: List[str] = None, **options: Any
+    ) -> web.Application:
         # Instantiate settings
         settings = Settings(**options)
 
@@ -145,8 +147,8 @@ yourself like,
                 release=settings.sentry_release,
                 integrations=(
                     AioHttpIntegration(),
-                    LoggingIntegration(event_level=logging.WARNING)
-                )
+                    LoggingIntegration(event_level=logging.WARNING),
+                ),
             )
 
         ...
@@ -206,7 +208,7 @@ In most cases that ``__main__.py`` will look like,
             host=settings.host,
             port=settings.port,
             access_log=logger if is_dev else None,
-            access_log_format=ACCESS_LOG_FORMAT
+            access_log_format=ACCESS_LOG_FORMAT,
         )
 
 Within view functions

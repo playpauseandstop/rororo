@@ -40,6 +40,7 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
     .. code-block:: python
 
         from logging.config import dictConfig
+
         dictConfig(default_logging_dict("aiohttp", "api"))
 
     :param \*loggers: Enable logging for each logger in sequence.
@@ -103,7 +104,7 @@ def update_sentry_logging(
         from logging.config import dictConfig
 
         LOGGING = default_logging_dict()
-        SENTRY_DSN = '...'
+        SENTRY_DSN = "..."
 
         update_sentry_logging(LOGGING, SENTRY_DSN)
         dictConfig(LOGGING)
@@ -116,10 +117,9 @@ def update_sentry_logging(
     .. code-block:: python
 
         from raven_aiohttp import AioHttpTransport
+
         update_sentry_logging(
-            LOGGING,
-            SENTRY_DSN,
-            transport=AioHttpTransport
+            LOGGING, SENTRY_DSN, transport=AioHttpTransport
         )
 
     :param logging_dict: Logging dict.

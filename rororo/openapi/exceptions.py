@@ -131,7 +131,9 @@ class ValidationError(OpenAPIError):
 
     .. code-block:: python
 
-        raise ValidationError.from_dict(body={"name": "Name is not unique"})
+        raise ValidationError.from_dict(
+            body={"name": "Name is not unique"}
+        )
         raise ValidationError.from_dict(
             parameters={"X-Api-Key": "Outdated API key"}
         )

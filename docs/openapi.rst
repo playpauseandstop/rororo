@@ -107,7 +107,9 @@ to pass ``operation_id`` string as first argument to ``@operations.register``,
 .. code-block:: python
 
     @operations.register("hello_world")
-    async def not_a_hello_world(request: web.Request) -> web.Response:
+    async def not_a_hello_world(
+        request: web.Request,
+    ) -> web.Response:
         return web.json_response("Hello, world!")
 
 Request Validation

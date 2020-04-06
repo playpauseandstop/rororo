@@ -73,7 +73,11 @@ schema file.
     from typing import List
 
     from aiohttp import web
-    from rororo import openapi_context, OperationTableDef, setup_openapi
+    from rororo import (
+        openapi_context,
+        OperationTableDef,
+        setup_openapi,
+    )
 
 
     operations = OperationTableDef()
@@ -92,7 +96,7 @@ schema file.
             app,
             Path(__file__).parent / "openapi.yaml",
             operations,
-            route_prefix="/api"
+            route_prefix="/api",
         )
         return app
 

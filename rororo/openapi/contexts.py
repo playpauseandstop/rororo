@@ -21,6 +21,7 @@ def openapi_context(request: web.Request) -> Iterator[OpenAPIContext]:
 
         operations = OperationTableDef()
 
+
         @operations.register
         async def hello_world(request: web.Request) -> web.Response:
             with openapi_context(request) as context:

@@ -9,6 +9,6 @@ schema.
 Usage
 =====
 
-.. code-block:: python
+.. code-block:: bash
 
     python -m aiohttp.web petstore.app:create_app
