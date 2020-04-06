@@ -19,17 +19,17 @@ Step 1. Settings data structure
 ===============================
 
 The main part of setup is Settings data structure backed by brilliant
-`attrs <https://www.attrs.org/>`_ library. It stores all settings values, as
-well as any other settings related data.
+`environ-config <https://environ-config.readthedocs.io/>`_ library. It stores
+all settings values, as well as any other settings related data.
 
 Example below illustrates how given Settings data structure may look like,
 
 .. code-block:: python
 
-    import attr
+    import environ
 
 
-    @attr.dataclass(frozen=True, slots=True)
+    @environ.config(prefix=None, frozen=True)
     class Settings:
         level: str
         debug: bool
@@ -92,7 +92,7 @@ In most cases, it should looks like,
         argv: List[str] = None, **options: Any
     ) -> web.Application:
         # Instantiate settings
-        settings = Settings(**options)
+        settings = Settings().from_environ(**options)
 
         # Instantiate app
         app = web.Application(...)
@@ -138,7 +138,7 @@ yourself like,
 
 
     def create_app(argv: List[str] = None) -> web.Application:
-        settings = Settings()
+        settings = Settings.from_environ()
 
         if settings.sentry_dsn:
             sentry_sdk.init(
@@ -156,9 +156,10 @@ yourself like,
 Setup shortcut
 --------------
 
-There is a :func:`rororo.settings.setup_settings` shortcut, which apply given
-Settings data structure and put given instance into
-:class:`aiohttp.web.Application` dict as ``"settings"`` key.
+There is a :func:`rororo.settings.setup_settings_from_environ` &
+:func:`rororo.settings.setup_settings` shortcuts, which apply given Settings
+data structure and put given instance into :class:`aiohttp.web.Application`
+dict as ``"settings"`` key.
 
 In other words given function is a literally shortcut to,
 
@@ -197,7 +198,7 @@ In most cases that ``__main__.py`` will look like,
         app = create_app()
 
         settings: Settings = app[APP_SETTINGS_KEY]
-        is_dev = settings.level == "dev"
+        is_dev = settings.is_dev
 
         if is_dev:
             import aiohttp_autoreload

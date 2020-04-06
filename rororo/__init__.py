@@ -20,12 +20,11 @@ from .openapi import (
     OperationTableDef,
     setup_openapi,
 )
-from .settings import BaseSettings, env_factory, setup_settings
+from .settings import BaseSettings, setup_settings, setup_settings_from_environ
 
 
 __all__ = (
     "BaseSettings",
-    "env_factory",
     "get_openapi_context",
     "get_openapi_schema",
     "get_openapi_spec",
@@ -33,6 +32,7 @@ __all__ = (
     "OperationTableDef",
     "setup_openapi",
     "setup_settings",
+    "setup_settings_from_environ",
 )
 
 __author__ = "Igor Davydenko"

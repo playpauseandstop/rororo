@@ -6,6 +6,8 @@
 
 - feature: Allow to pass kwargs to error middleware as done for CORS middleware
 - feature: Ensure support optional security schemes
+- feature: Integrate `environ-config <https://environ-config.readthedocs.io>`_
+  library for settings needs
 
 2.0.0b3 (2020-01-27)
 --------------------

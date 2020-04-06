@@ -28,15 +28,22 @@ from typing import (
     Iterator,
     MutableMapping,
     Optional,
-    overload,
     Tuple,
+    Type,
     Union,
 )
 
-import attr
+import environ
 from aiohttp import web
 
-from .annotations import DictStrAny, Level, MappingStrAny, Settings, T
+from .annotations import (
+    DictStrAny,
+    Level,
+    MappingStrAny,
+    MappingStrStr,
+    Settings,
+    T,
+)
 from .logger import default_logging_dict
 from .utils import ensure_collection, to_bool
 
@@ -44,80 +51,7 @@ from .utils import ensure_collection, to_bool
 APP_SETTINGS_KEY = "settings"
 
 
-@overload
-def env_factory(name: str) -> Optional[str]:
-    ...  # pragma: no cover
-
-
-@overload
-def env_factory(name: str, default: T) -> T:
-    ...  # pragma: no cover
-
-
-def env_factory(name: str, default: T = None) -> Union[Optional[str], T]:
-    """Helper to read attribute value from environment.
-
-    It is designed to use, when settings is implemented as ``@attr.dataclass``
-    data structure and there is a need to read value from environment via
-    :func:`os.getenv` function.
-
-    This factory function helps to:
-
-    1. Eliminate necessity of using ``lambda`` functions when mixing
-       ``os.getenv`` with ``attr``, like:
-       ``attr.Factory(lambda: os.getenv("USER"))``
-    2. Exclude ``# type: ignore`` from settings data structures
-    3. Convert ``str`` values from environment to required type
-
-    Example belows demonstrates ``env_factory`` usage variants,
-
-    .. code-block:: python
-
-        import attr
-
-
-        @attr.dataclass
-        class Settings:
-            # As ``os.getenv(key)`` returns ``Optional[str]`` you need
-            # to provide default value for each non-optional env attribs
-            user: str = env_factory("USER", "default-user")
-
-            # Convert string value from environment to ``Path``
-            user_path: Path = env_factory("USER_PATH", Path("~"))
-
-            # Or to integer
-            user_level: int = env_factory("USER_LEVEL", 1)
-
-            # When default value is omit env attrib is **optional**
-            sentry_dsn: Optional[str] = env_factory("SENTRY_DSN")
-
-    """
-
-    def getenv() -> Union[Optional[str], T]:
-        value = os.getenv(name)
-        if default is None:
-            return value
-
-        if value is None:
-            return default
-
-        expected_type = type(default)
-        if isinstance(value, expected_type):
-            return value
-
-        try:
-            if expected_type is bool:
-                return to_bool(value)  # type: ignore
-            return expected_type(value)  # type: ignore
-        except (TypeError, ValueError):
-            raise ValueError(
-                f"Unable to convert {name} env var to {expected_type}."
-            )
-
-    return attr.Factory(getenv)
-
-
-@attr.dataclass(frozen=True, slots=True)
+@environ.config(prefix=None, frozen=True)
 class BaseSettings:
     """Base Settings data structure for configuring ``aiohttp.web`` apps.
 
@@ -138,23 +72,27 @@ class BaseSettings:
     """
 
     # Base aiohttp settings
-    host: str = env_factory("AIOHTTP_HOST", "localhost")
-    port: int = env_factory("AIOHTTP_PORT", 8080)
+    host: str = environ.var(name="AIOHTTP_HOST", default="localhost")
+    port: int = environ.var(name="AIOHTTP_PORT", converter=int, default=8080)
 
     # Base application settings
-    debug: bool = env_factory("DEBUG", False)
-    level: Level = env_factory("LEVEL", "dev")
+    debug: bool = environ.bool_var(name="DEBUG", default=False)
+    level: Level = environ.var(name="LEVEL", default="dev")
 
     # Date & time settings
-    time_zone: str = env_factory("TIME_ZONE", "UTC")
+    time_zone: str = environ.var(name="TIME_ZONE", default="UTC")
 
     # Locale settings
-    first_weekday: int = env_factory("FIRST_WEEKDAY", 0)
-    locale: str = env_factory("LOCALE", "en_US.UTF-8")
+    first_weekday: int = environ.var(
+        name="FIRST_WEEKDAY", converter=int, default=0
+    )
+    locale: str = environ.var(name="LOCALE", default="en_US.UTF-8")
 
     # Sentry settings
-    sentry_dsn: Optional[str] = env_factory("SENTRY_DSN")
-    sentry_release: Optional[str] = env_factory("SENTRY_RELEASE")
+    sentry_dsn: Optional[str] = environ.var(name="SENTRY_DSN", default=None)
+    sentry_release: Optional[str] = environ.var(
+        name="SENTRY_RELEASE", default=None
+    )
 
     def apply(
         self,
@@ -395,6 +333,31 @@ def setup_settings(
     settings.apply(loggers=loggers, remove_root_handlers=remove_root_handlers)
     app[APP_SETTINGS_KEY] = settings
     return app
+
+
+def setup_settings_from_environ(
+    app: web.Application,
+    settings_class: Type[BaseSettings],
+    *,
+    environ: MappingStrStr = None,
+    loggers: Collection[str] = None,
+    remove_root_handlers: bool = False,
+) -> web.Application:
+    """
+    Shortcut for instantiating settings from environ and applying them for
+    given ``aiohttp.web`` app.
+
+    This function calls ``settings_class.from_environ()`` method for you.
+
+    After applying, put settings to :class:`aiohttp.web.Application` dict as
+    ``"settings"`` key.
+    """
+    return setup_settings(
+        app,
+        settings_class.from_environ(environ or os.environ),  # type: ignore
+        loggers=loggers,
+        remove_root_handlers=remove_root_handlers,
+    )
 
 
 def setup_timezone(timezone: str) -> None:

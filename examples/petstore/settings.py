@@ -1,8 +1,8 @@
-import attr
+import environ
 
-from rororo import BaseSettings, env_factory
+from rororo import BaseSettings
 
 
-@attr.dataclass(frozen=True, slots=True)
+@environ.config(prefix=None, frozen=True)
 class Settings(BaseSettings):
-    pets_app_key: str = env_factory("PETS_APP_KEY", "pets")
+    pets_app_key: str = environ.var(name="PETS_APP_KEY", default="pets")

@@ -15,7 +15,7 @@ from rororo import (
     openapi_context,
     OperationTableDef,
     setup_openapi,
-    setup_settings,
+    setup_settings_from_environ,
 )
 from rororo.openapi import get_validated_data
 from rororo.openapi.exceptions import ConfigurationError, OperationError
@@ -461,7 +461,7 @@ async def test_setup_openapi_server_url_from_settings(
     monkeypatch.setenv("LEVEL", level)
 
     app = setup_openapi(
-        setup_settings(web.Application(), BaseSettings()),
+        setup_settings_from_environ(web.Application(), BaseSettings),
         schema_path,
         operations,
     )
@@ -477,7 +477,7 @@ def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
 
     with pytest.raises(ConfigurationError):
         setup_openapi(
-            setup_settings(web.Application(), BaseSettings()),
+            setup_settings_from_environ(web.Application(), BaseSettings),
             schema_path,
             operations,
         )

@@ -2,17 +2,14 @@ import calendar
 import datetime
 import logging
 import os
-from pathlib import Path
-from typing import Optional
 
-import attr
+import environ
 import pytest
 from aiohttp import web
 
 from rororo.logger import default_logging_dict
 from rororo.settings import (
     BaseSettings,
-    env_factory,
     from_env,
     immutable_settings,
     inject_settings,
@@ -47,7 +44,7 @@ def check_immutability(settings):
 
 
 def test_base_settings():
-    settings = BaseSettings()
+    settings = BaseSettings.from_environ()
     assert settings.host == "localhost"
     assert settings.port == 8080
     assert settings.debug is False
@@ -60,16 +57,20 @@ def test_base_settings():
 
 
 def test_base_settings_apply():
-    BaseSettings().apply()
+    BaseSettings.from_environ().apply()
 
 
 def test_base_settings_apply_with_loggers():
-    BaseSettings().apply(loggers=("aiohttp", "rororo"))
+    BaseSettings.from_environ().apply(loggers=("aiohttp", "rororo"))
 
 
 def test_base_settings_from_env(monkeypatch):
-    monkeypatch.setenv("DEBUG", "on")
-    assert BaseSettings().debug is True
+    monkeypatch.setenv("DEBUG", "yes")
+    assert BaseSettings.from_environ().debug is True
+
+
+def test_base_settings_from_env_kwargs():
+    assert BaseSettings.from_environ({"DEBUG": "true"}).debug is True
 
 
 def test_base_settings_from_kwargs():
@@ -79,11 +80,11 @@ def test_base_settings_from_kwargs():
 def test_base_settings_inheritance(monkeypatch):
     monkeypatch.setenv("USE_RORORO", "yes")
 
-    @attr.dataclass(frozen=True, slots=True)
+    @environ.config(prefix=None, frozen=True)
     class Settings(BaseSettings):
-        use_rororo: bool = env_factory("USE_RORORO", False)
+        use_rororo: bool = environ.bool_var(name="USE_RORORO", default=True)
 
-    settings = Settings()
+    settings = Settings.from_environ()
     assert settings.debug is False
     assert settings.use_rororo is True
 
@@ -107,75 +108,11 @@ def test_base_settings_is_properties(
     expected_is_prod,
 ):
     monkeypatch.setenv("LEVEL", level)
-    settings = BaseSettings()
+    settings = BaseSettings.from_environ()
     assert settings.is_test is expected_is_test
     assert settings.is_dev is expected_is_dev
     assert settings.is_staging is expected_is_staging
     assert settings.is_prod is expected_is_prod
-
-
-@pytest.mark.parametrize(
-    "name, expected", (("LEVEL", "test"), ("dOesNotExist", None))
-)
-def test_env_factory(name, expected):
-    @attr.dataclass
-    class Model:
-        value: Optional[str] = env_factory(name)
-
-    instance = Model()
-    assert instance.value == expected
-
-
-@pytest.mark.parametrize(
-    "str_value, expected",
-    (("yes", True), ("off", False), ("no", False), ("0", False), ("1", True)),
-)
-def test_env_factory_bool(monkeypatch, str_value, expected):
-    monkeypatch.setenv("USE_SOMETHING", str_value)
-
-    @attr.dataclass
-    class Model:
-        use_something: bool = env_factory("USE_SOMETHING", False)
-
-    instance = Model()
-    assert instance.use_something is expected
-
-
-def test_env_factory_custom_type(monkeypatch):
-    monkeypatch.setenv("DATA_PATH", "/tmp/data")
-
-    @attr.dataclass
-    class Model:
-        data_path: Path = env_factory(
-            "DATA_PATH", Path("~").expanduser() / "data"
-        )
-
-    instance = Model()
-    assert instance.data_path == Path("/") / "tmp" / "data"
-
-
-@pytest.mark.parametrize(
-    "name, default, expected",
-    (("LEVEL", "dev", "test"), ("dOesNotExist", "ok", "ok")),
-)
-def test_env_factory_default(name, default, expected):
-    @attr.dataclass
-    class Model:
-        value: str = env_factory(name, default)
-
-    instance = Model()
-    assert instance.value == expected
-
-
-def test_env_factory_invalid_type(monkeypatch):
-    monkeypatch.setenv("FIRST_WEEKDAY", "one")
-
-    @attr.dataclass
-    class Model:
-        value: str = env_factory("FIRST_WEEKDAY", 0)
-
-    with pytest.raises(ValueError):
-        Model()
 
 
 def test_from_env():

@@ -20,7 +20,7 @@ Settings
 
 .. automodule:: rororo.settings
 .. autoclass:: rororo.settings.BaseSettings
-.. autofunction:: rororo.settings.env_factory
+.. autofunction:: rororo.settings.setup_settings_from_environ
 .. autofunction:: rororo.settings.setup_settings
 .. autofunction:: rororo.settings.setup_locale
 .. autofunction:: rororo.settings.setup_logging
