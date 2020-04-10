@@ -61,8 +61,8 @@ Request Parameter Validation Errors
 
 When request parameter is missed, when required, missed, has empty, or invalid
 value `openapi-core <https://pypi.org/project/openapi-core/>`_ raises an
-``OpenAPIParameterError``. ``rororo`` handles given error and wraps it into
-``ValidationError``.
+``OpenAPIParameterError`` or ``EmptyParameterValue`` exception. ``rororo``
+handles given error and wraps it into own ``ValidationError``.
 
 For example, when operation is required ``X-GitHub-Username`` header parameter,
 missing it in request will result in ``422 Unprocessable Entity`` response
@@ -85,12 +85,63 @@ with next JSON content:
 Request Body Validation Errors
 ==============================
 
-TODO
+When request body contains invalid data ``rororo`` converts any
+``openapi-core`` or ``jsonschema`` exceptions into own ``ValidationError``.
+
+For example, when request body missed ``name`` field and have invalid ``email``
+field next response will be supplied:
+
+.. code-block:: json
+
+    {
+        "detail": [
+            {
+                "loc": [
+                    "body",
+                    "name"
+                ],
+                "message": "Field required"
+            },
+            {
+                "loc": [
+                    "body",
+                    "email"
+                ],
+                "message": "'not-email' is not an 'email'"
+            }
+        ]
+    }
 
 Response Data Validation Errors
 ===============================
 
-TODO
+Similarly to `Request Body Validation Errors`_ ``rororo`` converts any
+``openapi-core`` or ``jsonschema`` exceptions raised by validating response
+data into own ``ValidationError``.
+
+.. important::
+
+    For performance reasons, you might want to disable response data validation
+    entirely by passing ``is_validate_response=False`` into
+    :func:`rororo.openapi.setup_openapi`. In that case ``rororo`` will not
+    run any validation for response data.
+
+For example, when response data contains wrong ``uid`` format field next error
+response will be supplied,
+
+.. code-block:: json
+
+    {
+        "detail": [
+            {
+                "loc": [
+                    "response",
+                    "uid"
+                ],
+                "message": "'not-uid' is not a 'uuid'"
+            }
+        ]
+    }
 
 OpenAPI Schemas
 ===============

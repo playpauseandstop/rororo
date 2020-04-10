@@ -44,8 +44,10 @@ python = "^3.6"
 aiohttp = "^3.5"
 aiohttp-middlewares = "^1.0.0"
 attrs = "^19.1"
+email-validator = "^1.0.5"
 environ-config = "^20.1.0"
-openapi-core = "0.12"
+openapi-core = "^0.13.3"
+pyrsistent = "^0.16.0"
 PyYAML = "^5.1"
 typing-extensions = { version = "^3.7.4", python = "<3.8" }
 
@@ -85,5 +87,5 @@ commands =
     poetry run python -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
     poetry run python -m openapi_spec_validator tests/openapi.json
     poetry run python -m openapi_spec_validator tests/openapi.yaml
-    poetry run python -m pytest examples/hobotnica/tests.py examples/petstore/tests.py tests/ --cov=rororo --no-cov-on-fail
+    poetry run python -m pytest examples/hobotnica/tests.py examples/petstore/tests.py tests/ --cov --no-cov-on-fail
 """

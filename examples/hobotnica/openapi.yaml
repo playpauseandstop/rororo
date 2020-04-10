@@ -60,26 +60,6 @@ paths:
       security:
         - personalToken: []
 
-  "/repositories/{owner}":
-    get:
-      operationId: "list_owner_repositories"
-      tags:
-        - repositories
-      summary: "List repositories owned by user."
-      parameters:
-        - $ref: "#/components/parameters/RepositoryOwner"
-      responses:
-        "200":
-          description: "Repositories list."
-          content:
-            application/json:
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Repository"
-      security:
-        - basic: []
-
   "/repositories/{owner}/{name}":
     get:
       operationId: "retrieve_repository"
@@ -100,6 +80,26 @@ paths:
       security:
         - jwt: []
           personalToken: []
+
+  "/repositories/{owner}":
+    get:
+      operationId: "list_owner_repositories"
+      tags:
+        - repositories
+      summary: "List repositories owned by user."
+      parameters:
+        - $ref: "#/components/parameters/RepositoryOwner"
+      responses:
+        "200":
+          description: "Repositories list."
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Repository"
+      security:
+        - basic: []
 
 components:
   schemas:

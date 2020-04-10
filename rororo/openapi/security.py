@@ -1,71 +1,100 @@
 import types
 from typing import Optional, Union
 
-from aiohttp import BasicAuth, hdrs, web
+from aiohttp import BasicAuth, hdrs
+from openapi_core.schema.operations.models import Operation
+from openapi_core.schema.security_schemes.enums import (
+    HttpAuthScheme,
+    SecuritySchemeType,
+)
+from openapi_core.schema.security_schemes.models import SecurityScheme
+from openapi_core.security.exceptions import SecurityError as CoreSecurityError
+from openapi_core.validation.request.datatypes import OpenAPIRequest
+from openapi_core.validation.request.validators import RequestValidator
 
-from .constants import OPENAPI_SECURITY_API_KEY, OPENAPI_SECURITY_HTTP
-from .data import OpenAPIOperation
 from .exceptions import BasicSecurityError, SecurityError
-from ..annotations import DictStrAny, MappingStrAny
+from ..annotations import MappingStrAny
 
 
 AUTHORIZATION_HEADER = hdrs.AUTHORIZATION
-BEARER = "Bearer"
+
+
+def get_jwt_security_data(request: OpenAPIRequest) -> Optional[str]:
+    """Get JWT bearer security data.
+
+    At a moment, openapi-core attempts to decode JWT header using same rules
+    as for basic auth, which might return unexpected results.
+    """
+    header: Optional[str] = request.parameters.header.get(AUTHORIZATION_HEADER)
+
+    # Header does not exist
+    if header is None:
+        return None
+
+    try:
+        maybe_bearer, value = header.split(" ", 1)
+    except ValueError:
+        return None
+
+    if maybe_bearer.lower() != "bearer":
+        return None
+
+    return value
 
 
 def get_security_data(
-    request: web.Request, item: str, *, oas: DictStrAny
-) -> Optional[Union[str, BasicAuth]]:
+    validator: RequestValidator, request: OpenAPIRequest, scheme_name: str
+) -> Optional[Union[BasicAuth, str]]:
     """Get security data from request.
 
     Currently supported getting API Key & HTTP security data. OAuth & OpenID
     data not supported yet.
     """
-    schema = oas["components"]["securitySchemes"].get(item)
-    if not schema:
+    if is_jwt_bearer_security_scheme(validator, scheme_name):
+        return get_jwt_security_data(request)
+
+    try:
+        value: str = validator._get_security_value(scheme_name, request)
+    except CoreSecurityError:
         return None
 
-    security_type = schema["type"]
-    if security_type == OPENAPI_SECURITY_API_KEY:
-        location = schema["in"]
-        name = schema["name"]
+    if is_basic_auth_security_scheme(validator, scheme_name):
+        return BasicAuth(*(item.strip() for item in value.split(":", 1)))
+    return value
 
-        # API Key from query string
-        if location == "query":
-            return request.rel_url.query.get(name)  # type: ignore
-        # API Key from headers
-        if location == "header":
-            return request.headers.get(name)  # type: ignore
-        # API Key from cookies
-        if location == "cookie":
-            return request.cookies.get(name)  # type: ignore
-    elif security_type == OPENAPI_SECURITY_HTTP:
-        authorization_header = request.headers.get(AUTHORIZATION_HEADER)
-        scheme = schema["scheme"]
 
-        # Basic HTTP authentication
-        if scheme == "basic":
-            try:
-                return BasicAuth.decode(auth_header=authorization_header)
-            except (AttributeError, ValueError):
-                return None
+def get_security_scheme(
+    validator: RequestValidator, scheme_name: str
+) -> Optional[SecurityScheme]:
+    return validator.spec.components.security_schemes.get(scheme_name)
 
-        # Bearer authorization (JWT)
-        if scheme == "bearer":
-            stop = len(BEARER) + 1
-            if (
-                not authorization_header
-                or authorization_header[:stop].lower() != "bearer "
-            ):
-                return None
 
-            return authorization_header[stop:]  # type: ignore
+def is_basic_auth_security_scheme(
+    validator: RequestValidator, scheme_name: str
+) -> bool:
+    scheme = get_security_scheme(validator, scheme_name)
+    if scheme is None:
+        return False
+    return (  # type: ignore
+        scheme.type == SecuritySchemeType.HTTP
+        and scheme.scheme == HttpAuthScheme.BASIC
+    )
 
-    return None
+
+def is_jwt_bearer_security_scheme(
+    validator: RequestValidator, scheme_name: str
+) -> bool:
+    scheme = get_security_scheme(validator, scheme_name)
+    if scheme is None:
+        return False
+    return (  # type: ignore
+        scheme.type == SecuritySchemeType.HTTP
+        and scheme.scheme == HttpAuthScheme.BEARER
+    )
 
 
 def validate_security(
-    request: web.Request, operation: OpenAPIOperation, *, oas: DictStrAny
+    validator: RequestValidator, request: OpenAPIRequest, operation: Operation
 ) -> MappingStrAny:
     """Validate security data for the request if any.
 
@@ -77,7 +106,7 @@ def validate_security(
     their data in request. If some of security items is matched - return it
     as result, if not - raise `SecurityError`.
     """
-    security_list = operation.schema.get("security") or oas.get("security")
+    security_list = operation.security or validator.spec.security
     if not security_list:
         return types.MappingProxyType({})
 
@@ -90,7 +119,9 @@ def validate_security(
         security_list.append({})
 
     for item in security_list:
-        data = {key: get_security_data(request, key, oas=oas) for key in item}
+        data = {
+            key: get_security_data(validator, request, key) for key in item
+        }
         if all(value for value in data.values()):
             return types.MappingProxyType(data)
 
@@ -101,13 +132,8 @@ def validate_security(
     # it is a HTTP basic - raise BasicSecurityError (401 Unauthenticated). In
     # all other cases - raise a SecurityError (403 Access Denied)
     if len(security_list) == 1 and len(security_list[0]) == 1:
-        security_key = list(security_list[0].keys())[0]
-        schema = oas["components"]["securitySchemes"].get(security_key)
-
-        if (
-            schema["type"] == OPENAPI_SECURITY_HTTP
-            and schema["scheme"] == "basic"
-        ):
+        scheme_name = list(security_list[0].keys())[0]
+        if is_basic_auth_security_scheme(validator, scheme_name):
             raise BasicSecurityError()
 
     raise SecurityError()

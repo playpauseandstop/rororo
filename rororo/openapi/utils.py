@@ -3,6 +3,8 @@ from typing import Any, Optional, Union
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
 from openapi_core.schema.specs.models import Spec
+from openapi_core.validation.request.datatypes import OpenAPIRequest
+from yarl import URL
 
 from .constants import (
     APP_OPENAPI_SCHEMA_KEY,
@@ -20,6 +22,10 @@ def add_prefix(path: str, prefix: Optional[str]) -> str:
             prefix = prefix[:-1]
         return f"{prefix}{path}"
     return path
+
+
+def get_base_url(core_request: OpenAPIRequest) -> str:
+    return str(URL(core_request.full_url_pattern).with_path("/"))
 
 
 def get_openapi_context(request: web.Request) -> OpenAPIContext:

@@ -3,19 +3,25 @@ import re
 from typing import Any, Dict, List, Optional, Union
 
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
-from openapi_core.schema.exceptions import OpenAPIMappingError
+from openapi_core.deserializing.exceptions import DeserializeError
+from openapi_core.deserializing.parameters.exceptions import (
+    EmptyParameterValue,
+)
+from openapi_core.exceptions import OpenAPIError as CoreOpenAPIError
 from openapi_core.schema.media_types.exceptions import (
     InvalidContentType,
-    InvalidMediaTypeValue,
     OpenAPIMediaTypeError,
 )
 from openapi_core.schema.parameters.exceptions import (
-    EmptyParameterValue,
-    InvalidParameterValue,
     MissingParameter,
     MissingRequiredParameter,
     OpenAPIParameterError,
 )
+from openapi_core.unmarshalling.schemas.exceptions import (
+    InvalidSchemaValue,
+    UnmarshalError,
+)
+from openapi_core.validation.exceptions import InvalidSecurity
 
 from ..annotations import DictStrAny, MappingStrStr, TypedDict
 
@@ -189,13 +195,17 @@ class ValidationError(OpenAPIError):
 
     @classmethod
     def from_request_errors(  # type: ignore
-        cls, errors: List[OpenAPIMappingError]
+        cls,
+        errors: List[CoreOpenAPIError],
+        *,
+        unmarshal_loc: List[PathItem] = None,
     ) -> "ValidationError":
+        unmarshal_loc = ["body"] if unmarshal_loc is None else unmarshal_loc
         parameters = []
         body = []
 
         for err in errors:
-            if isinstance(err, OpenAPIParameterError):
+            if isinstance(err, (OpenAPIParameterError, EmptyParameterValue)):
                 details = get_parameter_error_details(err)
                 if details:
                     parameters.append(details)
@@ -203,6 +213,10 @@ class ValidationError(OpenAPIError):
                 details = get_media_type_error_details(["body"], err)
                 if details:
                     body.append(details)
+            elif isinstance(err, UnmarshalError):
+                details_list = get_unmarshal_error_details(unmarshal_loc, err)
+                if details_list:
+                    body.extend(details_list)
             else:
                 logger.debug(
                     "Unhandled request validation error",
@@ -216,7 +230,7 @@ class ValidationError(OpenAPIError):
 
     @classmethod
     def from_response_errors(  # type: ignore
-        cls, errors: List[OpenAPIMappingError]
+        cls, errors: List[CoreOpenAPIError]
     ) -> "ValidationError":
         result = []
 
@@ -225,12 +239,37 @@ class ValidationError(OpenAPIError):
                 details = get_media_type_error_details(["response"], err)
                 if details:
                     result.append(details)
+            elif isinstance(err, UnmarshalError):
+                details_list = get_unmarshal_error_details(["response"], err)
+                if details_list:
+                    result.extend(details_list)
 
         return cls(message="Response data validation error", errors=result)
 
 
 def ensure_loc(loc: List[PathItem]) -> List[PathItem]:
     return [item for item in loc if item != ""]
+
+
+def get_json_schema_validation_error_details(
+    loc: List[PathItem], err: JsonSchemaValidationError
+) -> ValidationErrorItem:
+    message = err.message
+    path = list(err.absolute_path)
+    matched = required_message_re.match(message)
+
+    if matched:
+        return {
+            "loc": ensure_loc(
+                loc + path + [matched.groupdict()["field_name"]]
+            ),
+            "message": ERROR_FIELD_REQUIRED,
+        }
+
+    return {
+        "loc": ensure_loc(loc + path),
+        "message": err.message,
+    }
 
 
 def get_media_type_error_details(
@@ -243,31 +282,6 @@ def get_media_type_error_details(
                 f"Schema missing for following mimetype: {err.mimetype}"
             ),
         }
-
-    if isinstance(err, InvalidMediaTypeValue):
-        maybe_json_schema_err = getattr(
-            err.original_exception, "__context__", None
-        )
-        if maybe_json_schema_err and isinstance(
-            maybe_json_schema_err, JsonSchemaValidationError
-        ):
-            message = maybe_json_schema_err.message
-            path = list(maybe_json_schema_err.absolute_path)
-            matched = required_message_re.match(message)
-
-            if matched:
-                return {
-                    "loc": ensure_loc(
-                        loc + path + [matched.groupdict()["field_name"]]
-                    ),
-                    "message": ERROR_FIELD_REQUIRED,
-                }
-
-            return {
-                "loc": ensure_loc(loc + path),
-                "message": maybe_json_schema_err.message,
-            }
-
     return None
 
 
@@ -276,13 +290,33 @@ def get_parameter_error_details(
 ) -> Optional[ValidationErrorItem]:
     parameter_name: str = getattr(err, "name", None)
     if parameter_name is None:
+        logger.info(f"Parameter error missing parameter name: {err}")
         return None
 
     message = {
+        DeserializeError: ERROR_PARAMETER_INVALID,
         EmptyParameterValue: ERROR_PARAMETER_EMPTY,
-        InvalidParameterValue: ERROR_PARAMETER_INVALID,
         MissingParameter: ERROR_PARAMETER_MISSING,
         MissingRequiredParameter: ERROR_PARAMETER_REQUIRED,
     }[type(err)]
 
     return {"loc": ["parameters", parameter_name], "message": message}
+
+
+def get_unmarshal_error_details(
+    loc: List[PathItem], err: UnmarshalError
+) -> List[ValidationErrorItem]:
+    if isinstance(err, InvalidSchemaValue):
+        return [
+            get_json_schema_validation_error_details(loc, item)
+            for item in err.schema_errors
+        ]
+
+    # TODO: Handle InvalidSchemaFormatValue & FormatterNotFoundError errors
+    # as well
+    logger.info(f"Unhandled unmarshal error: {err}")
+    return []
+
+
+def is_only_security_error(errors: List[CoreOpenAPIError]) -> bool:
+    return len(errors) == 1 and isinstance(errors[0], InvalidSecurity)

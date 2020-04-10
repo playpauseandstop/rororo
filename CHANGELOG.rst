@@ -8,6 +8,13 @@
 - feature: Ensure support optional security schemes
 - feature: Integrate `environ-config <https://environ-config.readthedocs.io>`_
   library for settings needs
+- feature: Upgrade to latest `openapi-core <https://pypi.org/project/openapi-core>`_
+  version: **0.13.3**
+- feature: Valid request data is freezed with
+  `pyrsistent.freeze <https://github.com/tobgu/pyrsistent#freeze-and-thaw>`_
+  call
+- feature: Use `email-validator <https://pypi.org/project/email-validator>`_
+  for validating string fields with ``format: "email"``
 
 2.0.0b3 (2020-01-27)
 --------------------

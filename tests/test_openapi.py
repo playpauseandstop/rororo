@@ -2,6 +2,7 @@ import io
 import zipfile
 from pathlib import Path
 
+import pyrsistent
 import pytest
 from aiohttp import web
 from aiohttp_middlewares import cors_middleware, error_middleware
@@ -19,7 +20,6 @@ from rororo import (
 )
 from rororo.openapi import get_validated_data
 from rororo.openapi.exceptions import ConfigurationError, OperationError
-from rororo.openapi.mappings import enforce_dicts
 
 
 ROOT_PATH = Path(__file__).parent
@@ -78,7 +78,7 @@ async def hello_world(request: web.Request) -> web.Response:
 async def retrieve_any_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
-    return web.json_response(enforce_dicts(get_validated_data(request)))
+    return web.json_response(pyrsistent.thaw(get_validated_data(request)))
 
 
 @operations.register
@@ -86,7 +86,7 @@ async def retrieve_array_from_request_body(
     request: web.Request,
 ) -> web.Response:
     with openapi_context(request) as context:
-        return web.json_response(context.data)
+        return web.json_response(pyrsistent.thaw(context.data))
 
 
 @operations.register
@@ -107,8 +107,11 @@ async def retrieve_nested_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
     with openapi_context(request) as context:
+        data = pyrsistent.thaw(context.data)
+        data["uid"] = str(data["uid"])
+
         return web.json_response(
-            {**enforce_dicts(context.data), "uid": str(context.data["uid"])},
+            data,
             headers={
                 "X-Data-Type": str(type(context.data)),
                 "X-Data-Data-Data-Items-Type": str(
@@ -155,14 +158,7 @@ async def test_any_object_request_body(aiohttp_client, schema_path):
         (
             {},
             422,
-            {
-                "detail": [
-                    {
-                        "loc": ["body"],
-                        "message": "{} is not of type array",  # noqa: P103
-                    }
-                ]
-            },
+            {"detail": [{"loc": ["body"], "message": "[] is too short"}]},
         ),
         (
             [],
@@ -209,9 +205,7 @@ async def test_create_post_201(aiohttp_client, schema_path):
         "id": 1,
         "title": "Post",
         "slug": "post",
-        "description": None,
         "content": "Post Content",
-        "tags": None,
     }
 
 
@@ -221,12 +215,19 @@ async def test_create_post_201(aiohttp_client, schema_path):
         (
             OPENAPI_JSON_PATH,
             {},
-            [{"loc": ["body", "title"], "message": "Field required"}],
+            [
+                {"loc": ["body", "title"], "message": "Field required"},
+                {"loc": ["body", "slug"], "message": "Field required"},
+                {"loc": ["body", "content"], "message": "Field required"},
+            ],
         ),
         (
             OPENAPI_YAML_PATH,
             {"title": "Title"},
-            [{"loc": ["body", "slug"], "message": "Field required"}],
+            [
+                {"loc": ["body", "slug"], "message": "Field required"},
+                {"loc": ["body", "content"], "message": "Field required"},
+            ],
         ),
         (
             OPENAPI_JSON_PATH,
@@ -396,7 +397,7 @@ async def test_optional_security_scheme(
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
-async def test_request_body_nested_obejct(aiohttp_client, schema_path):
+async def test_request_body_nested_object(aiohttp_client, schema_path):
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -404,9 +405,15 @@ async def test_request_body_nested_obejct(aiohttp_client, schema_path):
     client = await aiohttp_client(app)
     response = await client.post("/api/nested-object", json=TEST_NESTED_OBJECT)
     assert response.status == 200
-    assert response.headers["X-Data-Type"] == "<class 'mappingproxy'>"
-    assert response.headers["X-Data-Data-Data-Items-Type"] == "<class 'tuple'>"
-    assert response.headers["X-Data-Data-Str-Items-Type"] == "<class 'tuple'>"
+    assert response.headers["X-Data-Type"] == "<class 'pyrsistent._pmap.PMap'>"
+    assert (
+        response.headers["X-Data-Data-Data-Items-Type"]
+        == "<class 'pvectorc.PVector'>"
+    )
+    assert (
+        response.headers["X-Data-Data-Str-Items-Type"]
+        == "<class 'pvectorc.PVector'>"
+    )
     assert response.headers["X-Data-UID-Type"] == "<class 'uuid.UUID'>"
     assert await response.json() == TEST_NESTED_OBJECT
 
@@ -631,5 +638,10 @@ async def test_validate_response_error(aiohttp_client, schema_path):
     response = await client.get("/api/invalid-response")
     assert response.status == 422
     assert await response.json() == {
-        "detail": [{"loc": ["response", "uid"], "message": "Field required"}]
+        "detail": [
+            {"loc": ["response", "uid"], "message": "Field required"},
+            {"loc": ["response", "type"], "message": "Field required"},
+            {"loc": ["response", "data"], "message": "Field required"},
+            {"loc": ["response", "any_data"], "message": "Field required"},
+        ]
     }

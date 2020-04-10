@@ -1,14 +1,17 @@
 import types
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import attr
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
 from aiohttp.payload import IOBasePayload, Payload
-from openapi_core.validation.request.models import RequestParameters
-from openapi_core.wrappers.base import BaseOpenAPIRequest, BaseOpenAPIResponse
+from openapi_core.validation.request.datatypes import (
+    OpenAPIRequest,
+    RequestParameters,
+)
+from openapi_core.validation.response.datatypes import OpenAPIResponse
 
-from ..annotations import DictStrAny, MappingStrAny, MappingStrStr
+from ..annotations import DictStrAny, MappingStrAny
 
 
 def immutable_dict_factory() -> MappingStrAny:
@@ -18,78 +21,6 @@ def immutable_dict_factory() -> MappingStrAny:
     implementation.
     """
     return types.MappingProxyType({})
-
-
-class OpenAPICoreRequest(BaseOpenAPIRequest):
-    def __init__(self, request: web.Request, body: Optional[bytes]) -> None:
-        self.request = request
-        self.body = body
-
-    @property
-    def host_url(self) -> str:
-        request = self.request
-        return f"{request.scheme}://{request.host}"
-
-    @property
-    def method(self) -> str:
-        return self.request.method.lower()  # type: ignore
-
-    @property
-    def mimetype(self) -> str:
-        return self.request.content_type
-
-    @property
-    def parameters(self) -> Dict[str, MappingStrStr]:
-        request = self.request
-        return {
-            "path": request.match_info,
-            "query": request.rel_url.query,
-            "header": request.headers,
-            "cookie": request.cookies,
-        }
-
-    @property
-    def path(self) -> str:
-        return self.request.path  # type: ignore
-
-    @property
-    def path_pattern(self) -> str:
-        info = self.request.match_info.route.get_info()
-        formatter = info.get("formatter")
-        return (  # type: ignore
-            formatter if formatter is not None else info.get("path")
-        )
-
-
-class OpenAPICoreResponse(BaseOpenAPIResponse):
-    def __init__(self, response: web.StreamResponse) -> None:
-        self.response = response
-
-    @property
-    def data(self) -> Optional[bytes]:
-        response = self.response
-        if isinstance(response, web.Response):
-            body = response.body
-            if not body:
-                return None
-
-            # TODO: Find better way to provide response from payload
-            if isinstance(body, IOBasePayload):
-                return body._value.getvalue()  # type: ignore
-
-            if isinstance(body, Payload):
-                return body._value  # type: ignore
-
-            return body
-        return None
-
-    @property
-    def mimetype(self) -> str:
-        return self.response.content_type
-
-    @property
-    def status_code(self) -> int:
-        return self.response.status
 
 
 @attr.dataclass(frozen=True, slots=True)
@@ -155,7 +86,24 @@ class OpenAPIContext:
     data: Any = None
 
 
-async def to_openapi_core_request(request: web.Request) -> OpenAPICoreRequest:
+def get_full_url_pattern(request: web.Request) -> str:
+    return str(request.url.with_path(get_path_pattern(request)))
+
+
+def get_path_pattern(request: web.Request) -> str:
+    """Get path pattern for given :class:`aiohttp.web.Request` instance.
+
+    When current handler is a dynamic route: use formatter, otherwise use
+    path from route info.
+    """
+    info = request.match_info.route.get_info()
+    formatter = info.get("formatter")
+    return (  # type: ignore
+        formatter if formatter is not None else info.get("path")
+    )
+
+
+async def to_core_openapi_request(request: web.Request,) -> OpenAPIRequest:
     """Convert aiohttp.web request to openapi-core request.
 
     Afterwards opeanpi-core request can be used for validation request data
@@ -165,14 +113,50 @@ async def to_openapi_core_request(request: web.Request) -> OpenAPICoreRequest:
     if request.body_exists and request.can_read_body:
         body = await request.read()
 
-    return OpenAPICoreRequest(request=request, body=body)
+    return OpenAPIRequest(
+        full_url_pattern=get_full_url_pattern(request),
+        method=request.method.lower(),
+        body=body,
+        mimetype=request.content_type,
+        parameters=to_core_request_parameters(request),
+    )
 
 
-def to_openapi_core_response(
-    response: web.StreamResponse,
-) -> OpenAPICoreResponse:
+def to_core_openapi_response(response: web.StreamResponse) -> OpenAPIResponse:
     """Convert aiohttp.web response to openapi-core response."""
-    return OpenAPICoreResponse(response)
+    return OpenAPIResponse(
+        data=to_core_openapi_response_data(response),
+        status_code=response.status,
+        mimetype=response.content_type,
+    )
+
+
+def to_core_openapi_response_data(
+    response: web.StreamResponse,
+) -> Optional[bytes]:
+    if isinstance(response, web.Response):
+        body = response.body
+        if not body:
+            return None
+
+        # TODO: Find better way to provide response from payload
+        if isinstance(body, IOBasePayload):
+            return body._value.getvalue()  # type: ignore
+
+        if isinstance(body, Payload):
+            return body._value  # type: ignore
+
+        return body
+    return None
+
+
+def to_core_request_parameters(request: web.Request) -> RequestParameters:
+    return RequestParameters(
+        query=request.rel_url.query,
+        header=request.headers,
+        cookie=request.cookies,
+        path=request.match_info,
+    )
 
 
 def to_openapi_parameters(
@@ -180,8 +164,8 @@ def to_openapi_parameters(
 ) -> OpenAPIParameters:
     """Convert openapi-core parameters to internal parameters instance."""
     return OpenAPIParameters(
-        path=types.MappingProxyType(core_parameters["path"]),
-        query=types.MappingProxyType(core_parameters["query"]),
-        header=types.MappingProxyType(core_parameters["header"]),
-        cookie=types.MappingProxyType(core_parameters["cookie"]),
+        path=types.MappingProxyType(core_parameters.path),
+        query=types.MappingProxyType(core_parameters.query),
+        header=types.MappingProxyType(core_parameters.header),
+        cookie=types.MappingProxyType(core_parameters.cookie),
     )
