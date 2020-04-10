@@ -230,7 +230,10 @@ components:
             type: "string"
             minLength: 1
           nullable: true
-      required: ["title", "slug", "content"]
+        published_at:
+          type: "string"
+          format: "date-time"
+      required: ["title", "slug", "content", "published_at"]
 
     Post:
       allOf:

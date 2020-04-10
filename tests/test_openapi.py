@@ -1,3 +1,4 @@
+import datetime
 import io
 import zipfile
 from pathlib import Path
@@ -19,7 +20,11 @@ from rororo import (
     setup_settings_from_environ,
 )
 from rororo.openapi import get_validated_data
-from rororo.openapi.exceptions import ConfigurationError, OperationError
+from rororo.openapi.exceptions import (
+    ConfigurationError,
+    OperationError,
+    ValidationError,
+)
 
 
 ROOT_PATH = Path(__file__).parent
@@ -61,7 +66,15 @@ async def does_not_exist(request: web.Request) -> web.Response:
 @operations.register("create-post")
 async def create_post(request: web.Request) -> web.Response:
     data = get_validated_data(request)
-    return web.json_response({**data, "id": 1}, status=201)
+
+    published_at: datetime.datetime = data["published_at"]
+    if published_at.tzinfo is None:
+        raise ValidationError.from_dict(body={"published_at": "Invalid value"})
+
+    return web.json_response(
+        {**data, "id": 1, "published_at": data["published_at"].isoformat()},
+        status=201,
+    )
 
 
 @operations.register
@@ -194,11 +207,17 @@ async def test_create_post_201(aiohttp_client, schema_path):
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
+    published_at = "2020-04-01T12:00:00+02:00"
 
     client = await aiohttp_client(app)
     response = await client.post(
         "/api/create-post",
-        json={"title": "Post", "slug": "post", "content": "Post Content"},
+        json={
+            "title": "Post",
+            "slug": "post",
+            "content": "Post Content",
+            "published_at": published_at,
+        },
     )
     assert response.status == 201
     assert await response.json() == {
@@ -206,6 +225,7 @@ async def test_create_post_201(aiohttp_client, schema_path):
         "title": "Post",
         "slug": "post",
         "content": "Post Content",
+        "published_at": published_at,
     }
 
 
@@ -219,6 +239,7 @@ async def test_create_post_201(aiohttp_client, schema_path):
                 {"loc": ["body", "title"], "message": "Field required"},
                 {"loc": ["body", "slug"], "message": "Field required"},
                 {"loc": ["body", "content"], "message": "Field required"},
+                {"loc": ["body", "published_at"], "message": "Field required"},
             ],
         ),
         (
@@ -227,12 +248,21 @@ async def test_create_post_201(aiohttp_client, schema_path):
             [
                 {"loc": ["body", "slug"], "message": "Field required"},
                 {"loc": ["body", "content"], "message": "Field required"},
+                {"loc": ["body", "published_at"], "message": "Field required"},
             ],
         ),
         (
             OPENAPI_JSON_PATH,
             {"title": "Title", "slug": "slug"},
-            [{"loc": ["body", "content"], "message": "Field required"}],
+            [
+                {"loc": ["body", "content"], "message": "Field required"},
+                {"loc": ["body", "published_at"], "message": "Field required"},
+            ],
+        ),
+        (
+            OPENAPI_YAML_PATH,
+            {"title": "Title", "slug": "slug", "content": "Content"},
+            [{"loc": ["body", "published_at"], "message": "Field required"}],
         ),
     ),
 )

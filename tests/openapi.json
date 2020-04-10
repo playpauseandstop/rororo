@@ -336,9 +336,13 @@
               "minLength": 1
             },
             "nullable": true
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time"
           }
         },
-        "required": ["title", "slug", "content"]
+        "required": ["title", "slug", "content", "published_at"]
       },
 
       "Post": {
