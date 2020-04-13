@@ -54,7 +54,6 @@ typing-extensions = { version = "^3.7.4", python = "<3.8" }
 
 [tool.poetry.dev-dependencies]
 coverage = {extras = ["toml"], version = "^5.0.3"}
-coveralls = "^2.0.0"
 pytest = "^5.0"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.7"
