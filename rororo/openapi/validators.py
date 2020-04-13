@@ -1,17 +1,27 @@
 from functools import partial
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterator, List, Tuple
 
 import pyrsistent
 from email_validator import EmailNotValidError, validate_email
 from isodate import parse_datetime
 from jsonschema.exceptions import FormatError
+from more_itertools import peekable
 from openapi_core.exceptions import OpenAPIError
 from openapi_core.schema.operations.models import Operation
+from openapi_core.schema.paths.models import Path
 from openapi_core.schema.schemas.enums import SchemaFormat
+from openapi_core.schema.servers.models import Server
 from openapi_core.schema.specs.models import Spec
+from openapi_core.templating.datatypes import TemplateResult
+from openapi_core.templating.paths.exceptions import (
+    OperationNotFound,
+    PathNotFound,
+    ServerNotFound,
+)
+from openapi_core.templating.paths.finders import PathFinder as CorePathFinder
 from openapi_core.unmarshalling.schemas.enums import UnmarshalContext
 from openapi_core.unmarshalling.schemas.factories import (
-    SchemaUnmarshallersFactory as BaseSchemaUnmarshallersFactory,
+    SchemaUnmarshallersFactory as CoreSchemaUnmarshallersFactory,
 )
 from openapi_core.unmarshalling.schemas.formatters import Formatter
 from openapi_core.validation.request.datatypes import (
@@ -40,9 +50,16 @@ from ..annotations import MappingStrAny
 DATE_TIME_FORMATTER = Formatter.from_callables(
     partial(oas30_format_checker.check, format="date-time"), parse_datetime,
 )
+PathTuple = Tuple[Path, Operation, Server, TemplateResult, TemplateResult]
 
 
 class EmailFormatter(Formatter):
+    """Formatter to support email strings.
+
+    Use `email-validator <https://pypi.org/project/email-validator>`_ library
+    to ensure that given string is a valid email.
+    """
+
     def validate(self, value: str) -> bool:
         try:
             validate_email(value)
@@ -51,7 +68,53 @@ class EmailFormatter(Formatter):
         return True
 
 
-class SchemaUnmarshallersFactory(BaseSchemaUnmarshallersFactory):
+class PathFinder(CorePathFinder):
+    """Custom path finder to fix issue with finding paths with vars.
+
+    Temporary fix for https://github.com/p1c2u/openapi-core/issues/226, to be
+    removed from ``rororo`` after next ``openapi-core`` version released with
+    proper fix for the issue.
+    """
+
+    def find(self, request: OpenAPIRequest) -> PathTuple:
+        """Better finder for request path.
+
+        Instead of returning first possible result from
+        ``self._get_servers_iter(...)`` call, attempt to ensure that
+        ``request.full_url_pattern`` ends with ``path.name``.
+        """
+        paths_iter_peek = peekable(
+            self._get_paths_iter(request.full_url_pattern)
+        )
+        if not paths_iter_peek:
+            raise PathNotFound(request.full_url_pattern)
+
+        operations_iter_peek = peekable(
+            self._get_operations_iter(request.method, paths_iter_peek)
+        )
+        if not operations_iter_peek:
+            raise OperationNotFound(request.full_url_pattern, request.method)
+
+        servers_iter: Iterator[PathTuple] = self._get_servers_iter(
+            request.full_url_pattern, operations_iter_peek
+        )
+        for server in servers_iter:
+            path = server[0]
+            if request.full_url_pattern.endswith(path.name):
+                return server
+
+        raise ServerNotFound(request.full_url_pattern)
+
+
+class SchemaUnmarshallersFactory(CoreSchemaUnmarshallersFactory):
+    """
+    Custom schema unmarshallers factory to deal with tz aware date time
+    strings.
+
+    Temporary fix to https://github.com/p1c2u/openapi-core/issues/235, to be
+    removed from ``rororo`` after next ``openapi-core`` release.
+    """
+
     def get_formatter(
         self,
         default_formatters: Dict[str, Formatter],
@@ -66,9 +129,18 @@ CUSTOM_FORMATTERS = {"email": EmailFormatter()}
 
 
 class BaseValidator(CoreBaseValidator):
+    """Custom base validator to deal with tz aware date time strings.
+
+    To be removed from ``rororo`` after next ``openapi-core`` version release.
+    """
+
+    def _find_path(self, request: OpenAPIRequest) -> PathTuple:
+        return PathFinder(self.spec, base_url=self.base_url).find(request)
+
     def _unmarshal(
         self, param_or_media_type: Any, value: Any, context: UnmarshalContext
     ) -> Any:
+        """Use custom unmarshallers factory for unmarsahlling data."""
         if not param_or_media_type.schema:
             return value
 
@@ -83,6 +155,10 @@ class RequestValidator(BaseValidator, CoreRequestValidator):
     def _get_parameters(
         self, request: OpenAPIRequest, params: MappingStrAny
     ) -> Tuple[RequestParameters, List[OpenAPIError]]:
+        """
+        Distinct parameters errors from body errors to supply proper validation
+        error response.
+        """
         parameters, errors = super()._get_parameters(request, params)
         if errors:
             raise ValidationError.from_request_errors(
@@ -93,6 +169,13 @@ class RequestValidator(BaseValidator, CoreRequestValidator):
     def _get_security(
         self, request: OpenAPIRequest, operation: Operation
     ) -> MappingStrAny:
+        """
+        Custom logic for validating request security, which support handling
+        JWT tokens without decoding them from ``base64`` (as needed for
+        basic authorization).
+
+        Consider to remove from ``rororo`` after next ``openapi-core`` release.
+        """
         return validate_security(self, request, operation)
 
     def _unmarshal(  # type: ignore

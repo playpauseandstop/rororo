@@ -20,8 +20,7 @@ paths:
   "/repositories":
     get:
       operationId: "list_repositories"
-      tags:
-        - "repositories"
+      tags: ["repositories"]
       summary: "List user repositories registered in Hobotnica."
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
@@ -40,8 +39,7 @@ paths:
 
     post:
       operationId: "create_repository"
-      tags:
-        - "repositories"
+      tags: ["repositories"]
       summary: "Add new user repository to Hobotnica."
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
@@ -60,11 +58,47 @@ paths:
       security:
         - personalToken: []
 
+  "/repositories/{owner}":
+    get:
+      operationId: "list_owner_repositories"
+      tags: ["repositories"]
+      summary: "List repositories owned by user."
+      parameters:
+        - $ref: "#/components/parameters/RepositoryOwner"
+      responses:
+        "200":
+          description: "Repositories list."
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Repository"
+      security:
+        - basic: []
+
+  "/repositories/{owner}/env":
+    get:
+      operationId: "retrieve_owner_env"
+      tags: ["environment"]
+      summary: "Retrieve common environment vars for user."
+      parameters:
+        - $ref: "#/components/parameters/RepositoryOwner"
+      responses:
+        "200":
+          description: "Owner environment vars."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnyObject"
+      security:
+        - basic: []
+
   "/repositories/{owner}/{name}":
     get:
       operationId: "retrieve_repository"
       tags:
-        - repositories
+        - "repositories"
       summary: "Retrieve details of user repository."
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
@@ -81,28 +115,32 @@ paths:
         - jwt: []
           personalToken: []
 
-  "/repositories/{owner}":
+  "/repositories/{owner}/{name}/env":
     get:
-      operationId: "list_owner_repositories"
+      operationId: "retrieve_repository_env"
       tags:
-        - repositories
-      summary: "List repositories owned by user."
+        - "environment"
+      summary: "Retrieve common env vars for the repository"
       parameters:
+        - $ref: "#/components/parameters/GitHubUsername"
         - $ref: "#/components/parameters/RepositoryOwner"
+        - $ref: "#/components/parameters/RepositoryName"
       responses:
         "200":
-          description: "Repositories list."
+          description: "Repository environment vars."
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Repository"
+                $ref: "#/components/schemas/AnyObject"
       security:
-        - basic: []
+        - personalToken: []
 
 components:
   schemas:
+    AnyObject:
+      type: "object"
+      additionalProperties: true
+
     RepositoryOwner:
       type: "string"
       minLength: 1
@@ -186,3 +224,6 @@ components:
 tags:
   - name: "repositories"
     description: "Repositories endpoints."
+
+  - name: "environment"
+    description: "Environment endpoints."

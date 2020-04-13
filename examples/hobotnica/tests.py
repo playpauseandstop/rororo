@@ -10,7 +10,9 @@ from hobotnica.data import (
 
 REPOSITORIES_URL = "/api/repositories"
 OWNER_REPOSITORIES_URL = f"{REPOSITORIES_URL}/{GITHUB_USERNAME}"
+OWNER_ENV_URL = f"{OWNER_REPOSITORIES_URL}/env"
 REPOSITORY_URL = f"{REPOSITORIES_URL}/{GITHUB_USERNAME}/{GITHUB_REPOSITORY}"
+REPOSITORY_ENV_URL = f"{REPOSITORY_URL}/env"
 
 
 async def test_create_repository_201(aiohttp_client):
@@ -157,6 +159,24 @@ async def test_list_repositories_422(aiohttp_client, invalid_headers):
     }
 
 
+async def test_retrieve_owner_env_200(aiohttp_client):
+    client = await aiohttp_client(create_app())
+
+    response = await client.get(
+        OWNER_ENV_URL,
+        headers={
+            "Authorization": BasicAuth(
+                GITHUB_USERNAME, GITHUB_PERSONAL_TOKEN
+            ).encode()
+        },
+    )
+    assert response.status == 200
+    assert await response.json() == {
+        "HOME": f"/home/{GITHUB_USERNAME}",
+        "TIME_ZONE": "Europe/Kiev",
+    }
+
+
 async def test_retrieve_repository_200(aiohttp_client):
     client = await aiohttp_client(create_app())
 
@@ -196,3 +216,17 @@ async def test_retrieve_repository_403(aiohttp_client, invalid_headers):
     response = await client.get(REPOSITORY_URL, headers=invalid_headers)
     assert response.status == 403
     assert await response.json() == {"detail": "Not authenticated"}
+
+
+async def test_retrieve_repository_env_200(aiohttp_client):
+    client = await aiohttp_client(create_app())
+
+    response = await client.get(
+        REPOSITORY_ENV_URL,
+        headers={
+            "X-GitHub-Username": GITHUB_USERNAME,
+            "X-GitHub-Personal-Token": GITHUB_PERSONAL_TOKEN,
+        },
+    )
+    assert response.status == 200
+    assert await response.json() == {"LOCALE": "uk_UA.UTF-8"}

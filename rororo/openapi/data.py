@@ -10,6 +10,7 @@ from openapi_core.validation.request.datatypes import (
     RequestParameters,
 )
 from openapi_core.validation.response.datatypes import OpenAPIResponse
+from yarl import URL
 
 from ..annotations import DictStrAny, MappingStrAny
 
@@ -87,7 +88,8 @@ class OpenAPIContext:
 
 
 def get_full_url_pattern(request: web.Request) -> str:
-    return str(request.url.with_path(get_path_pattern(request)))
+    full_url: URL = request.url.with_path(get_path_pattern(request))
+    return full_url.human_repr()
 
 
 def get_path_pattern(request: web.Request) -> str:
@@ -103,7 +105,7 @@ def get_path_pattern(request: web.Request) -> str:
     )
 
 
-async def to_core_openapi_request(request: web.Request,) -> OpenAPIRequest:
+async def to_core_openapi_request(request: web.Request) -> OpenAPIRequest:
     """Convert aiohttp.web request to openapi-core request.
 
     Afterwards opeanpi-core request can be used for validation request data

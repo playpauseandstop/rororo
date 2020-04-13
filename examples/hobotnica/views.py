@@ -4,7 +4,7 @@ from aiohttp import web
 
 from rororo import openapi_context, OperationTableDef
 from rororo.openapi.exceptions import ObjectDoesNotExist
-from .data import GITHUB_REPOSITORIES
+from .data import ENVIRONMENT_VARS, GITHUB_REPOSITORIES
 from .decorators import login_required
 
 
@@ -48,6 +48,14 @@ async def list_repositories(request: web.Request) -> web.Response:
 
 @operations.register
 @login_required
+async def retrieve_owner_env(request: web.Request) -> web.Response:
+    with openapi_context(request) as context:
+        owner = context.parameters.path["owner"]
+        return web.json_response(ENVIRONMENT_VARS.get(owner) or {})
+
+
+@operations.register
+@login_required
 async def retrieve_repository(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
         owner = context.parameters.path["owner"]
@@ -59,3 +67,13 @@ async def retrieve_repository(request: web.Request) -> web.Response:
             raise ObjectDoesNotExist("Repository")
 
         return web.json_response(repository)
+
+
+@operations.register
+@login_required
+async def retrieve_repository_env(request: web.Request) -> web.Response:
+    with openapi_context(request) as context:
+        owner = context.parameters.path["owner"]
+        name = context.parameters.path["name"]
+        env_key = f"{owner}/{name}"
+        return web.json_response(ENVIRONMENT_VARS.get(env_key) or {})

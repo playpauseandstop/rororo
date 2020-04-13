@@ -13,3 +13,11 @@ GITHUB_REPOSITORIES = {
         }
     }
 }
+
+ENVIRONMENT_VARS = {
+    GITHUB_USERNAME: {
+        "HOME": f"/home/{GITHUB_USERNAME}",
+        "TIME_ZONE": "Europe/Kiev",
+    },
+    f"{GITHUB_USERNAME}/{GITHUB_REPOSITORY}": {"LOCALE": "uk_UA.UTF-8"},
+}
