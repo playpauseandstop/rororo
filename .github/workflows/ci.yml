@@ -54,6 +54,13 @@ jobs:
 
     runs-on: "ubuntu-latest"
 
+    services:
+      redis:
+        image: "redis:5.0.8-alpine"
+        ports:
+          - "6379/tcp"
+        options: "--entrypoint redis-server"
+
     steps:
       - uses: "actions/checkout@v2.0.0"
 
@@ -89,9 +96,20 @@ jobs:
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
         uses: "pre-commit/action@v1.0.1"
 
+      - name: "Validate OpenAPI schemas"
+        if: "matrix.python-version == env.DEV_PYTHON_VERSION"
+        run: |
+          poetry run python -m openapi_spec_validator examples/hobotnica/openapi.yaml
+          poetry run python -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
+          poetry run python -m openapi_spec_validator examples/todobackend/openapi.yaml
+          poetry run python -m openapi_spec_validator tests/openapi.json
+          poetry run python -m openapi_spec_validator tests/openapi.yaml
+
       - name: "Run tests"
         run: |
           python -m tox
+        env:
+          REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
 
       - name: "Send report to coveralls"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"

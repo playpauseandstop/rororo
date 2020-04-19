@@ -302,21 +302,21 @@ def setup_openapi(
     # Store whether rororo need to validate response or not. By default: not
     app[APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY] = is_validate_response
 
-    # Register all operation handlers to web application
+    # Register the route to dump openapi schema used for the application if
+    # required
     route_prefix = find_route_prefix(
         oas, server_url=server_url, settings=app.get(APP_SETTINGS_KEY)
     )
-    for item in operations:
-        app.router.add_routes(
-            convert_operations_to_routes(item, oas, prefix=route_prefix)
-        )
-
-    # Register the route to dump openapi schema used for the application if
-    # required
     if has_openapi_schema_handler:
         app.router.add_get(
             add_prefix("/openapi.{schema_format}", route_prefix),
             views.openapi_schema,
+        )
+
+    # Register all operation handlers to web application
+    for item in operations:
+        app.router.add_routes(
+            convert_operations_to_routes(item, oas, prefix=route_prefix)
         )
 
     # Add error middleware if necessary

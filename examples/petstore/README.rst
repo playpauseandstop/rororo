@@ -11,4 +11,6 @@ Usage
 
 .. code-block:: bash
 
-    python -m aiohttp.web petstore.app:create_app
+    make EXAMPLE=petstore example
+
+**IMPORTANT:** To run from ``rororo`` root directory.

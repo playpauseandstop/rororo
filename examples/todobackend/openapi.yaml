@@ -1,0 +1,222 @@
+openapi: "3.0.3"
+
+info:
+  title: "Todo-Backend implementation for rororo"
+  description: |
+    [Todo-Backend](http://todobackend.com) implementation built on top of
+    `rororo`, which highlights class based views usage.
+  version: "1.0.0"
+  contact:
+    name: "Igor Davydenko (developer)"
+    url: "https://igordavydenko.com"
+    email: "iam@igordavydenko.com"
+  license:
+    name: "BSD-3-Clause"
+    url: "https://opensource.org/licenses/BSD-3-Clause"
+
+servers:
+  - url: "http://localhost:8080/todos/"
+    x-rororo-level: "dev"
+  - url: "https://todobackend.igordavydenko.com/"
+    x-rororo-level: "prod"
+  - url: "/todos/"
+    x-rororo-level: "test"
+
+x-default-responses: &default_responses
+  "422":
+    $ref: "#/components/responses/ValidationError"
+  default:
+    $ref: "#/components/responses/DefaultResponse"
+
+paths:
+  "/":
+    post:
+      operationId: "create_todo"
+      summary: "Add new todo"
+      tags: ["todos"]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTodo"
+      responses:
+        <<: *default_responses
+        "201":
+          description: "Todo added successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+    get:
+      operationId: "list_todos"
+      summary: "List all todos"
+      tags: ["todos"]
+      responses:
+        <<: *default_responses
+        "200":
+          description: "Todos list"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Todo"
+
+    delete:
+      operationId: "delete_todos"
+      summary: "Delete all todos"
+      tags: ["todos"]
+      responses:
+        <<: *default_responses
+        "200":
+          description: "All todos deleted"
+
+  "/{todo_uid}":
+    get:
+      operationId: "retrieve_todo"
+      summary: "Retrieve todo by ID"
+      tags: ["todos"]
+      parameters:
+        - $ref: "#/components/parameters/TodoUID"
+      responses:
+        <<: *default_responses
+        "200":
+          description: "Todo details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+    patch:
+      operationId: "update_todo"
+      summary: "Update todo details"
+      tags: ["todos"]
+      parameters:
+        - $ref: "#/components/parameters/TodoUID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTodo"
+      responses:
+        <<: *default_responses
+        "200":
+          description: "Updated todo details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+    delete:
+      operationId: "delete_todo"
+      summary: "Delete todo by ID"
+      tags: ["todos"]
+      parameters:
+        - $ref: "#/components/parameters/TodoUID"
+      responses:
+        <<: *default_responses
+        "200":
+          description: "Todo successfully deleted"
+
+components:
+  parameters:
+    TodoUID:
+      name: "todo_uid"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/UID"
+
+  responses:
+    DefaultResponse:
+      description: "Default error response"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DefaultResponse"
+
+    ValidationError:
+      description: "Validation error response"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+
+  schemas:
+    NonEmptyString:
+      type: "string"
+      minLength: 1
+
+    PositiveInteger:
+      type: "integer"
+      format: "int64"
+
+    UID:
+      type: "string"
+      format: "uuid"
+
+    DefaultResponse:
+      type: "object"
+      properties:
+        detail:
+          $ref: "#/components/schemas/NonEmptyString"
+      required: ["detail"]
+
+    ValidationErrorItem:
+      type: "object"
+      properties:
+        loc:
+          type: "array"
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/NonEmptyString"
+              - $ref: "#/components/schemas/PositiveInteger"
+          minItems: 1
+        message:
+          $ref: "#/components/schemas/NonEmptyString"
+
+    ValidationError:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/ValidationErrorItem"
+      minItems: 1
+      uniqueItems: true
+
+    AddTodo:
+      type: "object"
+      properties:
+        title:
+          $ref: "#/components/schemas/NonEmptyString"
+        order:
+          $ref: "#/components/schemas/PositiveInteger"
+      required: ["title"]
+
+    UpdateTodo:
+      type: "object"
+      properties:
+        title:
+          $ref: "#/components/schemas/NonEmptyString"
+        order:
+          $ref: "#/components/schemas/PositiveInteger"
+        completed:
+          type: "boolean"
+
+    Todo:
+      type: "object"
+      properties:
+        uid:
+          $ref: "#/components/schemas/UID"
+        title:
+          $ref: "#/components/schemas/NonEmptyString"
+        order:
+          $ref: "#/components/schemas/PositiveInteger"
+        url:
+          $ref: "#/components/schemas/NonEmptyString"
+        completed:
+          type: "boolean"
+      required: ["uid", "title", "order", "url", "completed"]
+
+tags:
+  - name: "todos"
+    description: "Todo endpoints"

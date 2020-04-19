@@ -79,7 +79,14 @@ list-outdated: install
 open-docs: docs
 	open $(DOCS_DIR)/_build/html/index.html
 
-test: install clean lint test-only
+test: install clean lint validate test-only
 
 test-only:
 	TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
+
+validate: install
+	$(PYTHON) -m openapi_spec_validator examples/hobotnica/openapi.yaml
+	$(PYTHON) -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
+	$(PYTHON) -m openapi_spec_validator examples/todobackend/openapi.yaml
+	$(PYTHON) -m openapi_spec_validator tests/openapi.json
+	$(PYTHON) -m openapi_spec_validator tests/openapi.yaml
