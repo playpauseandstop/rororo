@@ -61,13 +61,15 @@ class BaseSettings:
 
     .. code-block:: python
 
-        import attr
-        from rororo.settings import BaseSettings, env_factory
+        import environ
+        from rororo.settings import BaseSettings
 
 
-        @attr.dataclass(frozen=True, slots=True)
+        @environ.config(prefix=None, frozen=True)
         class Settings(BaseSettings):
-            other_name: str = env_factory("OTHER_NAME", "other-value")
+            other_name: str = environ.var(
+                name="OTHER_NAME", default="other-value"
+            )
 
     """
 

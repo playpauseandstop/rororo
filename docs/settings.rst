@@ -89,10 +89,11 @@ In most cases, it should looks like,
 
 
     def create_app(
-        argv: List[str] = None, **options: Any
+        argv: List[str] = None, *, settings: Settings = None
     ) -> web.Application:
-        # Instantiate settings
-        settings = Settings().from_environ(**options)
+        # Instantiate settings if needed
+        if settings is None:
+            settings = Settings().from_environ()
 
         # Instantiate app
         app = web.Application(...)

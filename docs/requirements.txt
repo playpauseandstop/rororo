@@ -4,7 +4,7 @@
 #
 #    pip-compile docs/requirements.in
 #
-aiohttp-middlewares==1.0.0  # via -r docs/requirements.in
+aiohttp-middlewares==1.1.0  # via -r docs/requirements.in
 aiohttp==3.6.2            # via -r docs/requirements.in, aiohttp-middlewares
 alabaster==0.7.12         # via sphinx
 async-timeout==3.0.1      # via aiohttp, aiohttp-middlewares
@@ -16,7 +16,7 @@ docutils==0.16            # via sphinx
 idna==2.9                 # via requests, yarl
 imagesize==1.2.0          # via sphinx
 isodate==0.6.0            # via openapi-schema-validator
-jinja2==2.11.1            # via sphinx
+jinja2==2.11.2            # via sphinx
 jsonschema==3.2.0         # via openapi-schema-validator, openapi-spec-validator
 lazy-object-proxy==1.4.3  # via openapi-core
 markupsafe==1.1.1         # via jinja2
@@ -36,7 +36,7 @@ requests==2.23.0          # via sphinx
 six==1.14.0               # via isodate, jsonschema, openapi-core, openapi-schema-validator, openapi-spec-validator, packaging
 snowballstemmer==2.0.0    # via sphinx
 sphinx-autodoc-typehints==1.10.3  # via -r docs/requirements.in
-sphinx==3.0.1             # via -r docs/requirements.in, sphinx-autodoc-typehints
+sphinx==3.0.2             # via -r docs/requirements.in, sphinx-autodoc-typehints
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
 sphinxcontrib-htmlhelp==1.0.3  # via sphinx
@@ -45,7 +45,7 @@ sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 strict-rfc3339==0.7       # via openapi-schema-validator
 typing-extensions==3.7.4.2 ; python_version <= "3.8"  # via -r docs/requirements.in
-urllib3==1.25.8           # via requests
+urllib3==1.25.9           # via requests
 werkzeug==1.0.1           # via openapi-core
 yarl==1.4.2               # via aiohttp
 
