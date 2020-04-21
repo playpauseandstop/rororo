@@ -57,6 +57,9 @@ def create_app(
         Path(__file__).parent / "petstore-expanded.yaml",
         # And after list of operations
         views.operations,
+        # Disable validating responses as `petstore-expanded.yaml` don't have
+        # error responses schema definitions
+        is_validate_response=False,
         # Enable CORS middleware as it ensures that every aiohttp response
         # will use proper CORS headers
         cors_middleware_kwargs={"allow_all": True},

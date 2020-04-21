@@ -30,7 +30,7 @@ description = "Collection of useful middlewares for aiohttp applications."
 name = "aiohttp-middlewares"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "1.0.0"
+version = "1.1.0"
 
 [package.dependencies]
 aiohttp = ">=3.5,<4.0"
@@ -526,7 +526,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "929c2fc583e2858d9d689ce30c9d61e516074c252c0f7ebca69387cdb76e5731"
+content-hash = "7bd8d36bb713110c374225111b5d5eedcdebc8f65549ee5a2721bd692577de29"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -545,8 +545,8 @@ aiohttp = [
     {file = "aiohttp-3.6.2.tar.gz", hash = "sha256:259ab809ff0727d0e834ac5e8a283dc5e3e0ecc30c4d80b3cd17a4139ce1f326"},
 ]
 aiohttp-middlewares = [
-    {file = "aiohttp-middlewares-1.0.0.tar.gz", hash = "sha256:30ad64818332214134e03947d1990f7229775c0b8f5774c68c5b61bb0e7637c3"},
-    {file = "aiohttp_middlewares-1.0.0-py3-none-any.whl", hash = "sha256:12b2fa8744ec25d33c2b42c8ae4ad3b4f8b1a91ce730828047b6c3a2d41e830d"},
+    {file = "aiohttp-middlewares-1.1.0.tar.gz", hash = "sha256:4a58c090ea50f44ae49a8ce1dc79f7366b8b6223f179f499bc97f399751efeed"},
+    {file = "aiohttp_middlewares-1.1.0-py3-none-any.whl", hash = "sha256:47080da0eaa8dee0f3d26ce781959b077b79dd063f45308f5e93fd4134f1c683"},
 ]
 aioredis = [
     {file = "aioredis-1.3.1-py3-none-any.whl", hash = "sha256:b61808d7e97b7cd5a92ed574937a079c9387fdadd22bfbfa7ad2fd319ecc26e3"},

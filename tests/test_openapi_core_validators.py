@@ -1,7 +1,7 @@
 import pytest
 from jsonschema.exceptions import FormatError
 
-from rororo.openapi.validators import EmailFormatter
+from rororo.openapi.core_validators import EmailFormatter
 
 
 @pytest.mark.parametrize(

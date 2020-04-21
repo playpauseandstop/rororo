@@ -11,8 +11,8 @@ from .constants import (
     APP_OPENAPI_SPEC_KEY,
     REQUEST_OPENAPI_CONTEXT_KEY,
 )
-from .data import OpenAPIContext, OpenAPIOperation, OpenAPIParameters
-from .exceptions import ConfigurationError, ContextError, OperationError
+from .data import OpenAPIContext, OpenAPIParameters
+from .exceptions import ConfigurationError, ContextError
 from ..annotations import DictStrAny
 
 
@@ -79,34 +79,6 @@ def get_openapi_spec(mixed: Union[web.Application, ChainMapProxy]) -> Spec:
             '"from rororo import setup_openapi" function to register OpenAPI '
             "schema to your web.Application."
         )
-
-
-def get_openapi_operation(
-    oas: DictStrAny, operation_id: str
-) -> OpenAPIOperation:
-    """Go through OpenAPI schema and try to find operation details by its ID.
-
-    These details allow to add given operation to router as they share:
-
-    - method
-    - path
-
-    for the operation.
-    """
-    for path, path_schema in (oas.get("paths") or {}).items():
-        for method, operation_schema in path_schema.items():
-            if operation_schema.get("operationId") == operation_id:
-                return OpenAPIOperation(
-                    id=operation_id,
-                    method=method,
-                    path=path,
-                    schema=operation_schema,
-                )
-
-    raise OperationError(
-        f'Unable to find operation "{operation_id}" in provided OpenAPI '
-        "Schema."
-    )
 
 
 def get_validated_data(request: web.Request) -> Any:

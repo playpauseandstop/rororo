@@ -3,30 +3,35 @@ import os
 from pathlib import Path
 from typing import Dict, overload, Union
 
+import attr
 import yaml
-from aiohttp import web
-from aiohttp_middlewares import cors_middleware, error_middleware
+from aiohttp import hdrs, web
+from aiohttp_middlewares import cors_middleware
+from openapi_core.schema.specs.models import Spec
 from openapi_core.shortcuts import create_spec
 from openapi_spec_validator.exceptions import OpenAPIValidationError
+from pyrsistent import pmap
 from yarl import URL
 
 from . import views
 from .constants import (
-    APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY,
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
+    HANDLER_OPENAPI_MAPPING_KEY,
 )
-from .decorators import openapi_operation
+from .core_data import get_core_operation
 from .exceptions import ConfigurationError
-from .utils import add_prefix, get_openapi_operation
-from ..annotations import Decorator, DictStrAny, Handler
+from .middlewares import openapi_middleware
+from .utils import add_prefix
+from ..annotations import Decorator, DictStrAny, DictStrStr, Handler
 from ..settings import APP_SETTINGS_KEY, BaseSettings
 
 
 Url = Union[str, URL]
 
 
-class OperationTableDef(Dict[str, Handler]):
+@attr.dataclass(slots=True)
+class OperationTableDef:
     """Map OpenAPI 3 operations to aiohttp.web view handlers.
 
     In short it is rororo's equialent to :class:`aiohttp.web.RouteTableDef`.
@@ -69,6 +74,9 @@ class OperationTableDef(Dict[str, Handler]):
     :func:`rororo.openapi.setup_openapi` call raises an ``OperationError``.
     """
 
+    handlers: Dict[str, Handler] = attr.Factory(dict)
+    aliases: DictStrStr = attr.Factory(dict)
+
     @overload
     def register(self, handler: Handler) -> Handler:
         ...  # pragma: no cover
@@ -81,26 +89,29 @@ class OperationTableDef(Dict[str, Handler]):
         operation_id = mixed if isinstance(mixed, str) else mixed.__name__
 
         def decorator(handler: Handler) -> Handler:
-            openapi_handler = openapi_operation(operation_id)(handler)
-
-            self[operation_id] = openapi_handler
-            return openapi_handler
+            setattr(
+                handler,
+                HANDLER_OPENAPI_MAPPING_KEY,
+                pmap({hdrs.METH_ANY: operation_id}),
+            )
+            self.handlers[operation_id] = handler
+            return handler
 
         return decorator(mixed) if callable(mixed) else decorator
 
 
 def convert_operations_to_routes(
-    operations: OperationTableDef, oas: DictStrAny, *, prefix: str = None
+    operations: OperationTableDef, spec: Spec, *, prefix: str = None
 ) -> web.RouteTableDef:
     """Convert operations table defintion to routes table definition."""
     routes = web.RouteTableDef()
 
-    for operation_id, handler in operations.items():
-        operation = get_openapi_operation(oas, operation_id)
+    for operation_id, handler in operations.handlers.items():
+        core_operation = get_core_operation(spec, operation_id)
         routes.route(
-            operation.method,
-            add_prefix(operation.path, prefix),
-            name=operation.route_name,
+            core_operation.http_method,
+            add_prefix(core_operation.path_name, prefix),
+            name=get_route_name(core_operation.operation_id),
         )(handler)
 
     return routes
@@ -138,6 +149,10 @@ def find_route_prefix(
         "Unable to guess route prefix as no server in OpenAPI schema has "
         f'defined "x-rororo-level" key of "{settings.level}".'
     )
+
+
+def get_route_name(operation_id: str) -> str:
+    return operation_id.replace(" ", "-")
 
 
 def get_route_prefix(mixed: Url) -> str:
@@ -290,7 +305,7 @@ def setup_openapi(
 
     # Create the spec and put it to the application dict as well
     try:
-        app[APP_OPENAPI_SPEC_KEY] = create_spec(oas)
+        app[APP_OPENAPI_SPEC_KEY] = spec = create_spec(oas)
     except OpenAPIValidationError:
         raise ConfigurationError(
             f"Unable to load valid OpenAPI schema in {path}. In most cases "
@@ -298,9 +313,6 @@ def setup_openapi(
             "To get full details about errors run `openapi-spec-validator "
             f"{path}`"
         )
-
-    # Store whether rororo need to validate response or not. By default: not
-    app[APP_OPENAPI_IS_VALIDATE_RESPONSE_KEY] = is_validate_response
 
     # Register the route to dump openapi schema used for the application if
     # required
@@ -316,22 +328,28 @@ def setup_openapi(
     # Register all operation handlers to web application
     for item in operations:
         app.router.add_routes(
-            convert_operations_to_routes(item, oas, prefix=route_prefix)
+            convert_operations_to_routes(item, spec, prefix=route_prefix)
         )
 
-    # Add error middleware if necessary
-    if use_error_middleware:
-        kwargs = error_middleware_kwargs or {}
-        kwargs["default_handler"] = views.default_error_handler
+    # Add OpenAPI middleware
+    kwargs = error_middleware_kwargs or {}
+    kwargs["default_handler"] = views.default_error_handler
 
-        try:
-            app.middlewares.insert(0, error_middleware(**kwargs))
-        except TypeError:
-            raise ConfigurationError(
-                "Unsupported kwargs passed to error middleware. Please check "
-                "given kwargs and remove unsupported ones: "
-                f"{error_middleware_kwargs!r}"
-            )
+    try:
+        app.middlewares.insert(
+            0,
+            openapi_middleware(
+                is_validate_response=is_validate_response,
+                use_error_middleware=use_error_middleware,
+                error_middleware_kwargs=kwargs,
+            ),
+        )
+    except TypeError:
+        raise ConfigurationError(
+            "Unsupported kwargs passed to error middleware. Please check "
+            "given kwargs and remove unsupported ones: "
+            f"{error_middleware_kwargs!r}"
+        )
 
     # Add CORS middleware if necessary
     if use_cors_middleware:

@@ -6,7 +6,7 @@ from pathlib import Path
 import pyrsistent
 import pytest
 from aiohttp import web
-from aiohttp_middlewares import cors_middleware, error_middleware
+from aiohttp_middlewares import cors_middleware
 from yarl import URL
 
 from rororo import (
@@ -571,26 +571,6 @@ def test_setup_openapi_use_invalid_error_middleware_kwargs(schema_path):
             use_error_middleware=True,
             error_middleware_kwargs={"does_not_exist": True},
         )
-
-
-@pytest.mark.parametrize(
-    "schema_path, is_enabled",
-    (
-        (OPENAPI_JSON_PATH, False),
-        (OPENAPI_YAML_PATH, False),
-        (OPENAPI_JSON_PATH, True),
-        (OPENAPI_YAML_PATH, True),
-    ),
-)
-def test_setup_openapi_use_error_middleware(schema_path, is_enabled):
-    app = setup_openapi(
-        web.Application(),
-        schema_path,
-        operations,
-        server_url="/api/",
-        use_error_middleware=is_enabled,
-    )
-    assert has_middleware(app, error_middleware) is is_enabled
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))

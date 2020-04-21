@@ -17,6 +17,10 @@ from openapi_core.schema.parameters.exceptions import (
     MissingRequiredParameter,
     OpenAPIParameterError,
 )
+from openapi_core.schema.responses.exceptions import (
+    InvalidResponse,
+    MissingResponseContent,
+)
 from openapi_core.unmarshalling.schemas.exceptions import (
     InvalidSchemaValue,
     UnmarshalError,
@@ -232,10 +236,23 @@ class ValidationError(OpenAPIError):
     def from_response_errors(  # type: ignore
         cls, errors: List[CoreOpenAPIError]
     ) -> "ValidationError":
-        result = []
+        result: List[ValidationErrorItem] = []
 
         for err in errors:
-            if isinstance(err, OpenAPIMediaTypeError):
+            if isinstance(err, InvalidResponse):
+                available_responses = ", ".join(sorted(err.responses))
+                result.append(
+                    {
+                        "loc": ["response"],
+                        "message": (
+                            f"{err}. Available response http statuses: "
+                            f"{available_responses}"
+                        ),
+                    }
+                )
+            elif isinstance(err, MissingResponseContent):
+                result.append({"loc": ["response"], "message": str(err)})
+            elif isinstance(err, OpenAPIMediaTypeError):
                 details = get_media_type_error_details(["response"], err)
                 if details:
                     result.append(details)
@@ -243,6 +260,11 @@ class ValidationError(OpenAPIError):
                 details_list = get_unmarshal_error_details(["response"], err)
                 if details_list:
                     result.extend(details_list)
+            else:
+                logger.debug(
+                    "Unhandled response validation error",
+                    extra={"err": err, "err_type": str(type(err))},
+                )
 
         return cls(message="Response data validation error", errors=result)
 

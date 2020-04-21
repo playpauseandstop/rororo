@@ -1,4 +1,3 @@
-import types
 from typing import Optional, Union
 
 from aiohttp import BasicAuth, hdrs
@@ -11,6 +10,7 @@ from openapi_core.schema.security_schemes.models import SecurityScheme
 from openapi_core.security.exceptions import SecurityError as CoreSecurityError
 from openapi_core.validation.request.datatypes import OpenAPIRequest
 from openapi_core.validation.request.validators import RequestValidator
+from pyrsistent import pmap
 
 from .exceptions import BasicSecurityError, SecurityError
 from ..annotations import MappingStrAny
@@ -100,7 +100,7 @@ def validate_security(
 
     First, check whether operation is secured or there is global security
     definitions. If not and current operation is not secured - return empty
-    :class:`types.MappingProxyType`.
+    :class:`pyrsistent.PMap`.
 
     If operation secured, go through all security items and attempt to match
     their data in request. If some of security items is matched - return it
@@ -108,7 +108,7 @@ def validate_security(
     """
     security_list = operation.security or validator.spec.security
     if not security_list:
-        return types.MappingProxyType({})
+        return pmap()
 
     # If operation "secured" with an empty object it means the whole security
     # rules are optional. However to not return empty security details it is
@@ -123,7 +123,7 @@ def validate_security(
             key: get_security_data(validator, request, key) for key in item
         }
         if all(value for value in data.values()):
-            return types.MappingProxyType(data)
+            return pmap(data)
 
     # To supply proper security error need to check how many security schemas
     # should be applied for given operation

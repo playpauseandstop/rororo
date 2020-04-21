@@ -16,6 +16,12 @@ info:
 servers:
   - url: "/api"
 
+x-default-responses: &default_responses
+  "422":
+    $ref: "#/components/responses/ValidationError"
+  default:
+    $ref: "#/components/responses/DefaultResponse"
+
 paths:
   "/repositories":
     get:
@@ -25,6 +31,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
       responses:
+        <<: *default_responses
         "200":
           description: "Available repositories."
           content:
@@ -49,6 +56,7 @@ paths:
             schema:
               $ref: "#/components/schemas/NewRepository"
       responses:
+        <<: *default_responses
         "201":
           description: "Added repository details."
           content:
@@ -66,6 +74,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/RepositoryOwner"
       responses:
+        <<: *default_responses
         "200":
           description: "Repositories list."
           content:
@@ -85,6 +94,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/RepositoryOwner"
       responses:
+        <<: *default_responses
         "200":
           description: "Owner environment vars."
           content:
@@ -105,6 +115,7 @@ paths:
         - $ref: "#/components/parameters/RepositoryOwner"
         - $ref: "#/components/parameters/RepositoryName"
       responses:
+        <<: *default_responses
         "200":
           description: "Repository details."
           content:
@@ -126,6 +137,7 @@ paths:
         - $ref: "#/components/parameters/RepositoryOwner"
         - $ref: "#/components/parameters/RepositoryName"
       responses:
+        <<: *default_responses
         "200":
           description: "Repository environment vars."
           content:
@@ -136,53 +148,6 @@ paths:
         - personalToken: []
 
 components:
-  schemas:
-    AnyObject:
-      type: "object"
-      additionalProperties: true
-
-    RepositoryOwner:
-      type: "string"
-      minLength: 1
-
-    RepositoryName:
-      type: "string"
-      minLength: 1
-
-    RepositoryJob:
-      type: "string"
-      enum: ["test", "deploy"]
-
-    NewRepository:
-      type: "object"
-      properties:
-        owner:
-          $ref: "#/components/schemas/RepositoryOwner"
-        name:
-          $ref: "#/components/schemas/RepositoryName"
-      required: ["owner", "name"]
-
-    Repository:
-      type: "object"
-      properties:
-        uid:
-          type: "string"
-          format: "uuid"
-        owner:
-          $ref: "#/components/schemas/RepositoryOwner"
-        name:
-          $ref: "#/components/schemas/RepositoryName"
-        jobs:
-          type: "array"
-          description: "List of registered jobs for the repository."
-          items:
-            $ref: "#/components/schemas/RepositoryJob"
-          minItems: 1
-        status:
-          type: "string"
-          enum: ["cloning", "ready", "running"]
-      required: ["uid", "owner", "name", "jobs", "status"]
-
   parameters:
     GitHubUsername:
       name: "X-GitHub-Username"
@@ -197,14 +162,103 @@ components:
       in: "path"
       required: true
       schema:
-        $ref: "#/components/schemas/RepositoryOwner"
+        $ref: "#/components/schemas/NonEmptyString"
 
     RepositoryName:
       name: "name"
       in: "path"
       required: true
       schema:
-        $ref: "#/components/schemas/RepositoryName"
+        $ref: "#/components/schemas/NonEmptyString"
+
+  responses:
+    DefaultResponse:
+      description: "Default error response"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DefaultResponse"
+
+    ValidationError:
+      description: "Validation error response"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+
+  schemas:
+    AnyObject:
+      type: "object"
+      additionalProperties: true
+
+    NonEmptyString:
+      type: "string"
+      minLength: 1
+
+    PositiveInteger:
+      type: "integer"
+      format: "int64"
+
+    RepositoryJob:
+      type: "string"
+      enum: ["test", "deploy"]
+
+    DefaultResponse:
+      type: "object"
+      properties:
+        detail:
+          $ref: "#/components/schemas/NonEmptyString"
+      required: ["detail"]
+
+    ValidationErrorItem:
+      type: "object"
+      properties:
+        loc:
+          type: "array"
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/NonEmptyString"
+              - $ref: "#/components/schemas/PositiveInteger"
+          minItems: 1
+        message:
+          $ref: "#/components/schemas/NonEmptyString"
+
+    ValidationError:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/ValidationErrorItem"
+      minItems: 1
+      uniqueItems: true
+
+    NewRepository:
+      type: "object"
+      properties:
+        owner:
+          $ref: "#/components/schemas/NonEmptyString"
+        name:
+          $ref: "#/components/schemas/NonEmptyString"
+      required: ["owner", "name"]
+
+    Repository:
+      type: "object"
+      properties:
+        uid:
+          type: "string"
+          format: "uuid"
+        owner:
+          $ref: "#/components/schemas/NonEmptyString"
+        name:
+          $ref: "#/components/schemas/NonEmptyString"
+        jobs:
+          type: "array"
+          description: "List of registered jobs for the repository."
+          items:
+            $ref: "#/components/schemas/RepositoryJob"
+          minItems: 1
+        status:
+          type: "string"
+          enum: ["cloning", "ready", "running"]
+      required: ["uid", "owner", "name", "jobs", "status"]
 
   securitySchemes:
     basic:

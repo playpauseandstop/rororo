@@ -42,7 +42,7 @@ include = ["CHANGELOG.rst"]
 [tool.poetry.dependencies]
 python = "^3.6"
 aiohttp = "^3.5"
-aiohttp-middlewares = "^1.0.0"
+aiohttp-middlewares = "^1.1.0"
 attrs = "^19.1"
 email-validator = "^1.0.5"
 environ-config = "^20.1.0"

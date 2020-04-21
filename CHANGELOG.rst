@@ -15,6 +15,7 @@
   call
 - feature: Use `email-validator <https://pypi.org/project/email-validator>`_
   for validating string fields with ``format: "email"``
+- feature: Validating error responses via OpenAPI schema as well
 
 2.0.0b3 (2020-01-27)
 --------------------
