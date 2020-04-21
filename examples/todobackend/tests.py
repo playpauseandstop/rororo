@@ -16,6 +16,7 @@ from todobackend.storage import Storage
 from yarl import URL
 
 
+FAKE_UID = "b3f8d6d7-f4a5-44bb-ba36-85a6579b63c0"
 TEST_TITLE = "New todo"
 URL_TODOS = URL("/todos/")
 
@@ -123,3 +124,19 @@ async def test_storage(todobackend_redis, todobackend_settings):
 
         assert await storage.delete_todo(todo) == 0
         assert await storage.delete_todos() == 0
+
+
+@pytest.mark.parametrize(
+    "route_name, kwargs, expected",
+    (
+        ("TodosView.delete", {}, URL_TODOS),
+        ("TodosView.get", {}, URL_TODOS),
+        ("TodosView.post", {}, URL_TODOS),
+        ("todo.delete", {"todo_uid": FAKE_UID}, URL_TODOS / FAKE_UID),
+        ("todo.get", {"todo_uid": FAKE_UID}, URL_TODOS / FAKE_UID),
+        ("todo.patch", {"todo_uid": FAKE_UID}, URL_TODOS / FAKE_UID),
+    ),
+)
+async def test_url(route_name, kwargs, expected):
+    app = create_app()
+    assert app.router[route_name].url_for(**kwargs) == expected

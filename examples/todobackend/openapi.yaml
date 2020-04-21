@@ -31,7 +31,7 @@ x-default-responses: &default_responses
 paths:
   "/":
     post:
-      operationId: "create_todo"
+      operationId: "TodosView.post"
       summary: "Add new todo"
       tags: ["todos"]
       requestBody:
@@ -49,7 +49,7 @@ paths:
                 $ref: "#/components/schemas/Todo"
 
     get:
-      operationId: "list_todos"
+      operationId: "TodosView.get"
       summary: "List all todos"
       tags: ["todos"]
       responses:
@@ -64,7 +64,7 @@ paths:
                   $ref: "#/components/schemas/Todo"
 
     delete:
-      operationId: "delete_todos"
+      operationId: "TodosView.delete"
       summary: "Delete all todos"
       tags: ["todos"]
       responses:
@@ -74,7 +74,7 @@ paths:
 
   "/{todo_uid}":
     get:
-      operationId: "retrieve_todo"
+      operationId: "todo.get"
       summary: "Retrieve todo by ID"
       tags: ["todos"]
       parameters:
@@ -89,7 +89,7 @@ paths:
                 $ref: "#/components/schemas/Todo"
 
     patch:
-      operationId: "update_todo"
+      operationId: "todo.patch"
       summary: "Update todo details"
       tags: ["todos"]
       parameters:
@@ -109,7 +109,7 @@ paths:
                 $ref: "#/components/schemas/Todo"
 
     delete:
-      operationId: "delete_todo"
+      operationId: "todo.delete"
       summary: "Delete todo by ID"
       tags: ["todos"]
       parameters:

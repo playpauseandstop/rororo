@@ -12,58 +12,61 @@ operations = OperationTableDef()
 
 
 @operations.register
-async def create_todo(request: web.Request) -> web.Response:
-    with openapi_context(request) as context:
-        todo = Todo(
-            title=context.data["title"], order=context.data.get("order") or 0
+class TodosView(web.View):
+    async def delete(self) -> web.Response:
+        storage: Storage = self.request.config_dict[APP_STORAGE_KEY]
+        await storage.delete_todos()
+
+        return web.json_response("")
+
+    async def get(self) -> web.Response:
+        request = self.request
+
+        storage: Storage = request.config_dict[APP_STORAGE_KEY]
+        todos = await storage.list_todos()
+
+        return web.json_response(
+            [item.to_api_dict(request=request) for item in todos]
         )
 
-    storage: Storage = request.config_dict[APP_STORAGE_KEY]
-    await storage.create_todo(todo)
+    async def post(self) -> web.Response:
+        request = self.request
 
-    return web.json_response(todo.to_api_dict(request=request), status=201)
+        with openapi_context(request) as context:
+            todo = Todo(
+                title=context.data["title"],
+                order=context.data.get("order") or 0,
+            )
 
+        storage: Storage = request.config_dict[APP_STORAGE_KEY]
+        await storage.create_todo(todo)
 
-@operations.register
-async def delete_todo(request: web.Request) -> web.Response:
-    storage: Storage = request.config_dict[APP_STORAGE_KEY]
-    await storage.delete_todo(await get_todo_or_404(request))
-
-    return web.json_response("")
-
-
-@operations.register
-async def delete_todos(request: web.Request) -> web.Response:
-    storage: Storage = request.config_dict[APP_STORAGE_KEY]
-    await storage.delete_todos()
-
-    return web.json_response("")
+        return web.json_response(todo.to_api_dict(request=request), status=201)
 
 
-@operations.register
-async def list_todos(request: web.Request) -> web.Response:
-    storage: Storage = request.config_dict[APP_STORAGE_KEY]
-    todos = await storage.list_todos()
+@operations.register("todo")
+class TodoView(web.View):
+    async def delete(self) -> web.Response:
+        request = self.request
 
-    return web.json_response(
-        [item.to_api_dict(request=request) for item in todos]
-    )
+        storage: Storage = request.config_dict[APP_STORAGE_KEY]
+        await storage.delete_todo(await get_todo_or_404(request))
 
+        return web.json_response("")
 
-@operations.register
-async def retrieve_todo(request: web.Request) -> web.Response:
-    todo = await get_todo_or_404(request)
-    return web.json_response(todo.to_api_dict(request=request))
+    async def get(self) -> web.Response:
+        request = self.request
+        todo = await get_todo_or_404(request)
+        return web.json_response(todo.to_api_dict(request=request))
 
+    async def patch(self) -> web.Response:
+        request = self.request
+        todo = await get_todo_or_404(request)
 
-@operations.register
-async def update_todo(request: web.Request) -> web.Response:
-    todo = await get_todo_or_404(request)
+        with openapi_context(request) as context:
+            next_todo = attr.evolve(todo, **context.data)
 
-    with openapi_context(request) as context:
-        next_todo = attr.evolve(todo, **context.data)
+        storage: Storage = request.config_dict[APP_STORAGE_KEY]
+        await storage.save_todo(next_todo)
 
-    storage: Storage = request.config_dict[APP_STORAGE_KEY]
-    await storage.save_todo(next_todo)
-
-    return web.json_response(next_todo.to_api_dict(request=request))
+        return web.json_response(next_todo.to_api_dict(request=request))

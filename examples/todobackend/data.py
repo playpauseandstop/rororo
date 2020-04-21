@@ -1,5 +1,4 @@
 import uuid
-from random import choice
 
 import attr
 from aiohttp import web
@@ -35,9 +34,8 @@ class Todo:
         )
 
     def get_absolute_url(self, *, request: web.Request) -> URL:
-        route_name = choice(["retrieve_todo", "update_todo", "delete_todo"])
         return request.url.with_path(  # type: ignore
-            str(request.app.router[route_name].url_for(todo_uid=str(self.uid)))
+            str(request.app.router["todo.get"].url_for(todo_uid=str(self.uid)))
         )
 
     def to_api_dict(self, *, request: web.Request) -> TodoAPIDict:

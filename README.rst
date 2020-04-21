@@ -104,6 +104,26 @@ schema file.
         )
         return app
 
+Class Based Views
+-----------------
+
+``rororo`` supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
+as well. `Todo-Backend <https://github.com/playpauseandstop/rororo/tree/master/examples/todobackend>`_
+example illustrates how to use class based views for OpenAPI handlers.
+
+In snippet below, ``rororo`` expects that OpenAPI schema contains operation ID
+``UserView.get``,
+
+.. code-block:: python
+
+    @operations.register
+    class UserView(web.View):
+        async def get(self) -> web.Response:
+            ...
+
+More Examples
+-------------
+
 Check
 `examples <https://github.com/playpauseandstop/rororo/tree/master/examples>`_
 folder to see other examples on how to use OpenAPI 3 schemas with aiohttp.web

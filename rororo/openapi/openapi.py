@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, overload, Union
+from typing import Deque, List, overload, Type, Union
 
 import attr
 import yaml
@@ -28,6 +28,7 @@ from ..settings import APP_SETTINGS_KEY, BaseSettings
 
 
 Url = Union[str, URL]
+ViewType = Type[web.View]
 
 
 @attr.dataclass(slots=True)
@@ -70,15 +71,50 @@ class OperationTableDef:
         async def hello_world(request: web.Request) -> web.Response:
             ...
 
+    Class based views supported as well. In most generic way you just need
+    to decorate your view with ``@operations.register`` decorator and ensure
+    that ``operationId`` equals to view method qualified name
+    (``__qualname__``).
+
+    For example,
+
+    .. code-block:: python
+
+        @operations.register
+        class UserView(web.View):
+            async def get(self) -> web.Response:
+                ...
+
+    expects for operation ID ``UserView.get`` to be declared in OpenAPI schema.
+
+    In same time,
+
+    .. code-block:: python
+
+        @operations.register("users")
+        class UserView(web.View):
+            async def get(self) -> web.Response:
+                ...
+
+    expects for operation ID ``users.get`` to be declared in OpenAPI schema.
+
+    When the class based view provides mutliple view methods (for example
+    ``delete``, ``get``, ``patch`` & ``put``) ``rororo`` expects that
+    OpenAPI schema contains operation IDs for each of view method.
+
     If supplied ``operation_id`` does not exist in OpenAPI 3 schema,
     :func:`rororo.openapi.setup_openapi` call raises an ``OperationError``.
     """
 
-    handlers: Dict[str, Handler] = attr.Factory(dict)
-    aliases: DictStrStr = attr.Factory(dict)
+    handlers: List[Handler] = attr.Factory(list)
+    views: List[ViewType] = attr.Factory(list)
 
     @overload
     def register(self, handler: Handler) -> Handler:
+        ...  # pragma: no cover
+
+    @overload
+    def register(self, view: ViewType) -> ViewType:  # noqa: F811
         ...  # pragma: no cover
 
     @overload
@@ -86,16 +122,47 @@ class OperationTableDef:
         ...  # pragma: no cover
 
     def register(self, mixed):  # type: ignore  # noqa: F811
-        operation_id = mixed if isinstance(mixed, str) else mixed.__name__
+        operation_id = mixed if isinstance(mixed, str) else mixed.__qualname__
 
-        def decorator(handler: Handler) -> Handler:
+        def register_handler(handler: Handler) -> Handler:
             setattr(
                 handler,
                 HANDLER_OPENAPI_MAPPING_KEY,
                 pmap({hdrs.METH_ANY: operation_id}),
             )
-            self.handlers[operation_id] = handler
+            self.handlers.append(handler)
             return handler
+
+        def register_view(view: ViewType) -> ViewType:
+            mapping: DictStrStr = {}
+
+            for key in vars(view):
+                maybe_method = key.upper()
+                if maybe_method not in hdrs.METH_ALL:
+                    continue
+                mapping[maybe_method] = f"{operation_id}.{key}"
+
+            setattr(view, HANDLER_OPENAPI_MAPPING_KEY, pmap(mapping))
+            self.views.append(view)
+
+            return view
+
+        @overload
+        def decorator(handler: Handler) -> Handler:
+            ...
+
+        @overload
+        def decorator(view: ViewType) -> ViewType:  # noqa: F811
+            ...
+
+        def decorator(handler_or_view):  # type: ignore  # noqa: F811
+            try:
+                if issubclass(handler_or_view, web.View):
+                    return register_view(handler_or_view)
+            except TypeError:
+                return register_handler(handler_or_view)
+
+            return handler_or_view
 
         return decorator(mixed) if callable(mixed) else decorator
 
@@ -104,15 +171,45 @@ def convert_operations_to_routes(
     operations: OperationTableDef, spec: Spec, *, prefix: str = None
 ) -> web.RouteTableDef:
     """Convert operations table defintion to routes table definition."""
+
+    async def noop(request: web.Request) -> web.Response:
+        return web.json_response(status=204)
+
     routes = web.RouteTableDef()
 
-    for operation_id, handler in operations.handlers.items():
+    # Add plain handlers to the route table def as a route
+    for handler in operations.handlers:
+        operation_id = getattr(handler, HANDLER_OPENAPI_MAPPING_KEY)[
+            hdrs.METH_ANY
+        ]
         core_operation = get_core_operation(spec, operation_id)
+
         routes.route(
             core_operation.http_method,
             add_prefix(core_operation.path_name, prefix),
             name=get_route_name(core_operation.operation_id),
         )(handler)
+
+    # But view should be added as a view instead
+    for view in operations.views:
+        ids: Deque[str] = Deque(
+            getattr(view, HANDLER_OPENAPI_MAPPING_KEY).values()
+        )
+
+        first_operation_id = ids.popleft()
+        core_operation = get_core_operation(spec, first_operation_id)
+
+        path = add_prefix(core_operation.path_name, prefix)
+        routes.view(path, name=get_route_name(core_operation.operation_id),)(
+            view
+        )
+
+        # Hacky way of adding aliases to class based views with multiple
+        # registered view methods
+        for other_operation_id in ids:
+            routes.route(
+                hdrs.METH_ANY, path, name=get_route_name(other_operation_id)
+            )(noop)
 
     return routes
 

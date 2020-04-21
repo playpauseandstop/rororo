@@ -4,6 +4,7 @@
 2.0.0rc0 (In Development)
 -------------------------
 
+- feature: Support class based views as well
 - feature: Allow to pass kwargs to error middleware as done for CORS middleware
 - feature: Ensure support optional security schemes
 - feature: Integrate `environ-config <https://environ-config.readthedocs.io>`_
