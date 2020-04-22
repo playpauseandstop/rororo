@@ -121,6 +121,17 @@ class OperationTableDef:
     handlers: List[Handler] = attr.Factory(list)
     views: List[ViewType] = attr.Factory(list)
 
+    def __add__(self, other: "OperationTableDef") -> "OperationTableDef":
+        return OperationTableDef(
+            handlers=[*self.handlers, *other.handlers],
+            views=[*self.views, *other.views],
+        )
+
+    def __iadd__(self, other: "OperationTableDef") -> "OperationTableDef":
+        self.handlers.extend(other.handlers)
+        self.views.extend(other.views)
+        return self
+
     @overload
     def register(self, handler: F) -> F:
         ...  # pragma: no cover
@@ -195,7 +206,7 @@ def convert_operations_to_routes(
     """Convert operations table defintion to routes table definition."""
 
     async def noop(request: web.Request) -> web.Response:
-        return web.json_response(status=204)
+        return web.json_response(status=204)  # pragma: no cover
 
     routes = web.RouteTableDef()
 
@@ -276,6 +287,20 @@ def get_route_name(operation_id: str) -> str:
 
 def get_route_prefix(mixed: Url) -> str:
     return (URL(mixed) if isinstance(mixed, str) else mixed).path
+
+
+def read_openapi_schema(path: Path) -> DictStrAny:
+    content = path.read_text()
+    if path.suffix == ".json":
+        return json.loads(content)  # type: ignore
+
+    if path.suffix in {".yml", ".yaml"}:
+        return yaml.safe_load(content)  # type: ignore
+
+    raise ConfigurationError(
+        f"Unsupported OpenAPI schema file: {path}. At a moment rororo "
+        "supports loading OpenAPI schemas from: .json, .yml, .yaml files"
+    )
 
 
 def setup_openapi(
@@ -396,19 +421,6 @@ def setup_openapi(
     :func:`aiohttp_middlewares.cors.cors_middleware`.
     """
 
-    def read_schema(path: Path) -> DictStrAny:
-        content = path.read_text()
-        if path.suffix == ".json":
-            return json.loads(content)  # type: ignore
-
-        if path.suffix in {".yml", ".yaml"}:
-            return yaml.safe_load(content)  # type: ignore
-
-        raise ConfigurationError(
-            f"Unsupported OpenAPI schema file: {path}. At a moment rororo "
-            "supports loading OpenAPI schemas from: .json, .yml, .yaml files"
-        )
-
     # Ensure OpenAPI schema is a readable file
     path = Path(schema_path) if isinstance(schema_path, str) else schema_path
     if not path.exists() or not path.is_file():
@@ -420,7 +432,7 @@ def setup_openapi(
         )
 
     # Store OpenAPI schema dict in the application dict
-    app[APP_OPENAPI_SCHEMA_KEY] = oas = read_schema(path)
+    app[APP_OPENAPI_SCHEMA_KEY] = oas = read_openapi_schema(path)
 
     # Create the spec and put it to the application dict as well
     try:
