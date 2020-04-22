@@ -112,6 +112,76 @@ to pass ``operation_id`` string as first argument to ``@operations.register``,
     ) -> web.Response:
         return web.json_response("Hello, world!")
 
+Class Based Views
+-----------------
+
+``rororo`` supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
+as well.
+
+In basic mode it expects that OpenAPI schema contains *operationId*, which
+equals to all view method qualified names. For example, code below expects
+OpenAPI schema to declare ``UsersView.get`` & ``UsersView.post`` operation IDs,
+
+.. code-block:: python
+
+    @operations.register
+    class UsersView(web.View):
+        async def get(self) -> web.Response:
+            ...
+
+        async def post(self) -> web.Response:
+            ...
+
+Next, it might be a need to use different prefix instead of ``UsersView``. In
+example below, ``rororo`` expects OpenAPI schema to provide ``users.get`` &
+``users.post`` operation IDs,
+
+.. code-block:: python
+
+    @operations.register("users")
+    class UsersView(web.View):
+        async def get(self) -> web.Response:
+            ...
+
+        async def post(self) -> web.Response:
+            ...
+
+Finally, it might be need to use custom *operationId* instead of guessing it
+from view or view method name. Example below, illustrates the case, when
+OpenAPI schema contains ``list_users`` & ``create_user`` operation IDs,
+
+.. code-block:: python
+
+    @operations.register
+    class UsersView(web.View):
+        @operations.register("list_users")
+        async def get(self) -> web.Response:
+            ...
+
+        @operations.register("create_user")
+        async def post(self) -> web.Response:
+            ...
+
+To access :class:`rororo.openapi.data.OpenAPIContext` in class based views you
+need to pass ``self.request`` into :func:`rororo.openapi.openapi_context` or
+:func:`rororo.openapi.get_openapi_context` as done below,
+
+.. code-block:: python
+
+    @operations.register
+    class UserView(web.View):
+        async def patch(self) -> web.Response:
+            user = get_user_or_404(self.request)
+            with openapi_context(self.request) as context:
+                next_user = attr.evolve(user, **context.data)
+                save_user(next_user)
+            return web.json_response(next_user.to_api_dict())
+
+.. important::
+    On registering class based views with multiple view methods (for example
+    with ``get``, ``patch`` & ``put``) you need to ensure that **all** methods
+    could be mapped to operation ID in provided OpenAPI schema file.
+
 Request Validation
 ------------------
 
@@ -140,11 +210,10 @@ Resulted *context* instance will contain,
 - ``request`` - untouched :class:`aiohttp.web.Request` instance
 - ``app`` - :class:`aiohttp.web.Application` instance
 - ``config_dict``
-- ``operation`` - operation details (``id``, ``schema``, etc)
 - ``parameters`` - valid parameters mappings (``path``, ``query``, ``header``,
   ``cookie``)
-- ``data`` - valid data from request body
 - ``security`` - security data, if operation is secured
+- ``data`` - valid data from request body
 
 Part 3. Finish setup process
 ============================
@@ -262,10 +331,21 @@ How it Works?
 Under the hood *rororo* heavily relies on
 `openapi-core <https://pypi.org/project/openapi-core>`_ library.
 
-1. :func:`rororo.openapi.setup_openapi` creates the spec instance
-2. On handling each request ``validate_parameters`` / ``validate_body``
-   shortcut functions called
-3. If enabled, ``validate_data`` shortcut called for each response
+1. :func:`rororo.openapi.setup_openapi`
+
+   - Creates the `Spec <https://github.com/p1c2u/openapi-core/blob/0.13.3/openapi_core/schema/specs/models.py#L14>`_
+     instance from OpenAPI schema source
+   - Connects previously registered handlers and views to the application router
+     (:class:`aiohttp.web.UrlDispatcher`)
+   - Registers hidden ``openapi_middleware`` to handle request to registered
+     handlers and views
+
+2. On handling each OpenAPI request `RequestValidator.validate(...) <https://github.com/p1c2u/openapi-core/blob/0.13.3/openapi_core/validation/request/validators.py#L27>`_
+   method called. Result of validation as
+   :class:`rororo.openapi.data.OpenAPIContext` supplied to current
+   :class:`aiohttp.web.Request` instance
+3. If enabled, `ResponseValidator.validate(...) <https://github.com/p1c2u/openapi-core/blob/0.13.3/openapi_core/validation/response/validators.py#L19>`_
+   method called for each OpenAPI response
 
 Swagger 2.0 Support
 ===================

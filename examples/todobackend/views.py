@@ -13,12 +13,24 @@ operations = OperationTableDef()
 
 @operations.register
 class TodosView(web.View):
+    """Illustrate how to register operations to ``web.View``.
+
+    Basic method allows to map ``ViewMethod.__qualname__`` to ``operationId``
+    in OpenAPI schema. Cause of that ``TodosView.delete`` is not additionally
+    decorated.
+
+    Advanced method allows to provide custom ``operationId`` for
+    ``ViewMethod``, cause of that ``TodosView.get`` and ``TodosView.post``
+    decorated with ``@operations.register(operation_id)`` as well.
+    """
+
     async def delete(self) -> web.Response:
         storage: Storage = self.request.config_dict[APP_STORAGE_KEY]
         await storage.delete_todos()
 
         return web.json_response("")
 
+    @operations.register("list_todos")
     async def get(self) -> web.Response:
         request = self.request
 
@@ -29,6 +41,7 @@ class TodosView(web.View):
             [item.to_api_dict(request=request) for item in todos]
         )
 
+    @operations.register("create_todo")
     async def post(self) -> web.Response:
         request = self.request
 

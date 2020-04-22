@@ -129,9 +129,9 @@ async def test_storage(todobackend_redis, todobackend_settings):
 @pytest.mark.parametrize(
     "route_name, kwargs, expected",
     (
+        ("create_todo", {}, URL_TODOS),
+        ("list_todos", {}, URL_TODOS),
         ("TodosView.delete", {}, URL_TODOS),
-        ("TodosView.get", {}, URL_TODOS),
-        ("TodosView.post", {}, URL_TODOS),
         ("todo.delete", {"todo_uid": FAKE_UID}, URL_TODOS / FAKE_UID),
         ("todo.get", {"todo_uid": FAKE_UID}, URL_TODOS / FAKE_UID),
         ("todo.patch", {"todo_uid": FAKE_UID}, URL_TODOS / FAKE_UID),

@@ -9,20 +9,24 @@ place.
 """
 
 import types
-from typing import Any, Callable, Dict, Mapping, TypeVar, Union
+from typing import Any, Callable, Dict, Mapping, Type, TypeVar, Union
 
 try:
     from typing_extensions import Literal, Protocol, TypedDict
 except ImportError:
     from typing import Literal, Protocol, TypedDict  # type: ignore
 
+from aiohttp import web
 from aiohttp.web_middlewares import _Handler
 
+
+F = TypeVar("F", bound=Callable[..., Any])
+T = TypeVar("T")
 
 Level = Literal["test", "dev", "staging", "prod"]
 
 Handler = _Handler
-Decorator = Callable[[Handler], Handler]
+ViewType = Type[web.View]
 
 DictStrAny = Dict[str, Any]
 DictStrInt = Dict[str, int]
@@ -33,7 +37,6 @@ MappingStrInt = Mapping[str, int]
 MappingStrStr = Mapping[str, str]
 
 Settings = Union[types.ModuleType, DictStrAny]
-T = TypeVar("T")
 
 
 (Protocol, TypedDict)  # Make flake8 happy

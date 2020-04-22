@@ -27,14 +27,6 @@ def openapi_context(request: web.Request) -> Iterator[OpenAPIContext]:
             with openapi_context(request) as context:
                 ...
 
-    ``OpenAPIContext`` class will contain next attributes:
-
-    - ``request``
-    - ``app``
-    - ``operation``
-    - ``parameters``
-    - ``data``
-
     If using context managers inside of view handlers considered as unwanted,
     there is an other option in
     :func:`rororo.openapi.get_openapi_context` function.

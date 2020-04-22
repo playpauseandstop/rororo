@@ -1,7 +1,8 @@
+import inspect
 import json
 import os
 from pathlib import Path
-from typing import Deque, List, overload, Type, Union
+from typing import Callable, Deque, List, overload, Union
 
 import attr
 import yaml
@@ -23,12 +24,11 @@ from .core_data import get_core_operation
 from .exceptions import ConfigurationError
 from .middlewares import openapi_middleware
 from .utils import add_prefix
-from ..annotations import Decorator, DictStrAny, DictStrStr, Handler
+from ..annotations import DictStrAny, DictStrStr, F, Handler, ViewType
 from ..settings import APP_SETTINGS_KEY, BaseSettings
 
 
 Url = Union[str, URL]
-ViewType = Type[web.View]
 
 
 @attr.dataclass(slots=True)
@@ -66,7 +66,7 @@ class OperationTableDef:
             ...
 
 
-        # Explicitly use operationId: helloWorld
+        # Explicitly use `operationId: "helloWorld"`
         @operations.register("helloWorld")
         async def hello_world(request: web.Request) -> web.Response:
             ...
@@ -98,6 +98,18 @@ class OperationTableDef:
 
     expects for operation ID ``users.get`` to be declared in OpenAPI schema.
 
+    Finally,
+
+    .. code-block:: python
+
+        @operations.register
+        class UserView(web.View):
+            @operations.register("me")
+            async def get(self) -> web.Response:
+                ...
+
+    expects for operation ID ``me`` to be declared in OpenAPI schema.
+
     When the class based view provides mutliple view methods (for example
     ``delete``, ``get``, ``patch`` & ``put``) ``rororo`` expects that
     OpenAPI schema contains operation IDs for each of view method.
@@ -110,63 +122,71 @@ class OperationTableDef:
     views: List[ViewType] = attr.Factory(list)
 
     @overload
-    def register(self, handler: Handler) -> Handler:
+    def register(self, handler: F) -> F:
         ...  # pragma: no cover
 
     @overload
-    def register(self, view: ViewType) -> ViewType:  # noqa: F811
-        ...  # pragma: no cover
-
-    @overload
-    def register(self, operation_id: str) -> Decorator:  # noqa: F811
+    def register(self, operation_id: str) -> Callable[[F], F]:  # noqa: F811
         ...  # pragma: no cover
 
     def register(self, mixed):  # type: ignore  # noqa: F811
         operation_id = mixed if isinstance(mixed, str) else mixed.__qualname__
 
-        def register_handler(handler: Handler) -> Handler:
-            setattr(
-                handler,
-                HANDLER_OPENAPI_MAPPING_KEY,
-                pmap({hdrs.METH_ANY: operation_id}),
-            )
-            self.handlers.append(handler)
-            return handler
-
-        def register_view(view: ViewType) -> ViewType:
+        def decorator(handler: F) -> F:
             mapping: DictStrStr = {}
 
-            for key in vars(view):
-                maybe_method = key.upper()
-                if maybe_method not in hdrs.METH_ALL:
-                    continue
-                mapping[maybe_method] = f"{operation_id}.{key}"
+            if self._is_view(handler):
+                mapping.update(
+                    self._register_view(handler, operation_id)  # type: ignore
+                )
+            else:
+                mapping.update(self._register_handler(handler, operation_id))
 
-            setattr(view, HANDLER_OPENAPI_MAPPING_KEY, pmap(mapping))
-            self.views.append(view)
-
-            return view
-
-        @overload
-        def decorator(handler: Handler) -> Handler:
-            ...
-
-        @overload
-        def decorator(view: ViewType) -> ViewType:  # noqa: F811
-            ...
-
-        def decorator(handler_or_view):  # type: ignore  # noqa: F811
-            try:
-                if issubclass(handler_or_view, web.View):
-                    return register_view(handler_or_view)
-            except TypeError:
-                return register_handler(handler_or_view)
-
-            # Python 3.6 do not raise a TypeError for checking whether plain
-            # handler is a subclass of `web.View`, but Python 3.7+ does
-            return register_handler(handler_or_view)
+            setattr(handler, HANDLER_OPENAPI_MAPPING_KEY, pmap(mapping))
+            return handler
 
         return decorator(mixed) if callable(mixed) else decorator
+
+    def _is_view(self, handler: F) -> bool:
+        is_class = inspect.isclass(handler)
+        return is_class and issubclass(handler, web.View)  # type: ignore
+
+    def _register_handler(
+        self, handler: Handler, operation_id: str
+    ) -> DictStrStr:
+        # Hacky way to check whether handler is a view function or view method
+        has_self_parameter = "self" in inspect.signature(handler).parameters
+
+        # Register only view functions, view methods will be registered via
+        # view class instead
+        if not has_self_parameter:
+            self.handlers.append(handler)
+
+        return {hdrs.METH_ANY: operation_id}
+
+    def _register_view(self, view: ViewType, prefix: str) -> DictStrStr:
+        mapping: DictStrStr = {}
+
+        for value in vars(view).values():
+            if not callable(value):
+                continue
+
+            name = value.__name__
+            maybe_method = name.upper()
+            if maybe_method not in hdrs.METH_ALL:
+                continue
+
+            maybe_operation_id = getattr(
+                value, HANDLER_OPENAPI_MAPPING_KEY, {}
+            ).get(hdrs.METH_ANY)
+            mapping[maybe_method] = (
+                maybe_operation_id
+                if maybe_operation_id
+                else f"{prefix}.{name}"
+            )
+
+        self.views.append(view)
+        return mapping
 
 
 def convert_operations_to_routes(

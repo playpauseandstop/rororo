@@ -31,7 +31,7 @@ x-default-responses: &default_responses
 paths:
   "/":
     post:
-      operationId: "TodosView.post"
+      operationId: "create_todo"
       summary: "Add new todo"
       tags: ["todos"]
       requestBody:
@@ -49,7 +49,7 @@ paths:
                 $ref: "#/components/schemas/Todo"
 
     get:
-      operationId: "TodosView.get"
+      operationId: "list_todos"
       summary: "List all todos"
       tags: ["todos"]
       responses:

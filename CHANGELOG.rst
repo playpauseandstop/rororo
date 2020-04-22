@@ -4,7 +4,7 @@
 2.0.0rc0 (In Development)
 -------------------------
 
-- feature: Support class based views as well
+- feature: Support class based views
 - feature: Allow to pass kwargs to error middleware as done for CORS middleware
 - feature: Ensure support optional security schemes
 - feature: Integrate `environ-config <https://environ-config.readthedocs.io>`_
@@ -16,7 +16,7 @@
   call
 - feature: Use `email-validator <https://pypi.org/project/email-validator>`_
   for validating string fields with ``format: "email"``
-- feature: Validating error responses via OpenAPI schema as well
+- feature: Validating error responses via OpenAPI schema
 
 2.0.0b3 (2020-01-27)
 --------------------
