@@ -162,7 +162,9 @@ class OperationTableDef:
             except TypeError:
                 return register_handler(handler_or_view)
 
-            return handler_or_view
+            # Python 3.6 do not raise a TypeError for checking whether plain
+            # handler is a subclass of `web.View`, but Python 3.7+ does
+            return register_handler(handler_or_view)
 
         return decorator(mixed) if callable(mixed) else decorator
 
