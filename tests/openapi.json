@@ -240,9 +240,54 @@
           }
         }
       }
+    },
+    "/posts/{post_id}": {
+      "get": {
+        "operationId": "retrieve_post",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PostID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnyObject"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnyObject"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
+    "parameters": {
+      "PostID": {
+        "name": "post_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      }
+    },
+
     "schemas": {
       "AnyObject": {
         "type": "object",

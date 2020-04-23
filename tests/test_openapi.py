@@ -116,6 +116,14 @@ async def retrieve_invalid_response(request: web.Request) -> web.Response:
 
 
 @operations.register
+async def retrieve_post(request: web.Request) -> web.Response:
+    context = get_openapi_context(request)
+    return web.json_response(
+        {"id": context.parameters.path["post_id"], "title": "The Post"}
+    )
+
+
+@operations.register
 async def retrieve_nested_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
@@ -291,6 +299,44 @@ async def test_email_format(aiohttp_client, schema_path):
     )
     assert response.status == 200
     assert (await response.json())["email"] == "email@example.com"
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_invalid_parameter_format(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/posts/not-an-integer")
+    assert response.status == 422
+    assert await response.json() == {
+        "detail": [
+            {
+                "loc": ["parameters", "post_id"],
+                "message": "'not-an-integer' is not a type of 'integer'",
+            }
+        ]
+    }
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_invalid_parameter_value(aiohttp_client, schema_path):
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api/"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/posts/0")
+    assert response.status == 422
+    assert await response.json() == {
+        "detail": [
+            {
+                "loc": ["parameters", "post_id"],
+                "message": "0 is less than the minimum of 1",
+            }
+        ]
+    }
 
 
 def test_get_openapi_schema_no_schema():

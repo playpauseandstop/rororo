@@ -1,8 +1,10 @@
 import logging
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
+import attr
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
+from openapi_core.casting.schemas.exceptions import CastError as CoreCastError
 from openapi_core.deserializing.exceptions import DeserializeError
 from openapi_core.deserializing.parameters.exceptions import (
     EmptyParameterValue,
@@ -17,10 +19,7 @@ from openapi_core.schema.parameters.exceptions import (
     MissingRequiredParameter,
     OpenAPIParameterError,
 )
-from openapi_core.schema.responses.exceptions import (
-    InvalidResponse,
-    MissingResponseContent,
-)
+from openapi_core.schema.responses.exceptions import InvalidResponse
 from openapi_core.unmarshalling.schemas.exceptions import (
     InvalidSchemaValue,
     UnmarshalError,
@@ -45,6 +44,13 @@ logger = logging.getLogger(__name__)
 required_message_re = re.compile(
     r"^'(?P<field_name>.*)' is a required property$"
 )
+
+
+@attr.s(hash=True)
+class CastError(CoreCastError):
+    name: str = attr.ib()
+    value: str = attr.ib()
+    type: str = attr.ib()  # noqa: A003
 
 
 class OpenAPIError(Exception):
@@ -202,27 +208,29 @@ class ValidationError(OpenAPIError):
         cls,
         errors: List[CoreOpenAPIError],
         *,
-        unmarshal_loc: List[PathItem] = None,
+        base_loc: List[PathItem] = None,
     ) -> "ValidationError":
-        unmarshal_loc = ["body"] if unmarshal_loc is None else unmarshal_loc
+        base_loc = ["body"] if base_loc is None else base_loc
         result = []
 
         for err in errors:
             if isinstance(err, (OpenAPIParameterError, EmptyParameterValue)):
-                details = get_parameter_error_details(err)
-                if details:
-                    result.append(details)
+                result.append(get_parameter_error_details(base_loc, err))
             elif isinstance(err, OpenAPIMediaTypeError):
-                details = get_media_type_error_details(["body"], err)
-                if details:
-                    result.append(details)
-            elif isinstance(err, UnmarshalError):
-                result.extend(get_unmarshal_error_details(unmarshal_loc, err))
-            else:
-                logger.debug(
-                    "Unhandled request validation error",
-                    extra={"err": err, "err_type": str(type(err))},
+                result.append(get_media_type_error_details(base_loc, err))
+            elif isinstance(err, CastError):
+                result.append(
+                    {
+                        "loc": [*base_loc, err.name],
+                        "message": (
+                            f"{err.value!r} is not a type of {err.type!r}"
+                        ),
+                    }
                 )
+            elif isinstance(err, UnmarshalError):
+                result.extend(get_unmarshal_error_details(base_loc, err))
+            else:
+                result.append(get_common_error_details(base_loc, err))
 
         return cls(
             message="Request parameters or body validation error",
@@ -234,38 +242,38 @@ class ValidationError(OpenAPIError):
         cls, errors: List[CoreOpenAPIError]
     ) -> "ValidationError":
         result: List[ValidationErrorItem] = []
+        loc: List[PathItem] = ["response"]
 
         for err in errors:
             if isinstance(err, InvalidResponse):
                 available_responses = ", ".join(sorted(err.responses))
                 result.append(
                     {
-                        "loc": ["response"],
+                        "loc": loc,
                         "message": (
                             f"{err}. Available response http statuses: "
                             f"{available_responses}"
                         ),
                     }
                 )
-            elif isinstance(err, MissingResponseContent):
-                result.append({"loc": ["response"], "message": str(err)})
             elif isinstance(err, OpenAPIMediaTypeError):
-                details = get_media_type_error_details(["response"], err)
-                if details:
-                    result.append(details)
+                result.append(get_media_type_error_details(loc, err))
             elif isinstance(err, UnmarshalError):
-                result.extend(get_unmarshal_error_details(["response"], err))
+                result.extend(get_unmarshal_error_details(loc, err))
             else:
-                logger.debug(
-                    "Unhandled response validation error",
-                    extra={"err": err, "err_type": str(type(err))},
-                )
+                result.append(get_common_error_details(loc, err))
 
         return cls(message="Response data validation error", errors=result)
 
 
 def ensure_loc(loc: List[PathItem]) -> List[PathItem]:
     return [item for item in loc if item != ""]
+
+
+def get_common_error_details(
+    loc: List[PathItem], err: CoreOpenAPIError
+) -> ValidationErrorItem:
+    return {"loc": loc, "message": str(err)}
 
 
 def get_json_schema_validation_error_details(
@@ -291,7 +299,7 @@ def get_json_schema_validation_error_details(
 
 def get_media_type_error_details(
     loc: List[PathItem], err: OpenAPIMediaTypeError
-) -> Optional[ValidationErrorItem]:
+) -> ValidationErrorItem:
     if isinstance(err, InvalidContentType):
         return {
             "loc": loc,
@@ -299,16 +307,16 @@ def get_media_type_error_details(
                 f"Schema missing for following mimetype: {err.mimetype}"
             ),
         }
-    return None
+
+    return get_common_error_details(loc, err)
 
 
 def get_parameter_error_details(
-    err: OpenAPIParameterError,
-) -> Optional[ValidationErrorItem]:
+    loc: List[PathItem], err: OpenAPIParameterError,
+) -> ValidationErrorItem:
     parameter_name: str = getattr(err, "name", None)
     if parameter_name is None:
-        logger.info(f"Parameter error missing parameter name: {err}")
-        return None
+        return get_common_error_details(loc, err)
 
     message = {
         DeserializeError: ERROR_PARAMETER_INVALID,
@@ -317,7 +325,7 @@ def get_parameter_error_details(
         MissingRequiredParameter: ERROR_PARAMETER_REQUIRED,
     }[type(err)]
 
-    return {"loc": ["parameters", parameter_name], "message": message}
+    return {"loc": [*loc, parameter_name], "message": message}
 
 
 def get_unmarshal_error_details(
@@ -329,10 +337,7 @@ def get_unmarshal_error_details(
             for item in err.schema_errors
         ]
 
-    # TODO: Handle InvalidSchemaFormatValue & FormatterNotFoundError errors
-    # as well
-    logger.info(f"Unhandled unmarshal error: {err}")
-    return []
+    return [get_common_error_details(loc, err)]
 
 
 def is_only_security_error(errors: List[CoreOpenAPIError]) -> bool:

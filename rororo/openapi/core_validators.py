@@ -7,7 +7,8 @@ from email_validator import EmailNotValidError, validate_email
 from isodate import parse_datetime
 from jsonschema.exceptions import FormatError
 from more_itertools import peekable
-from openapi_core.exceptions import OpenAPIError
+from openapi_core.casting.schemas.exceptions import CastError as CoreCastError
+from openapi_core.exceptions import OpenAPIError as CoreOpenAPIError
 from openapi_core.schema.operations.models import Operation
 from openapi_core.schema.parameters.models import Parameter
 from openapi_core.schema.paths.models import Path
@@ -44,7 +45,7 @@ from openapi_core.validation.validators import (
 from openapi_schema_validator._format import oas30_format_checker
 
 from .data import OpenAPIParameters, to_openapi_parameters
-from .exceptions import ValidationError
+from .exceptions import CastError, ValidationError
 from .security import validate_security
 from .utils import get_base_url
 from ..annotations import MappingStrAny
@@ -137,6 +138,15 @@ class BaseValidator(CoreBaseValidator):
     To be removed from ``rororo`` after next ``openapi-core`` version release.
     """
 
+    def _cast(self, param_or_media_type: Any, value: Any) -> Any:
+        try:
+            return super()._cast(param_or_media_type, value)
+        except CoreCastError as err:
+            # Pass param or media type name to cast error
+            raise CastError(
+                name=param_or_media_type.name, value=err.value, type=err.type
+            )
+
     def _find_path(self, request: OpenAPIRequest) -> PathTuple:
         return PathFinder(self.spec, base_url=self.base_url).find(request)
 
@@ -170,7 +180,7 @@ class BaseValidator(CoreBaseValidator):
 class RequestValidator(BaseValidator, CoreRequestValidator):
     def _get_parameters(
         self, request: OpenAPIRequest, params: MappingStrAny
-    ) -> Tuple[RequestParameters, List[OpenAPIError]]:
+    ) -> Tuple[RequestParameters, List[CoreOpenAPIError]]:
         """
         Distinct parameters errors from body errors to supply proper validation
         error response.
@@ -178,7 +188,7 @@ class RequestValidator(BaseValidator, CoreRequestValidator):
         parameters, errors = super()._get_parameters(request, params)
         if errors:
             raise ValidationError.from_request_errors(
-                errors, unmarshal_loc=["parameters"]
+                errors, base_loc=["parameters"]
             )
         return parameters, errors
 

@@ -93,17 +93,37 @@ def test_validation_error_from_dict_value_error():
 
 
 @pytest.mark.parametrize(
-    "method, error",
+    "method, error, expected_loc",
     (
-        (ValidationError.from_request_errors, OpenAPIMappingError()),
-        (ValidationError.from_response_errors, OpenAPIMappingError()),
-        (ValidationError.from_request_errors, OpenAPIMediaTypeError()),
-        (ValidationError.from_response_errors, OpenAPIMediaTypeError()),
-        (ValidationError.from_request_errors, OpenAPIParameterError()),
-        (ValidationError.from_response_errors, OpenAPIParameterError()),
+        (ValidationError.from_request_errors, OpenAPIMappingError(), ["body"]),
+        (
+            ValidationError.from_response_errors,
+            OpenAPIMappingError(),
+            ["response"],
+        ),
+        (
+            ValidationError.from_request_errors,
+            OpenAPIMediaTypeError(),
+            ["body"],
+        ),
+        (
+            ValidationError.from_response_errors,
+            OpenAPIMediaTypeError(),
+            ["response"],
+        ),
+        (
+            ValidationError.from_request_errors,
+            OpenAPIParameterError(),
+            ["body"],
+        ),
+        (
+            ValidationError.from_response_errors,
+            OpenAPIParameterError(),
+            ["response"],
+        ),
     ),
 )
-def test_validation_error_from_dummy_error(method, error):
+def test_validation_error_from_dummy_error(method, error, expected_loc):
     err = method([error])
-    assert err.errors == []
-    assert err.data is None
+    assert err.errors == [{"loc": expected_loc, "message": ""}]
+    assert err.data == {"detail": [{"loc": expected_loc, "message": ""}]}
