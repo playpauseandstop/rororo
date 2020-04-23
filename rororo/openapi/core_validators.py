@@ -1,3 +1,4 @@
+from collections import deque
 from functools import partial
 from typing import Any, Dict, Iterator, List, Tuple
 
@@ -8,6 +9,7 @@ from jsonschema.exceptions import FormatError
 from more_itertools import peekable
 from openapi_core.exceptions import OpenAPIError
 from openapi_core.schema.operations.models import Operation
+from openapi_core.schema.parameters.models import Parameter
 from openapi_core.schema.paths.models import Path
 from openapi_core.schema.schemas.enums import SchemaFormat
 from openapi_core.schema.servers.models import Server
@@ -20,6 +22,7 @@ from openapi_core.templating.paths.exceptions import (
 )
 from openapi_core.templating.paths.finders import PathFinder as CorePathFinder
 from openapi_core.unmarshalling.schemas.enums import UnmarshalContext
+from openapi_core.unmarshalling.schemas.exceptions import InvalidSchemaValue
 from openapi_core.unmarshalling.schemas.factories import (
     SchemaUnmarshallersFactory as CoreSchemaUnmarshallersFactory,
 )
@@ -148,7 +151,20 @@ class BaseValidator(CoreBaseValidator):
             self.spec._resolver, self.custom_formatters, context=context,
         )
         unmarshaller = unmarshallers_factory.create(param_or_media_type.schema)
-        return unmarshaller(value)
+
+        try:
+            return unmarshaller(value)
+        except InvalidSchemaValue as err:
+            # Modify invalid schema validation errors to include parameter name
+            if isinstance(param_or_media_type, Parameter):
+                param_name = param_or_media_type.name
+
+                for schema_error in err.schema_errors:
+                    schema_error.path = schema_error.relative_path = deque(
+                        [param_name]
+                    )
+
+            raise err
 
 
 class RequestValidator(BaseValidator, CoreRequestValidator):

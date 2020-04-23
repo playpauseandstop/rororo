@@ -154,22 +154,21 @@ components:
       in: "header"
       required: true
       schema:
-        type: "string"
-        minLength: 1
+        $ref: "#/components/schemas/NonEmptyString"
 
     RepositoryOwner:
       name: "owner"
       in: "path"
       required: true
       schema:
-        $ref: "#/components/schemas/NonEmptyString"
+        $ref: "#/components/schemas/RepositoryOwner"
 
     RepositoryName:
       name: "name"
       in: "path"
       required: true
       schema:
-        $ref: "#/components/schemas/NonEmptyString"
+        $ref: "#/components/schemas/RepositoryName"
 
   responses:
     DefaultResponse:
@@ -198,6 +197,14 @@ components:
     PositiveInteger:
       type: "integer"
       format: "int64"
+
+    RepositoryOwner:
+      type: "string"
+      minLength: 3
+
+    RepositoryName:
+      type: "string"
+      minLength: 3
 
     RepositoryJob:
       type: "string"

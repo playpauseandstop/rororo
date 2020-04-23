@@ -6,19 +6,20 @@ from hobotnica.data import (
     GITHUB_REPOSITORY,
     GITHUB_USERNAME,
 )
+from yarl import URL
 
 
-REPOSITORIES_URL = "/api/repositories"
-OWNER_REPOSITORIES_URL = f"{REPOSITORIES_URL}/{GITHUB_USERNAME}"
-OWNER_ENV_URL = f"{OWNER_REPOSITORIES_URL}/env"
-REPOSITORY_URL = f"{REPOSITORIES_URL}/{GITHUB_USERNAME}/{GITHUB_REPOSITORY}"
-REPOSITORY_ENV_URL = f"{REPOSITORY_URL}/env"
+URL_REPOSITORIES = URL("/api/repositories")
+URL_OWNER_REPOSITORIES = URL_REPOSITORIES / GITHUB_USERNAME
+URL_OWNER_REPOSITORIES_ENV = URL_OWNER_REPOSITORIES / "env"
+URL_REPOSITORY = URL_REPOSITORIES / GITHUB_USERNAME / GITHUB_REPOSITORY
+URL_REPOSITORY_ENV = URL_REPOSITORY / "env"
 
 
 async def test_create_repository_201(aiohttp_client):
     client = await aiohttp_client(create_app())
     response = await client.post(
-        REPOSITORIES_URL,
+        URL_REPOSITORIES,
         json={"owner": GITHUB_USERNAME, "name": GITHUB_REPOSITORY},
         headers={
             "X-GitHub-Username": GITHUB_USERNAME,
@@ -31,7 +32,7 @@ async def test_create_repository_201(aiohttp_client):
 async def test_list_owner_repositories_200(aiohttp_client):
     client = await aiohttp_client(create_app())
     response = await client.get(
-        OWNER_REPOSITORIES_URL,
+        URL_OWNER_REPOSITORIES,
         headers={
             "Authorization": BasicAuth(
                 GITHUB_USERNAME, GITHUB_PERSONAL_TOKEN
@@ -58,12 +59,30 @@ async def test_list_owner_repositories_200(aiohttp_client):
 async def test_list_owner_repositories_401(aiohttp_client, invalid_headers):
     client = await aiohttp_client(create_app())
     response = await client.get(
-        OWNER_REPOSITORIES_URL, headers=invalid_headers
+        URL_OWNER_REPOSITORIES, headers=invalid_headers
     )
 
     assert response.status == 401
     assert response.headers["www-authenticate"] == "basic"
     assert await response.json() == {"detail": "Not authenticated"}
+
+
+async def test_list_owner_repositories_422(aiohttp_client):
+    client = await aiohttp_client(create_app())
+    response = await client.get(
+        URL_REPOSITORIES / "ab",
+        headers={
+            "Authorization": BasicAuth(
+                GITHUB_USERNAME, GITHUB_PERSONAL_TOKEN
+            ).encode()
+        },
+    )
+    assert response.status == 422
+    assert await response.json() == {
+        "detail": [
+            {"loc": ["parameters", "owner"], "message": "'ab' is too short"}
+        ]
+    }
 
 
 @pytest.mark.parametrize(
@@ -81,7 +100,7 @@ async def test_list_owner_repositories_401(aiohttp_client, invalid_headers):
 )
 async def test_list_repositories_200(aiohttp_client, headers):
     client = await aiohttp_client(create_app())
-    response = await client.get(REPOSITORIES_URL, headers=headers)
+    response = await client.get(URL_REPOSITORIES, headers=headers)
 
     assert response.status == 200
     data = await response.json()
@@ -115,7 +134,7 @@ async def test_list_repositories_403_invalid_credentials(
     aiohttp_client, invalid_headers
 ):
     client = await aiohttp_client(create_app())
-    response = await client.get(REPOSITORIES_URL, headers=invalid_headers)
+    response = await client.get(URL_REPOSITORIES, headers=invalid_headers)
     assert response.status == 403
     assert await response.json() == {"detail": "Invalid credentials"}
 
@@ -133,7 +152,7 @@ async def test_list_repositories_403_not_authenticated(
     aiohttp_client, invalid_headers
 ):
     client = await aiohttp_client(create_app())
-    response = await client.get(REPOSITORIES_URL, headers=invalid_headers)
+    response = await client.get(URL_REPOSITORIES, headers=invalid_headers)
     assert response.status == 403
     assert await response.json() == {"detail": "Not authenticated"}
 
@@ -147,7 +166,7 @@ async def test_list_repositories_403_not_authenticated(
 )
 async def test_list_repositories_422(aiohttp_client, invalid_headers):
     client = await aiohttp_client(create_app())
-    response = await client.get(REPOSITORIES_URL, headers=invalid_headers)
+    response = await client.get(URL_REPOSITORIES, headers=invalid_headers)
     assert response.status == 422
     assert await response.json() == {
         "detail": [
@@ -163,7 +182,7 @@ async def test_retrieve_owner_env_200(aiohttp_client):
     client = await aiohttp_client(create_app())
 
     response = await client.get(
-        OWNER_ENV_URL,
+        URL_OWNER_REPOSITORIES_ENV,
         headers={
             "Authorization": BasicAuth(
                 GITHUB_USERNAME, GITHUB_PERSONAL_TOKEN
@@ -181,7 +200,7 @@ async def test_retrieve_repository_200(aiohttp_client):
     client = await aiohttp_client(create_app())
 
     response = await client.get(
-        REPOSITORY_URL,
+        URL_REPOSITORY,
         headers={
             "X-GitHub-Username": GITHUB_USERNAME,
             "X-GitHub-Personal-Token": GITHUB_PERSONAL_TOKEN,
@@ -213,7 +232,7 @@ async def test_retrieve_repository_200(aiohttp_client):
 async def test_retrieve_repository_403(aiohttp_client, invalid_headers):
     client = await aiohttp_client(create_app())
 
-    response = await client.get(REPOSITORY_URL, headers=invalid_headers)
+    response = await client.get(URL_REPOSITORY, headers=invalid_headers)
     assert response.status == 403
     assert await response.json() == {"detail": "Not authenticated"}
 
@@ -222,7 +241,7 @@ async def test_retrieve_repository_env_200(aiohttp_client):
     client = await aiohttp_client(create_app())
 
     response = await client.get(
-        REPOSITORY_ENV_URL,
+        URL_REPOSITORY_ENV,
         headers={
             "X-GitHub-Username": GITHUB_USERNAME,
             "X-GitHub-Personal-Token": GITHUB_PERSONAL_TOKEN,

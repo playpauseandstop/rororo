@@ -205,22 +205,19 @@ class ValidationError(OpenAPIError):
         unmarshal_loc: List[PathItem] = None,
     ) -> "ValidationError":
         unmarshal_loc = ["body"] if unmarshal_loc is None else unmarshal_loc
-        parameters = []
-        body = []
+        result = []
 
         for err in errors:
             if isinstance(err, (OpenAPIParameterError, EmptyParameterValue)):
                 details = get_parameter_error_details(err)
                 if details:
-                    parameters.append(details)
+                    result.append(details)
             elif isinstance(err, OpenAPIMediaTypeError):
                 details = get_media_type_error_details(["body"], err)
                 if details:
-                    body.append(details)
+                    result.append(details)
             elif isinstance(err, UnmarshalError):
-                details_list = get_unmarshal_error_details(unmarshal_loc, err)
-                if details_list:
-                    body.extend(details_list)
+                result.extend(get_unmarshal_error_details(unmarshal_loc, err))
             else:
                 logger.debug(
                     "Unhandled request validation error",
@@ -229,7 +226,7 @@ class ValidationError(OpenAPIError):
 
         return cls(
             message="Request parameters or body validation error",
-            errors=parameters + body,
+            errors=result,
         )
 
     @classmethod
@@ -257,9 +254,7 @@ class ValidationError(OpenAPIError):
                 if details:
                     result.append(details)
             elif isinstance(err, UnmarshalError):
-                details_list = get_unmarshal_error_details(["response"], err)
-                if details_list:
-                    result.extend(details_list)
+                result.extend(get_unmarshal_error_details(["response"], err))
             else:
                 logger.debug(
                     "Unhandled response validation error",
