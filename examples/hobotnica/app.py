@@ -2,6 +2,11 @@ from pathlib import Path
 from typing import List
 
 from aiohttp import web
+from aiohttp_middlewares import (
+    NON_IDEMPOTENT_METHODS,
+    shield_middleware,
+    timeout_middleware,
+)
 
 from rororo import BaseSettings, setup_openapi, setup_settings
 from . import views
@@ -15,7 +20,12 @@ def create_app(
 
     return setup_openapi(
         setup_settings(
-            web.Application(),
+            web.Application(
+                middlewares=(
+                    shield_middleware(methods=NON_IDEMPOTENT_METHODS),
+                    timeout_middleware(29.5),
+                )
+            ),
             settings,
             loggers=("aiohttp", "aiohttp_middlewares", "hobotnica", "rororo"),
             remove_root_handlers=True,

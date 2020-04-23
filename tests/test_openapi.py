@@ -547,6 +547,31 @@ def test_setup_openapi_use_cors_middleware(schema_path, is_enabled, kwargs):
     assert has_middleware(app, cors_middleware) is is_enabled
 
 
+@pytest.mark.parametrize(
+    "schema_path, is_enabled, expected_content_type",
+    (
+        (OPENAPI_JSON_PATH, False, "text/plain"),
+        (OPENAPI_YAML_PATH, False, "text/plain"),
+        (OPENAPI_JSON_PATH, True, "application/json"),
+        (OPENAPI_YAML_PATH, True, "application/json"),
+    ),
+)
+async def test_setup_openapi_use_error_middleware(
+    aiohttp_client, schema_path, is_enabled, expected_content_type
+):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api/",
+        use_error_middleware=is_enabled,
+    )
+    client = await aiohttp_client(app)
+    response = await client.get("/does-not-exist")
+    assert response.status == 404
+    assert response.content_type == expected_content_type
+
+
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 def test_setup_openapi_use_invalid_cors_middleware_kwargs(schema_path):
     with pytest.raises(ConfigurationError):
