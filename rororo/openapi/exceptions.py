@@ -85,6 +85,13 @@ class OperationError(OpenAPIError):
     default_message = "OpenAPI operation not found"
 
 
+class BadRequest(OpenAPIError):
+    """Bad request basic error."""
+
+    default_message = "Bad request"
+    status = 400
+
+
 class SecurityError(OpenAPIError):
     """Request is not secured, but should."""
 

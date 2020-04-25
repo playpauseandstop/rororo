@@ -4,10 +4,15 @@ from openapi_core.schema.media_types.exceptions import OpenAPIMediaTypeError
 from openapi_core.schema.parameters.exceptions import OpenAPIParameterError
 
 from rororo.openapi.exceptions import (
+    BadRequest,
     ObjectDoesNotExist,
     OpenAPIError,
     ValidationError,
 )
+
+
+def test_bad_request():
+    assert str(BadRequest()) == "Bad request"
 
 
 @pytest.mark.parametrize(
