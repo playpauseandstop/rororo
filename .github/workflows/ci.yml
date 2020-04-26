@@ -45,7 +45,6 @@ jobs:
         run: "poetry run python -c 'import rororo'"
 
   test:
-    needs: "dev"
     name: "Python ${{ matrix.python-version }}"
 
     strategy:
