@@ -464,7 +464,7 @@ def setup_openapi(
 
     # Add OpenAPI middleware
     kwargs = error_middleware_kwargs or {}
-    kwargs["default_handler"] = views.default_error_handler
+    kwargs.setdefault("default_handler", views.default_error_handler)
 
     try:
         app.middlewares.insert(
