@@ -10,6 +10,7 @@ from yarl import URL
 
 
 URL_REPOSITORIES = URL("/api/repositories")
+URL_FAVORITES_REPOSITORIES = URL_REPOSITORIES / "favorites"
 URL_OWNER_REPOSITORIES = URL_REPOSITORIES / GITHUB_USERNAME
 URL_OWNER_REPOSITORIES_ENV = URL_OWNER_REPOSITORIES / "env"
 URL_REPOSITORY = URL_REPOSITORIES / GITHUB_USERNAME / GITHUB_REPOSITORY
@@ -27,6 +28,19 @@ async def test_create_repository_201(aiohttp_client):
         },
     )
     assert response.status == 201
+
+
+async def test_list_favorites_repositories_204(aiohttp_client):
+    client = await aiohttp_client(create_app())
+    response = await client.get(
+        URL_FAVORITES_REPOSITORIES,
+        headers={
+            "X-GitHub-Username": GITHUB_USERNAME,
+            "X-GitHub-Personal-Token": GITHUB_PERSONAL_TOKEN,
+        },
+    )
+    assert response.status == 204
+    assert response.headers["X-Order"] == "date"
 
 
 async def test_list_owner_repositories_200(aiohttp_client):

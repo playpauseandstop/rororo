@@ -28,6 +28,15 @@ async def create_repository(request: web.Request) -> web.Response:
 
 @operations.register
 @login_required
+async def list_favorites_repositories(request: web.Request) -> web.Response:
+    with openapi_context(request) as context:
+        return web.json_response(
+            status=204, headers={"X-Order": context.parameters.query["order"]}
+        )
+
+
+@operations.register
+@login_required
 async def list_owner_repositories(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
         username = context.security["basic"].login

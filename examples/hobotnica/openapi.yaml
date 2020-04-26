@@ -27,13 +27,13 @@ paths:
     get:
       operationId: "list_repositories"
       tags: ["repositories"]
-      summary: "List user repositories registered in Hobotnica."
+      summary: "List user repositories registered in Hobotnica"
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
       responses:
         <<: *default_responses
         "200":
-          description: "Available repositories."
+          description: "Available repositories"
           content:
             application/json:
               schema:
@@ -47,7 +47,7 @@ paths:
     post:
       operationId: "create_repository"
       tags: ["repositories"]
-      summary: "Add new user repository to Hobotnica."
+      summary: "Add new user repository to Hobotnica"
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
       requestBody:
@@ -58,7 +58,7 @@ paths:
       responses:
         <<: *default_responses
         "201":
-          description: "Added repository details."
+          description: "Added repository details"
           content:
             application/json:
               schema:
@@ -66,17 +66,32 @@ paths:
       security:
         - personalToken: []
 
+  "/repositories/favorites":
+    get:
+      operationId: "list_favorites_repositories"
+      tags: ["repositories"]
+      summary: "List favorites respositories for logged in user (not implemented yet)"
+      parameters:
+        - $ref: "#/components/parameters/GitHubUsername"
+        - $ref: "#/components/parameters/Order"
+      responses:
+        <<: *default_responses
+        "204":
+          description: "Favorite repositories (not implemented yet)"
+      security:
+        - personalToken: []
+
   "/repositories/{owner}":
     get:
       operationId: "list_owner_repositories"
       tags: ["repositories"]
-      summary: "List repositories owned by user."
+      summary: "List repositories owned by user"
       parameters:
         - $ref: "#/components/parameters/RepositoryOwner"
       responses:
         <<: *default_responses
         "200":
-          description: "Repositories list."
+          description: "Repositories list"
           content:
             application/json:
               schema:
@@ -90,13 +105,13 @@ paths:
     get:
       operationId: "retrieve_owner_env"
       tags: ["environment"]
-      summary: "Retrieve common environment vars for user."
+      summary: "Retrieve common environment vars for user"
       parameters:
         - $ref: "#/components/parameters/RepositoryOwner"
       responses:
         <<: *default_responses
         "200":
-          description: "Owner environment vars."
+          description: "Owner environment vars"
           content:
             application/json:
               schema:
@@ -109,7 +124,7 @@ paths:
       operationId: "retrieve_repository"
       tags:
         - "repositories"
-      summary: "Retrieve details of user repository."
+      summary: "Retrieve details of user repository"
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
         - $ref: "#/components/parameters/RepositoryOwner"
@@ -117,7 +132,7 @@ paths:
       responses:
         <<: *default_responses
         "200":
-          description: "Repository details."
+          description: "Repository details"
           content:
             application/json:
               schema:
@@ -139,7 +154,7 @@ paths:
       responses:
         <<: *default_responses
         "200":
-          description: "Repository environment vars."
+          description: "Repository environment vars"
           content:
             application/json:
               schema:
@@ -155,6 +170,13 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/NonEmptyString"
+
+    Order:
+      name: "order"
+      in: "query"
+      required: false
+      schema:
+        $ref: "#/components/schemas/Order"
 
     RepositoryOwner:
       name: "owner"
@@ -197,6 +219,11 @@ components:
     PositiveInteger:
       type: "integer"
       format: "int64"
+
+    Order:
+      type: "string"
+      enum: ["date", "status"]
+      default: "date"
 
     RepositoryOwner:
       type: "string"
@@ -258,7 +285,7 @@ components:
           $ref: "#/components/schemas/NonEmptyString"
         jobs:
           type: "array"
-          description: "List of registered jobs for the repository."
+          description: "List of registered jobs for the repository"
           items:
             $ref: "#/components/schemas/RepositoryJob"
           minItems: 1
@@ -284,7 +311,7 @@ components:
 
 tags:
   - name: "repositories"
-    description: "Repositories endpoints."
+    description: "Repositories endpoints"
 
   - name: "environment"
-    description: "Environment endpoints."
+    description: "Environment endpoints"
