@@ -1,22 +1,46 @@
 2.0.0 (In Development)
 ----------------------
 
-2.0.0rc0 (In Development)
--------------------------
+2.0.0rc0 (2020-04-27)
+---------------------
 
-- feature: Support class based views
-- feature: Allow to pass kwargs to error middleware as done for CORS middleware
-- feature: Ensure support optional security schemes
-- feature: Integrate `environ-config <https://environ-config.readthedocs.io>`_
-  library for settings needs
-- feature: Upgrade to latest `openapi-core <https://pypi.org/project/openapi-core>`_
-  version: **0.13.3**
-- feature: Valid request data is freezed with
-  `pyrsistent.freeze <https://github.com/tobgu/pyrsistent#freeze-and-thaw>`_
-  call
-- feature: Use `email-validator <https://pypi.org/project/email-validator>`_
-  for validating string fields with ``format: "email"``
-- feature: Validating error responses via OpenAPI schema
+Breaking Changes:
+~~~~~~~~~~~~~~~~~
+
+- Use `environ-config <https://pypi.org/project/environ-config/>`_ for settings
+  needs, instead of providing extra sugar to `attrs <https://www.attrs.org>`_
+
+Features:
+~~~~~~~~~
+
+- Upgrade to latest ``openapi-core==0.13.3``
+- Support class based views
+- Deprecate old approach of validating OpenAPI requests via
+  ``openapi_operation`` decorator in favor of ``openapi_middleware``.
+  Improvements to error middleware, validate error responses against OpenAPI
+  schema as well
+- Valid request data is freezed with
+  `pyrsistent.freeze <https://pyrsistent.readthedocs.io/en/latest/api.html#pyrsistent.freeze>`_
+  call. Parameters and security data now wrapped into
+  `pyrsistent.pmap <https://pyrsistent.readthedocs.io/en/latest/api.html#pyrsistent.pmap>`_
+  for immutability needs
+- Use `email-validator <https://pypi.org/project/email-validator/>`_ to support
+  ``format: "email"``
+- Ensure TZ aware date times works as expected
+- Ensure support of optional security schemes
+
+Chores:
+~~~~~~~
+
+- Provide ``Todo-Backend`` example to illustrate how to use class based views
+
+Build, CI & Style updates:
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Update pre-commit hooks, integrate ``blacken-docs`` & ``commitizen``
+  pre-commit hooks
+- Speed up CI exec time, by not waiting on build to start test job
+- Add more badges to README
 
 2.0.0b3 (2020-01-27)
 --------------------
