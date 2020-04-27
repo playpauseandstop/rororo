@@ -1,5 +1,15 @@
 2.0.0 (In Development)
-----------------------
+======================
+
+2.0.0rc1 (In Development)
+-------------------------
+
+Performance:
+~~~~~~~~~~~~
+
+- Use ``yaml.CSafeLoader`` instead of ``yaml.SafeLoader`` when possible. Allow
+  to supply schema loader function to use custom loader, for example
+  ``ujson.loads`` instead of ``json.loads``
 
 2.0.0rc0 (2020-04-27)
 ---------------------
@@ -111,7 +121,7 @@ Build, CI & Style updates:
   - As result entirely remove ``rororo.schemas`` package from the project
 
 1.2.1 (2019-07-08)
-------------------
+==================
 
 - Publish 1.2.1 release
 
@@ -130,7 +140,7 @@ Build, CI & Style updates:
 - chore: Only use poetry for install project deps for tests & lint
 
 1.2.0 (2018-11-01)
-------------------
+==================
 
 - Publish 1.2.0 release
 
@@ -151,17 +161,17 @@ Build, CI & Style updates:
 - Move type annotations to ``rororo.annotations`` module
 
 1.1.1 (2017-10-09)
-------------------
+==================
 
 - Do not attempt to convert empty list to dict for request/response data
 
 1.1.0 (2017-10-09)
-------------------
+==================
 
 - Allow to supply non-dicts in request/response data
 
 1.0.0 (2017-05-14)
-------------------
+==================
 
 - Publish 1.0 release, even proper docs are not ready yet
 

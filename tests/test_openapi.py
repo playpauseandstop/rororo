@@ -1,10 +1,12 @@
 import datetime
 import io
+import json
 import zipfile
 from pathlib import Path
 
 import pyrsistent
 import pytest
+import yaml
 from aiohttp import web
 from yarl import URL
 
@@ -18,6 +20,7 @@ from rororo import (
     setup_openapi,
     setup_settings_from_environ,
 )
+from rororo.annotations import DictStrAny
 from rororo.openapi import get_validated_data
 from rororo.openapi.exceptions import (
     ConfigurationError,
@@ -48,6 +51,14 @@ TEST_NESTED_OBJECT = {
 
 operations = OperationTableDef()
 invalid_operations = OperationTableDef()
+
+
+def custom_json_loader(content: bytes) -> DictStrAny:
+    return json.load(io.BytesIO(content))
+
+
+def custom_yaml_loader(content: bytes) -> DictStrAny:
+    return yaml.load(content, Loader=yaml.SafeLoader)
 
 
 @invalid_operations.register("does-not-exist")
@@ -277,6 +288,24 @@ async def test_create_post_422(
     response = await client.post("/dev-api/create-post", json=invalid_data)
     assert response.status == 422
     assert (await response.json())["detail"] == expected_detail
+
+
+@pytest.mark.parametrize(
+    "schema_path, schema_loader",
+    (
+        (OPENAPI_JSON_PATH, custom_json_loader),
+        (OPENAPI_YAML_PATH, custom_yaml_loader),
+    ),
+)
+def test_custom_schema_loader(schema_path, schema_loader):
+    app = setup_openapi(
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api/",
+        schema_loader=schema_loader,
+    )
+    assert isinstance(get_openapi_schema(app), dict)
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))

@@ -1,6 +1,7 @@
 import inspect
 import json
 import os
+from functools import partial
 from pathlib import Path
 from typing import Callable, Deque, List, overload, Union
 
@@ -28,6 +29,7 @@ from ..annotations import DictStrAny, DictStrStr, F, Handler, ViewType
 from ..settings import APP_SETTINGS_KEY, BaseSettings
 
 
+SchemaLoader = Callable[[bytes], DictStrAny]
 Url = Union[str, URL]
 
 
@@ -289,13 +291,18 @@ def get_route_prefix(mixed: Url) -> str:
     return (URL(mixed) if isinstance(mixed, str) else mixed).path
 
 
-def read_openapi_schema(path: Path) -> DictStrAny:
-    content = path.read_text()
-    if path.suffix == ".json":
-        return json.loads(content)  # type: ignore
+def read_openapi_schema(
+    path: Path, *, loader: SchemaLoader = None
+) -> DictStrAny:
+    if loader is None:
+        if path.suffix == ".json":
+            loader = json.loads
+        elif path.suffix in {".yml", ".yaml"}:
+            safe_loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+            loader = partial(yaml.load, Loader=safe_loader)
 
-    if path.suffix in {".yml", ".yaml"}:
-        return yaml.safe_load(content)  # type: ignore
+    if loader is not None:
+        return loader(path.read_bytes())
 
     raise ConfigurationError(
         f"Unsupported OpenAPI schema file: {path}. At a moment rororo "
@@ -307,6 +314,7 @@ def setup_openapi(
     app: web.Application,
     schema_path: Union[str, Path],
     *operations: OperationTableDef,
+    schema_loader: SchemaLoader = None,
     server_url: Url = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
@@ -410,7 +418,7 @@ def setup_openapi(
     :func:`aiohttp_middlewares.cors.cors_middleware` without any settings and
     :func:`aiohttp_middlewares.error.error_middleware` with custom error
     handler to ensure that security / validation errors does not provide any
-    mess to command line. Pass ``use_cors_middleware`` /
+    mess to stdout. Pass ``use_cors_middleware`` /
     ``use_error_middleware`` to change or entirely disable this default
     behaviour.
 
@@ -419,6 +427,27 @@ def setup_openapi(
     middleware - ``rororo`` will raise a ``ConfigurationError``. All list of
     options available at documentation for
     :func:`aiohttp_middlewares.cors.cors_middleware`.
+
+    By default, ``rororo`` will use :func:`json.loads` to load OpenAPI schema
+    content from JSON file and ``yaml.CSafeLoader`` if it is available to load
+    schema content from YAML files (with fallback to ``yaml.SafeLoader``). But,
+    for performance considreations, you might use any other function to load
+    the schema. Example below illustrates how to use ``ujson.loads`` function
+    to load content from JSON schema,
+
+    .. code-block:: python
+
+        import ujson
+
+        app = setup_openapi(
+            web.Application(),
+            Path(__file__).parent / "openapi.json",
+            operations,
+            schema_loader=ujson.loads,
+        )
+
+    Schema loader function expects ``bytes`` as only argument and should return
+    ``Dict[str, Any]`` as OpenAPI schema dict.
     """
 
     # Ensure OpenAPI schema is a readable file
@@ -432,7 +461,9 @@ def setup_openapi(
         )
 
     # Store OpenAPI schema dict in the application dict
-    app[APP_OPENAPI_SCHEMA_KEY] = oas = read_openapi_schema(path)
+    app[APP_OPENAPI_SCHEMA_KEY] = oas = read_openapi_schema(
+        path, loader=schema_loader
+    )
 
     # Create the spec and put it to the application dict as well
     try:

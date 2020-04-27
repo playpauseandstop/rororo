@@ -14,6 +14,8 @@ Contents
 
    openapi
    openapi_errors
+   openapi_issues
+   openapi_speedups
    settings
    api
    changelog

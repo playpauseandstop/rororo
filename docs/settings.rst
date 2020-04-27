@@ -169,8 +169,8 @@ In other words given function is a literally shortcut to,
     settings.apply(...)
     app["settings"] = settings
 
-Step 3. Using the settings
-==========================
+Step 3. Using settings
+======================
 
 In `app.__main__` script
 ------------------------
