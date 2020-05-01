@@ -31,14 +31,16 @@ async def default_error_handler(request: web.Request) -> web.Response:
 async def openapi_schema(request: web.Request) -> web.Response:
     """Dump OpenAPI Schema into specified format."""
     schema_format = request.match_info.get("schema_format")
-    schema = get_openapi_schema(request.app)
+    schema = get_openapi_schema(request.config_dict)
 
     if schema_format == "json":
         return web.json_response(schema)
 
     if schema_format == "yaml":
+        safe_dumper = getattr(yaml, "CSafeDumper", yaml.SafeDumper)
         return web.Response(
-            text=yaml.dump(schema), content_type="application/yaml"
+            text=yaml.dump(schema, Dumper=safe_dumper),
+            content_type="application/yaml",
         )
 
     raise ConfigurationError(

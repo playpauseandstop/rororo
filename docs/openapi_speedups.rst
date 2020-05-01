@@ -88,3 +88,36 @@ responses in ``rororo``,
 .. danger::
     Turning off response validation may cause **unexpected** results for
     application consumers.
+
+[testing] Cache reading schema and spec creation
+================================================
+
+If you have a lot of tests and many of them calling
+:func:`rororo.openapi.setup_openapi` before supplying ``web.Application`` to
+``aiohttp_client`` you might want to speed up things, by caching calls for,
+
+- :func:`rororo.openapi.openapi.read_openapi_schema`
+- :func:`openapi_core.shortcuts.create_spec`
+
+To enable this behaviour use next snippet,
+
+.. code-block:: python
+
+    from pathlib import Path
+
+    from rororo import (
+        BaseSettings,
+        setup_openapi,
+        setup_settings_from_environ,
+    )
+
+
+    app = setup_settings_from_environ(
+        web.Application(), BaseSettings
+    )
+    setup_openapi(
+        app,
+        Path(__file__) / "openapi.yaml",
+        operations,
+        cache_create_schema_and_spec=settings.is_dev,
+    )

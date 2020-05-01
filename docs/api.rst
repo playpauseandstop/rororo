@@ -18,6 +18,8 @@ OpenAPI
 .. automodule:: rororo.openapi.data
 .. autoclass:: rororo.openapi.data.OpenAPIContext
 
+.. autofunction:: rororo.openapi.openapi.read_openapi_schema
+
 Settings
 ========
 

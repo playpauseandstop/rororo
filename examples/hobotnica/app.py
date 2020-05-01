@@ -33,4 +33,5 @@ def create_app(
         Path(__file__).parent / "openapi.yaml",
         views.operations,
         cors_middleware_kwargs={"allow_all": True},
+        cache_create_schema_and_spec=settings.is_test,
     )

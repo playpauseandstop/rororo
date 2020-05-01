@@ -38,6 +38,8 @@ def create_app(
         cors_middleware_kwargs={
             "origins": ("http://localhost:8081", "http://www.todobackend.com")
         },
+        # Allow caching schema and spec in tests
+        cache_create_schema_and_spec=settings.is_test,
     )
 
     # Enable HTTPS middleware for production

@@ -1,9 +1,9 @@
 import inspect
 import json
 import os
-from functools import partial
+from functools import lru_cache, partial
 from pathlib import Path
-from typing import Callable, Deque, List, overload, Union
+from typing import Callable, Deque, List, overload, Tuple, Union
 
 import attr
 import yaml
@@ -25,12 +25,26 @@ from .core_data import get_core_operation
 from .exceptions import ConfigurationError
 from .middlewares import openapi_middleware
 from .utils import add_prefix
-from ..annotations import DictStrAny, DictStrStr, F, Handler, ViewType
+from ..annotations import (
+    DictStrAny,
+    DictStrStr,
+    F,
+    Handler,
+    Protocol,
+    ViewType,
+)
 from ..settings import APP_SETTINGS_KEY, BaseSettings
 
 
 SchemaLoader = Callable[[bytes], DictStrAny]
 Url = Union[str, URL]
+
+
+class CreateSchemaAndSpec(Protocol):
+    def __call__(
+        self, path: Path, *, schema_loader: SchemaLoader = None
+    ) -> Tuple[DictStrAny, Spec]:  # pragma: no cover
+        ...
 
 
 @attr.dataclass(slots=True)
@@ -249,6 +263,20 @@ def convert_operations_to_routes(
     return routes
 
 
+def create_schema_and_spec(
+    path: Path, *, schema_loader: SchemaLoader = None
+) -> Tuple[DictStrAny, Spec]:
+    schema = read_openapi_schema(path, loader=schema_loader)
+    return (schema, create_spec(schema))
+
+
+@lru_cache(maxsize=128)
+def create_schema_and_spec_with_cache(  # type: ignore
+    path: Path, *, schema_loader: SchemaLoader = None
+) -> Tuple[DictStrAny, Spec]:
+    return create_schema_and_spec(path, schema_loader=schema_loader)
+
+
 def find_route_prefix(
     oas: DictStrAny,
     *,
@@ -322,6 +350,7 @@ def setup_openapi(
     error_middleware_kwargs: DictStrAny = None,
     use_cors_middleware: bool = True,
     cors_middleware_kwargs: DictStrAny = None,
+    cache_create_schema_and_spec: bool = False,
 ) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
 
@@ -448,6 +477,18 @@ def setup_openapi(
 
     Schema loader function expects ``bytes`` as only argument and should return
     ``Dict[str, Any]`` as OpenAPI schema dict.
+
+    .. danger::
+        By default ``rororo`` does not cache slow calls to read OpenAPI schema
+        and creating its spec. But sometimes, for example in tests, it is
+        sufficient to cache those calls. To enable cache behaviour pass
+        ``cache_create_schema_and_spec=True`` or even better,
+        ``cache_create_schema_and_spec=settings.is_test``.
+
+        But this may result in unexpected issues, as schema and spec will be
+        cached once and on next call it will result cached data instead to
+        attempt read fresh schema from the disk and instantiate OpenAPI Spec
+        instance.
     """
 
     # Ensure OpenAPI schema is a readable file
@@ -460,14 +501,15 @@ def setup_openapi(
             f"{uid}"
         )
 
-    # Store OpenAPI schema dict in the application dict
-    app[APP_OPENAPI_SCHEMA_KEY] = oas = read_openapi_schema(
-        path, loader=schema_loader
+    # Create the spec and put it to the application dict as well
+    create_func: CreateSchemaAndSpec = (
+        create_schema_and_spec_with_cache  # type: ignore
+        if cache_create_schema_and_spec
+        else create_schema_and_spec
     )
 
-    # Create the spec and put it to the application dict as well
     try:
-        app[APP_OPENAPI_SPEC_KEY] = spec = create_spec(oas)
+        oas, spec = create_func(path, schema_loader=schema_loader)
     except OpenAPIValidationError:
         raise ConfigurationError(
             f"Unable to load valid OpenAPI schema in {path}. In most cases "
@@ -475,6 +517,10 @@ def setup_openapi(
             "To get full details about errors run `openapi-spec-validator "
             f"{path}`"
         )
+
+    # Store schema and spec in application dict
+    app[APP_OPENAPI_SCHEMA_KEY] = oas
+    app[APP_OPENAPI_SPEC_KEY] = spec
 
     # Register the route to dump openapi schema used for the application if
     # required
