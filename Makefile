@@ -9,7 +9,6 @@
 	lint \
 	lint-only \
 	list-outdated \
-	open-docs \
 	test \
 	test-only
 
@@ -21,8 +20,11 @@ DOCS_DIR = ./docs
 POETRY ?= poetry
 PRE_COMMIT ?= pre-commit
 PYTHON ?= $(POETRY) run python
-SPHINXBUILD ?= $(POETRY) run sphinx-build
 TOX ?= tox
+
+# Docs vars
+DOCS_HOST ?= localhost
+DOCS_PORT ?= 8240
 
 all: install
 
@@ -53,7 +55,7 @@ distclean: clean
 
 docs: install
 	$(PYTHON) -m pip install -r docs/requirements.txt
-	$(MAKE) -C $(DOCS_DIR)/ SPHINXBUILD="$(SPHINXBUILD)" html
+	$(POETRY) run sphinx-autobuild -B -H $(DOCS_HOST) -p $(DOCS_PORT) -b html $(DOCS_DIR)/ $(DOCS_DIR)/_build/
 
 example: install
 ifeq ($(EXAMPLE),)

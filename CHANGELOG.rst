@@ -10,6 +10,14 @@ Performance:
 - Use ``yaml.CSafeLoader`` instead of ``yaml.SafeLoader`` when possible. Allow
   to supply schema loader function to use custom loader, for example
   ``ujson.loads`` instead of ``json.loads``
+- Use ``yaml.CSadeDumper`` instead of ``yaml.Dumper`` when possible on dumping
+  OpenAPI schema when it is requested in YAML format
+- Allow to cache create schema and spec call, usable for speeding up tests
+
+Docs:
+~~~~~
+
+- Use ``sphinx-autobuild`` for building docs at local env
 
 2.0.0rc0 (2020-04-27)
 ---------------------

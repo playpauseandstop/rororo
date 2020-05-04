@@ -7,6 +7,7 @@
 aiohttp-middlewares==1.1.0  # via -r docs/requirements.in
 aiohttp==3.6.2            # via -r docs/requirements.in, aiohttp-middlewares
 alabaster==0.7.12         # via sphinx
+argh==0.26.2              # via sphinx-autobuild
 async-timeout==3.0.1      # via aiohttp, aiohttp-middlewares
 attrs==19.3.0             # via -r docs/requirements.in, aiohttp, jsonschema, openapi-core
 babel==2.8.0              # via sphinx
@@ -19,6 +20,7 @@ isodate==0.6.0            # via openapi-schema-validator
 jinja2==2.11.2            # via sphinx
 jsonschema==3.2.0         # via openapi-schema-validator, openapi-spec-validator
 lazy-object-proxy==1.4.3  # via openapi-core
+livereload==2.6.1         # via sphinx-autobuild
 markupsafe==1.1.1         # via jinja2
 more-itertools==8.2.0     # via openapi-core
 multidict==4.7.5          # via aiohttp, yarl
@@ -27,16 +29,19 @@ openapi-schema-validator==0.1.1  # via openapi-core
 openapi-spec-validator==0.2.8  # via openapi-core
 packaging==20.3           # via sphinx
 parse==1.15.0             # via openapi-core
+pathtools==0.1.2          # via sphinx-autobuild, watchdog
+port_for==0.3.1           # via sphinx-autobuild
 pygments==2.6.1           # via sphinx
 pyparsing==2.4.7          # via packaging
 pyrsistent==0.16.0        # via jsonschema
-pytz==2019.3              # via babel
-pyyaml==5.3.1             # via -r docs/requirements.in, openapi-spec-validator
+pytz==2020.1              # via babel
+pyyaml==5.3.1             # via -r docs/requirements.in, openapi-spec-validator, sphinx-autobuild
 requests==2.23.0          # via sphinx
-six==1.14.0               # via isodate, jsonschema, openapi-core, openapi-schema-validator, openapi-spec-validator, packaging
+six==1.14.0               # via isodate, jsonschema, livereload, openapi-core, openapi-schema-validator, openapi-spec-validator, packaging
 snowballstemmer==2.0.0    # via sphinx
+sphinx-autobuild==0.7.1   # via -r docs/requirements.in
 sphinx-autodoc-typehints==1.10.3  # via -r docs/requirements.in
-sphinx==3.0.2             # via -r docs/requirements.in, sphinx-autodoc-typehints
+sphinx==3.0.3             # via -r docs/requirements.in, sphinx-autodoc-typehints
 sphinxcontrib-applehelp==1.0.2  # via sphinx
 sphinxcontrib-devhelp==1.0.2  # via sphinx
 sphinxcontrib-htmlhelp==1.0.3  # via sphinx
@@ -44,8 +49,10 @@ sphinxcontrib-jsmath==1.0.1  # via sphinx
 sphinxcontrib-qthelp==1.0.3  # via sphinx
 sphinxcontrib-serializinghtml==1.1.4  # via sphinx
 strict-rfc3339==0.7       # via openapi-schema-validator
+tornado==6.0.4            # via livereload, sphinx-autobuild
 typing-extensions==3.7.4.2 ; python_version <= "3.8"  # via -r docs/requirements.in
 urllib3==1.25.9           # via requests
+watchdog==0.10.2          # via sphinx-autobuild
 werkzeug==1.0.1           # via openapi-core
 yarl==1.4.2               # via aiohttp
 

@@ -3,6 +3,7 @@ aiohttp-middlewares
 attrs
 openapi-core
 PyYAML
-sphinx
-sphinx_autodoc_typehints
+Sphinx
+sphinx-autobuild
+sphinx-autodoc-typehints
 typing-extensions; python_version <= "3.8"
