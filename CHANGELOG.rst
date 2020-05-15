@@ -4,6 +4,11 @@
 2.0.0rc2 (In Development)
 -------------------------
 
+Fix:
+~~~~
+
+- Pass request body as string to ``openapi-core``, not as bytes, when possible
+
 Style:
 ~~~~~~
 

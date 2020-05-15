@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from aiohttp import hdrs, web
 from aiohttp.payload import IOBasePayload, Payload
@@ -71,9 +71,16 @@ async def to_core_openapi_request(request: web.Request) -> OpenAPIRequest:
     Afterwards opeanpi-core request can be used for validation request data
     against spec.
     """
-    body: Optional[bytes] = None
+    body: Optional[Union[bytes, str]] = None
     if request.body_exists and request.can_read_body:
-        body = await request.read()
+        raw_body = await request.read()
+
+        # If it possible, convert bytes to string
+        try:
+            body = raw_body.decode("utf-8")
+        # If not, use bytes as request body instead
+        except UnicodeDecodeError:
+            body = raw_body
 
     return OpenAPIRequest(
         full_url_pattern=get_full_url_pattern(request),

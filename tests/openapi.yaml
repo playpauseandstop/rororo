@@ -176,6 +176,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/AnyObject"
 
+  "/upload-image":
+    post:
+      operationId: "upload_image"
+      requestBody:
+        content:
+          image/*:
+            schema:
+              type: "string"
+              format: "binary"
+      responses:
+        "201":
+          description: "Uploaded text"
+          content:
+            image/*:
+              schema:
+                type: "string"
+                format: "binary"
+
+  "/upload-text":
+    post:
+      operationId: "upload_text"
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: "string"
+      responses:
+        "201":
+          description: "Uploaded text"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+
 components:
   parameters:
     PostID:

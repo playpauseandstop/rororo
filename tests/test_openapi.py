@@ -164,6 +164,24 @@ async def retrieve_zip(request: web.Request) -> web.Response:
     )
 
 
+@operations.register
+async def upload_image(request: web.Request) -> web.Response:
+    return web.Response(
+        body=get_openapi_context(request).data,
+        content_type=request.content_type,
+        status=201,
+    )
+
+
+@operations.register
+async def upload_text(request: web.Request) -> web.Response:
+    return web.Response(
+        text=get_openapi_context(request).data,
+        content_type=request.content_type,
+        status=201,
+    )
+
+
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_any_object_request_body(aiohttp_client, schema_path):
     app = setup_openapi(
@@ -591,6 +609,42 @@ def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
 def test_setup_openapi_server_url_does_not_set(schema_path):
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), schema_path, operations)
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_upload_image(aiohttp_client, schema_path):
+    blank_png = (Path(__file__).parent / "data" / "blank.png").read_bytes()
+
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.post(
+        "/api/upload-image",
+        data=blank_png,
+        headers={"Content-Type": "image/png"},
+    )
+    assert response.status == 201
+    assert await response.read() == blank_png
+
+
+@pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
+async def test_upload_text(aiohttp_client, schema_path):
+    text = "Hello, world! And other things..."
+
+    app = setup_openapi(
+        web.Application(), schema_path, operations, server_url="/api"
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.post(
+        "/api/upload-text",
+        data=text.encode("utf-8"),
+        headers={"Content-Type": "text/plain"},
+    )
+    assert response.status == 201
+    assert await response.text() == text
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
