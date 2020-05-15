@@ -1,18 +1,18 @@
 2.0.0 (In Development)
 ======================
 
-2.0.0rc2 (In Development)
--------------------------
+2.0.0rc2 (2020-05-15)
+---------------------
 
 Fix:
 ~~~~
 
-- Pass request body as string to ``openapi-core``, not as bytes, when possible
+- When possible pass request body as string to ``OpenAPIRequest``, not as bytes
 
 Style:
 ~~~~~~
 
-- Update pre-commit hooks to use, integrate ``flake8-variable-names`` check
+- Update pre-commit hooks, integrate ``flake8-variable-names`` check
 
 2.0.0rc1 (2020-05-04)
 ---------------------
