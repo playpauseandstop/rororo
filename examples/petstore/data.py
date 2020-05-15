@@ -16,7 +16,7 @@ class NewPet:
 
 @attr.dataclass(frozen=True, slots=True)
 class Pet(NewPet):
-    id: int  # noqa: A003
+    id: int  # noqa: A003, VNE003
 
     def to_dict(self) -> DictStrAny:
         if self.tag:

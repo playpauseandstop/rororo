@@ -50,7 +50,7 @@ required_message_re = re.compile(
 class CastError(CoreCastError):
     name: str = attr.ib()
     value: str = attr.ib()
-    type: str = attr.ib()  # noqa: A003
+    type: str = attr.ib()  # noqa: A003, VNE003
 
 
 class OpenAPIError(Exception):

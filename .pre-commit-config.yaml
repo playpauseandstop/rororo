@@ -1,7 +1,7 @@
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v1.18.3"
+    rev: "v1.22.0"
     hooks:
       - id: "commitizen"
         language_version: "python3.8"
@@ -16,7 +16,7 @@ repos:
         exclude: ^docs/.*$
 
   - repo: "https://github.com/asottile/blacken-docs"
-    rev: "v1.6.0"
+    rev: "v1.7.0"
     hooks:
       - id: "blacken-docs"
         name: "Format docs (blacken-docs)"
@@ -35,13 +35,13 @@ repos:
       - id: "check-yaml"
 
   - repo: "https://gitlab.com/PyCQA/flake8"
-    rev: "3.7.9"
+    rev: "3.8.1"
     hooks:
       - id: "flake8"
         name: "Lint code (flake8)"
         language_version: "python3.8"
         additional_dependencies:
-          - "flake8==3.7.9"
+          - "flake8==3.8.1"
           - "flake8-broken-line==0.2.0"
           - "flake8-bugbear==20.1.4"
           - "flake8-builtins==1.5.2"
@@ -50,9 +50,10 @@ repos:
           - "flake8-import-order==0.18.1"
           - "flake8-mutable==1.2.0"
           - "flake8-pie==0.5.0"
-          - "flake8-quotes==3.0.0"
+          - "flake8-quotes==3.2.0"
           - "flake8-string-format==0.3.0"
           - "flake8-tidy-imports==4.1.0"
+          - "flake8-variables-names==0.0.3"
           - "pep8-naming==0.10.0"
         exclude: ^docs/.*$
 

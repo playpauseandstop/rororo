@@ -20,7 +20,7 @@ from aiohttp import web
 from aiohttp.web_middlewares import _Handler
 
 
-F = TypeVar("F", bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])  # noqa: VNE001
 T = TypeVar("T")
 
 Level = Literal["test", "dev", "staging", "prod"]

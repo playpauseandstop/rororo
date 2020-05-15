@@ -1,6 +1,14 @@
 2.0.0 (In Development)
 ======================
 
+2.0.0rc2 (In Development)
+-------------------------
+
+Style:
+~~~~~~
+
+- Update pre-commit hooks to use, integrate ``flake8-variable-names`` check
+
 2.0.0rc1 (2020-05-04)
 ---------------------
 
