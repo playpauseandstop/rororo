@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, cast, Optional, Union
 
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
@@ -38,7 +38,7 @@ def get_openapi_context(request: web.Request) -> OpenAPIContext:
     valid OpenAPI request context.
     """
     try:
-        return request[REQUEST_OPENAPI_CONTEXT_KEY]  # type: ignore
+        return cast(OpenAPIContext, request[REQUEST_OPENAPI_CONTEXT_KEY])
     except KeyError:
         raise ContextError(
             "Request instance does not contain valid OpenAPI context. In "
@@ -56,7 +56,7 @@ def get_openapi_schema(
     contain registered OpenAPI schema.
     """
     try:
-        return mixed[APP_OPENAPI_SCHEMA_KEY]  # type: ignore
+        return cast(DictStrAny, mixed[APP_OPENAPI_SCHEMA_KEY])
     except KeyError:
         raise ConfigurationError(
             "Seems like OpenAPI schema not registered to the application. Use "

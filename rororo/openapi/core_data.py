@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import cast, Optional, Union
 
 from aiohttp import hdrs, web
 from aiohttp.payload import IOBasePayload, Payload
@@ -60,9 +60,7 @@ def get_path_pattern(request: web.Request) -> str:
     """
     info = request.match_info.route.get_info()
     formatter = info.get("formatter")
-    return (  # type: ignore
-        formatter if formatter is not None else info.get("path")
-    )
+    return cast(str, formatter if formatter is not None else info.get("path"))
 
 
 async def to_core_openapi_request(request: web.Request) -> OpenAPIRequest:
@@ -110,10 +108,10 @@ def to_core_openapi_response_data(
 
         # TODO: Find better way to provide response from payload
         if isinstance(body, IOBasePayload):
-            return body._value.getvalue()  # type: ignore
+            return cast(bytes, body._value.getvalue())
 
         if isinstance(body, Payload):
-            return body._value  # type: ignore
+            return cast(bytes, body._value)
 
         return body
     return None

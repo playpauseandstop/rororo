@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import cast, Optional, Union
 
 from aiohttp import BasicAuth, hdrs
 from openapi_core.schema.operations.models import Operation
@@ -75,9 +75,10 @@ def is_basic_auth_security_scheme(
     scheme = get_security_scheme(validator, scheme_name)
     if scheme is None:
         return False
-    return (  # type: ignore
+    return cast(
+        bool,
         scheme.type == SecuritySchemeType.HTTP
-        and scheme.scheme == HttpAuthScheme.BASIC
+        and scheme.scheme == HttpAuthScheme.BASIC,
     )
 
 
@@ -87,9 +88,10 @@ def is_jwt_bearer_security_scheme(
     scheme = get_security_scheme(validator, scheme_name)
     if scheme is None:
         return False
-    return (  # type: ignore
+    return cast(
+        bool,
         scheme.type == SecuritySchemeType.HTTP
-        and scheme.scheme == HttpAuthScheme.BEARER
+        and scheme.scheme == HttpAuthScheme.BEARER,
     )
 
 

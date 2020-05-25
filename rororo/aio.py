@@ -115,8 +115,8 @@ def is_xhr_request(request: web.Request) -> bool:
 
     :param request: Request instance.
     """
-    value = request.headers.get("X-Requested-With")
-    return value == "XMLHttpRequest"  # type: ignore
+    value: Optional[str] = request.headers.get("X-Requested-With")
+    return value == "XMLHttpRequest"
 
 
 def parse_aioredis_url(url: str) -> DictStrAny:
