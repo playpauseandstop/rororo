@@ -1,6 +1,15 @@
 2.0.0 (In Development)
 ======================
 
+2.0.0rc3 (In Development)
+-------------------------
+
+Build:
+~~~~~~
+
+- Do not include ``CHANGELOG.rst`` file in sdist and wheel
+- Use Python 3.8.3 as base version for development
+
 2.0.0rc2 (2020-05-15)
 ---------------------
 
