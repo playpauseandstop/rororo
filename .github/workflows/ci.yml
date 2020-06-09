@@ -150,3 +150,47 @@ jobs:
         with:
           user: "${{ secrets.PYPI_USERNAME }}"
           password: "${{ secrets.PYPI_PASSWORD }}"
+
+  release:
+    if: "startsWith(github.ref, 'refs/tags')"
+    needs: "package"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v2.0.0"
+
+      - name: "Fetch git data"
+        run: |
+          set -e
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git fetch --prune --unshallow
+
+      - id: "release-info"
+        name: "Prepare release info"
+        run: |
+          set -e
+
+          tag_name=${GITHUB_REF:10}
+          echo "::set-output name=tag_name::${tag_name}"
+
+          subject=$(git tag -l --format="%(subject)" ${tag_name})
+          echo "::set-output name=subject::${subject}"
+
+          body=$(git tag -l --format="%(body)" ${tag_name})
+          echo "::set-output name=body::${body}"
+
+          prerelease=false
+          if [ ${{ contains(github.event.ref, 'a') }} = true -o ${{ contains(github.event.ref, 'b') }} = true -o ${{ contains(github.event.ref, 'rc') }} = true ]; then
+            prerelease=true
+          fi
+          echo "::set-output name=prerelease::${prerelease}"
+
+      - name: "Create new release"
+        uses: "actions/create-release@v1.1.0"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          tag_name: "${{ steps.release-info.outputs.tag_name }}"
+          release_name: "${{ steps.release-info.outputs.subject }}"
+          body: "${{ steps.release-info.outputs.body }}"
+          prerelease: "${{ steps.release-info.outputs.prerelease }}"
