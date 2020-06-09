@@ -11,7 +11,6 @@ from aiohttp import hdrs, web
 from aiohttp_middlewares import cors_middleware
 from openapi_core.schema.specs.models import Spec
 from openapi_core.shortcuts import create_spec
-from openapi_spec_validator.exceptions import OpenAPIValidationError
 from pyrsistent import pmap
 from yarl import URL
 
@@ -510,12 +509,12 @@ def setup_openapi(
 
     try:
         oas, spec = create_func(path, schema_loader=schema_loader)
-    except OpenAPIValidationError:
+    except Exception:
         raise ConfigurationError(
             f"Unable to load valid OpenAPI schema in {path}. In most cases "
             "it means that given file doesn't contain valid OpenAPI 3 schema. "
             "To get full details about errors run `openapi-spec-validator "
-            f"{path}`"
+            f"{path.absolute()}`"
         )
 
     # Store schema and spec in application dict

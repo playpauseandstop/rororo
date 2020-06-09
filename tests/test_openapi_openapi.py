@@ -6,6 +6,7 @@ from pyrsistent import pmap
 
 from rororo import OperationTableDef, setup_openapi
 from rororo.openapi.constants import HANDLER_OPENAPI_MAPPING_KEY
+from rororo.openapi.exceptions import ConfigurationError
 
 
 ROOT_PATH = Path(__file__).parent
@@ -49,6 +50,14 @@ def test_cache_create_schema_and_spec(schema_path):
             server_url="/api/",
             cache_create_schema_and_spec=True,
         )
+
+
+def test_handle_all_create_schema_and_spec_errors(tmp_path):
+    invalid_json = tmp_path / "invalid_openapi.json"
+    invalid_json.write_text('{"openapi": "3.')
+
+    with pytest.raises(ConfigurationError):
+        setup_openapi(web.Application(), invalid_json, OperationTableDef())
 
 
 def test_ignore_non_http_view_methods():

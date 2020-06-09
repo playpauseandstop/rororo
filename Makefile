@@ -8,7 +8,8 @@
 	lint-only \
 	list-outdated \
 	test \
-	test-only
+	test-only \
+	validate
 
 # Project constants
 PROJECT = rororo
@@ -46,7 +47,7 @@ endif
 
 install: .install
 .install: pyproject.toml poetry.lock
-	$(POETRY) config virtualenvs.in-project true --local
+	$(POETRY) config --local virtualenvs.in-project true
 	$(POETRY) install
 	touch $@
 

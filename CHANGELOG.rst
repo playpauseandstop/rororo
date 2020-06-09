@@ -4,6 +4,18 @@
 2.0.0rc3 (In Development)
 -------------------------
 
+Fix:
+~~~~
+
+- Handle all errors on loading OpenAPI schema from files & creating OpenAPI
+  spec, not only ``OpenAPIValidationError`` ones
+
+Docs:
+~~~~~
+
+- Include new *rororo* slogan (aiohttp.web OpenAPI 3 schema first applications)
+  into the docs
+
 Build:
 ~~~~~~
 
