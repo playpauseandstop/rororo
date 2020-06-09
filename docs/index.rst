@@ -1,5 +1,18 @@
 .. include:: ../README.rst
 
+Installation
+============
+
+.. code-block:: bash
+
+    poetry add rororo
+
+Or using `pip <https://pip.pypa.org>`_,
+
+.. code-block:: bash
+
+    pip install rororo
+
 License
 =======
 

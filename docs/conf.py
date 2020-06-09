@@ -60,7 +60,7 @@ pygments_style = "sphinx"
 html_theme = "alabaster"
 html_theme_options = {
     "logo_name": True,
-    "description": "OpenAPI 3 support for aiohttp.web applications",
+    "description": "aiohttp.web OpenAPI 3 schema first server applications",
     "github_user": "playpauseandstop",
     "github_repo": project,
     "github_banner": True,

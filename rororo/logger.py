@@ -25,7 +25,7 @@ class IgnoreErrorsFilter(object):
 def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
     r"""Prepare logging dict for :func:`logging.config.dictConfig`.
 
-    ``rororo`` minds to simplify and unify logging configuration for
+    *rororo* minds to simplify and unify logging configuration for
     ``aiohttp.web`` applications and cause of that the resulted logging config
     will:
 

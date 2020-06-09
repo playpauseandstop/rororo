@@ -34,42 +34,30 @@ rororo
     :target: https://rororo.readthedocs.io/
     :alt: Documentation
 
-`OpenAPI 3 <https://spec.openapis.org/oas/v3.0.2>`_ schema support
-for `aiohttp.web <https://aiohttp.readthedocs.io/en/stable/web.html>`_
-applications.
+Implement `aiohttp.web`_ `OpenAPI 3`_ server applications with schema first
+approach.
 
-As well as bunch other utilities to build effective web applications with
-Python 3 & ``aiohttp.web``.
+As well as bunch other utilities to build effective server applications with
+`Python`_ 3 & `aiohttp.web`_.
 
-* Works on Python 3.6+
+* Works on `Python`_ 3.6+
+* Works with `aiohttp.web`_ 3.6+
 * BSD licensed
 * Source, issues, and pull requests `on GitHub
   <https://github.com/playpauseandstop/rororo>`_
 
-Important
-=========
-
-**2.0.0** version still in development. To install it use,
-
-.. code-block:: bash
-
-    pip install rororo==2.0.0rc1
-
-or,
-
-.. code-block:: bash
-
-    poetry add rororo==2.0.0rc1
+.. _`OpenAPI 3`: https://spec.openapis.org/oas/v3.0.3
+.. _`aiohttp.web`: https://aiohttp.readthedocs.io/en/stable/web.html
+.. _`Python`: https://www.python.org/
 
 Quick Start
 ===========
 
-``rororo`` relies on valid OpenAPI schema file (both JSON or YAML formats
+*rororo* relies on valid OpenAPI 3 schema file (both JSON or YAML formats
 supported).
 
 Example below, illustrates on how to handle operation ``hello_world`` from
-`openapi.yaml <https://github.com/playpauseandstop/rororo/blob/master/tests/openapi.yaml>`_
-schema file.
+`openapi.yaml </tests/openapi.yaml>`_ schema file.
 
 .. code-block:: python
 
@@ -95,24 +83,38 @@ schema file.
 
 
     def create_app(argv: List[str] = None) -> web.Application:
-        app = web.Application()
-        setup_openapi(
-            app,
+        return setup_openapi(
+            web.Application(),
             Path(__file__).parent / "openapi.yaml",
             operations,
-            route_prefix="/api",
+            server_url="/api",
         )
-        return app
+
+Schema First Approach
+---------------------
+
+Unlike other popular Python OpenAPI 3 solutions, such as
+`Django REST Framework`_, `FastAPI`_,  `flask-apispec`_, or `aiohttp-apispec`_
+*rororo* **requires** you to provide valid `OpenAPI 3`_ schema first. This
+makes *rororo* similar to `connexion`_, `pyramid_openapi3`_ and other schema
+first libraries.
+
+.. _`Django REST Framework`: https://www.django-rest-framework.org
+.. _`FastAPI`: https://fastapi.tiangolo.com
+.. _`flask-apispec`: https://flask-apispec.readthedocs.io
+.. _`aiohttp-apispec`: https://aiohttp-apispec.readthedocs.io
+.. _`connexion`: https://connexion.readthedocs.io
+.. _`pyramid_openapi3`: https://github.com/Pylons/pyramid_openapi3
 
 Class Based Views
 -----------------
 
-``rororo`` supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
-as well. `Todo-Backend <https://github.com/playpauseandstop/rororo/tree/master/examples/todobackend>`_
-example illustrates how to use class based views for OpenAPI handlers.
+*rororo* supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
+as well. `Todo-Backend </examples/todobackend>`_ example illustrates how to use
+class based views for OpenAPI 3 servers.
 
-In snippet below, ``rororo`` expects that OpenAPI schema contains operation ID
-``UserView.get``,
+In snippet below, *rororo* expects that OpenAPI 3 schema contains operation \
+ID ``UserView.get``,
 
 .. code-block:: python
 
@@ -124,7 +126,5 @@ In snippet below, ``rororo`` expects that OpenAPI schema contains operation ID
 More Examples
 -------------
 
-Check
-`examples <https://github.com/playpauseandstop/rororo/tree/master/examples>`_
-folder to see other examples on how to use OpenAPI 3 schemas with aiohttp.web
-applications.
+Check `examples </examples>`_ folder to see other examples on how to build
+aiohttp.web OpenAPI 3 server applications.

@@ -25,17 +25,17 @@ repository = "https://github.com/playpauseandstop/rororo"
 documentation = "https://rororo.readthedocs.io/"
 keywords = ["aiohttp", "aiohttp.web", "oas", "openapi", "openapi3", "helpers", "utilities"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Web Environment",
-    "Framework :: AsyncIO",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
-    "Operating System :: OS Independent",
-    "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Internet :: WWW/HTTP :: WSGI",
-    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-    "Topic :: Utilities",
-    "Typing :: Typed"
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Internet :: WWW/HTTP :: WSGI",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+  "Topic :: Utilities",
+  "Typing :: Typed"
 ]
 
 [tool.poetry.dependencies]
@@ -59,6 +59,9 @@ pytest = "^5.0"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.7"
 pytest-env = "^0.6.2"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
 
 [tool.tox]
 legacy_tox_ini = """

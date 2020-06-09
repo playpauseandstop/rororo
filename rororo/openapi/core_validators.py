@@ -76,7 +76,7 @@ class PathFinder(CorePathFinder):
     """Custom path finder to fix issue with finding paths with vars.
 
     Temporary fix for https://github.com/p1c2u/openapi-core/issues/226, to be
-    removed from ``rororo`` after next ``openapi-core`` version released with
+    removed from *rororo* after next ``openapi-core`` version released with
     proper fix for the issue.
     """
 
@@ -116,7 +116,7 @@ class SchemaUnmarshallersFactory(CoreSchemaUnmarshallersFactory):
     strings.
 
     Temporary fix to https://github.com/p1c2u/openapi-core/issues/235, to be
-    removed from ``rororo`` after next ``openapi-core`` release.
+    removed from *rororo* after next ``openapi-core`` release.
     """
 
     def get_formatter(
@@ -135,7 +135,7 @@ CUSTOM_FORMATTERS = {"email": EmailFormatter()}
 class BaseValidator(CoreBaseValidator):
     """Custom base validator to deal with tz aware date time strings.
 
-    To be removed from ``rororo`` after next ``openapi-core`` version release.
+    To be removed from *rororo* after next ``openapi-core`` version release.
     """
 
     def _cast(self, param_or_media_type: Any, value: Any) -> Any:
@@ -200,7 +200,7 @@ class RequestValidator(BaseValidator, CoreRequestValidator):
         JWT tokens without decoding them from ``base64`` (as needed for
         basic authorization).
 
-        Consider to remove from ``rororo`` after next ``openapi-core`` release.
+        Consider to remove from *rororo* after next ``openapi-core`` release.
         """
         return validate_security(self, request, operation)
 

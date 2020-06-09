@@ -3,7 +3,7 @@ aiohttp-middlewares
 attrs
 openapi-core
 PyYAML
-Sphinx
+Sphinx==3.0.4
 sphinx-autobuild
 sphinx-autodoc-typehints
 typing-extensions; python_version <= "3.8"

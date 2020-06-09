@@ -1,31 +1,31 @@
-============================================
-OpenAPI Support for aiohttp.web applications
-============================================
+======================================================
+aiohttp.web OpenAPI 3 schema first server applications
+======================================================
 
-`OpenAPI 3 <https://spec.openapis.org/oas/v3.0.2>`_ is a powerful way of
+`OpenAPI 3 <https://spec.openapis.org/oas/v3.0.3>`_ is a powerful way of
 describing request / response specifications for API endpoints. There are
-two ways on supporting OpenAPI 3 for Python web applications:
+two ways on using OpenAPI 3 within Python server applications:
 
 - Generate the schema from Python data structures (as done in
-  `django-rest-framework <https://www.django-rest-framework.org/>`_,
-  `fastapi <https://fastapi.tiangolo.com>`_,
+  `Django REST Framework <https://www.django-rest-framework.org/>`_,
+  `FastAPI <https://fastapi.tiangolo.com>`_,
   `aiohttp-apispec <https://aiohttp-apispec.readthedocs.io>`_ and others)
 - Rely on OpenAPI 3 schema file (as done in
   `pyramid_openapi3 <https://github.com/Pylons/pyramid_openapi3>`_)
 
-While both ways has their pros & cons, `rororo` library is heavily inspired by
+While both ways have their pros & cons, `rororo` library is heavily inspired by
 `pyramid_openapi3 <https://github.com/Pylons/pyramid_openapi3>`_ and as result
 **requires valid** OpenAPI 3 schema file to be provided.
 
-In total OpenAPI 3 schema support fo ``aiohttp.web`` applications done in 3
-parts:
+In total, to build aiohttp.web OpenAPI 3 server applications with *rororo*
+you need to:
 
 1. Provide **valid** OpenAPI 3 schema file
 2. Map ``operationId`` with ``aiohttp.web`` view handler via
    :class:`rororo.openapi.OperationTableDef`
 3. Call :func:`rororo.openapi.setup_openapi` to finish setup process
 
-Below more details provided for all of significant parts.
+Below more details provided for all significant parts.
 
 Part 1. Provide OpenAPI 3 schema file
 =====================================
@@ -35,12 +35,12 @@ structures is more *Pythonic* way, but it results in several issues:
 
 - Which Python data structure use as a basis? For example,
 
-  - `django-rest-framework`_ generates OpenAPI 3 schemas from their own
+  - `Django REST Framework`_ generates OpenAPI 3 schemas from their own
     serializers
-  - `fastapi`_ relies on `pydantic <https://pydantic-docs.helpmanual.io>`_
+  - `FastAPI`_ relies on `pydantic <https://pydantic-docs.helpmanual.io>`_
     models
   - While `aiohttp-apispec`_ built on top of
-    `apispec <https://apispec.readthedocs.io>`_ library, which behind the
+    `APISpec <https://apispec.readthedocs.io>`_ library, which behind the
     scenes utilies `marshmallow <https://marshmallow.readthedocs.io/>`_ data
     structures
 
@@ -69,7 +69,7 @@ Part 2. Map operation with view handler
 =======================================
 
 After OpenAPI 3 schema file is valid and ready to be used, it is needed to
-map `OpenAPI operations <https://spec.openapis.org/oas/v3.0.2#operation-object>`_
+map `OpenAPI operations <https://spec.openapis.org/oas/v3.0.3#operation-object>`_
 with `aiohttp.web view handlers <https://aiohttp.readthedocs.io/en/stable/web_quickstart.html#handler>`_.
 
 As *operationId* field for the operation is,
@@ -77,13 +77,13 @@ As *operationId* field for the operation is,
     Unique string used to identify the operation. The id MUST be unique among
     all operations described in the API.
 
-It is a possibility to tell ``aiohttp.web`` to use specific view as a handler
-for given OpenAPI 3 operation.
+It makes possible to tell ``aiohttp.web`` to use specific view as a handler
+for every given OpenAPI 3 operation.
 
 For example,
 
-1. OpenAPI 3 specification contains ``hello_world`` operation
-2. ``api.views`` module contains ``hello_world`` view handler
+1. OpenAPI 3 specification has ``hello_world`` operation
+2. ``api.views`` module has ``hello_world`` view handler
 
 To connect both of described parts :class:`rororo.openapi.OperationTableDef`
 need to be used as (in ``views.py``):
@@ -101,8 +101,9 @@ need to be used as (in ``views.py``):
     async def hello_world(request: web.Request) -> web.Response:
         return web.json_response("Hello, world!")
 
-In case, when *operationId* does not match with view handler name it is safe
-to pass ``operation_id`` string as first argument to ``@operations.register``,
+In case, when *operationId* does not match view handler name it is needed to
+to pass ``operation_id`` string as first argument of ``@operations.register``
+decorator,
 
 .. code-block:: python
 
@@ -115,7 +116,7 @@ to pass ``operation_id`` string as first argument to ``@operations.register``,
 Class Based Views
 -----------------
 
-``rororo`` supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
+*rororo* supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
 as well.
 
 In basic mode it expects that OpenAPI schema contains *operationId*, which
@@ -132,8 +133,8 @@ OpenAPI schema to declare ``UsersView.get`` & ``UsersView.post`` operation IDs,
         async def post(self) -> web.Response:
             ...
 
-Next, it might be a need to use different prefix instead of ``UsersView``. In
-example below, ``rororo`` expects OpenAPI schema to provide ``users.get`` &
+Next, it might be useful to provide different prefix instead of ``UsersView``.
+In example below, *rororo* expects OpenAPI schema to provide ``users.get`` &
 ``users.post`` operation IDs,
 
 .. code-block:: python
@@ -146,8 +147,8 @@ example below, ``rororo`` expects OpenAPI schema to provide ``users.get`` &
         async def post(self) -> web.Response:
             ...
 
-Finally, it might be need to use custom *operationId* instead of guessing it
-from view or view method name. Example below, illustrates the case, when
+Finally, it might be useful to provide custom *operationId* instead of guessing
+it from view or view method name. Example below, illustrates the case, when
 OpenAPI schema contains ``list_users`` & ``create_user`` operation IDs,
 
 .. code-block:: python
@@ -255,7 +256,7 @@ follows,
 
 .. note::
     By default, OpenAPI schema, which is used for the application will be
-    available via GET requests to ``{route_prefix}/openapi.(json|yaml)``, but
+    available via GET requests to ``{server_url}/openapi.(json|yaml)``, but
     it is possible to not serve the schema by passing
     ``has_openapi_schema_handler`` falsy flag to
     :func:`rororo.openapi.setup_openapi`

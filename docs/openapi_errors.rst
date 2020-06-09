@@ -51,7 +51,7 @@ Only difference is response status code & additional ``www-authenticate: basic``
 header in case of missing HTTP Basic Auth details.
 
 .. important::
-    ``rororo`` does not intend to check, whether authentication data is valid
+    *rororo* does not intend to check, whether authentication data is valid
     or not, so ``aiohttp.web`` application should make the authentication by
     itself. Most reliable way of doing that by providing ``@login_required``
     decorator as `done in Hobotnica example <https://github.com/playpauseandstop/rororo/blob/master/examples/hobotnica/decorators.py>`_.
@@ -61,7 +61,7 @@ Request Parameter Validation Errors
 
 When request parameter is missed, when required, missed, has empty, or invalid
 value `openapi-core <https://pypi.org/project/openapi-core/>`_ raises an
-``OpenAPIParameterError`` or ``EmptyParameterValue`` exception. ``rororo``
+``OpenAPIParameterError`` or ``EmptyParameterValue`` exception. *rororo*
 handles given error and wraps it into own ``ValidationError``.
 
 For example, when operation is required ``X-GitHub-Username`` header parameter,
@@ -85,7 +85,7 @@ with next JSON content:
 Request Body Validation Errors
 ==============================
 
-When request body contains invalid data ``rororo`` converts any
+When request body contains invalid data *rororo* converts any
 ``openapi-core`` or ``jsonschema`` exceptions into own ``ValidationError``.
 
 For example, when request body missed ``name`` field and have invalid ``email``
@@ -115,7 +115,7 @@ field next response will be supplied:
 Response Data Validation Errors
 ===============================
 
-Similarly to `Request Body Validation Errors`_ ``rororo`` converts any
+Similarly to `Request Body Validation Errors`_ *rororo* converts any
 ``openapi-core`` or ``jsonschema`` exceptions raised by validating response
 data into own ``ValidationError``.
 
@@ -123,7 +123,7 @@ data into own ``ValidationError``.
 
     For performance reasons, you might want to disable response data validation
     entirely by passing ``is_validate_response=False`` into
-    :func:`rororo.openapi.setup_openapi`. In that case ``rororo`` will not
+    :func:`rororo.openapi.setup_openapi`. In that case *rororo* will not
     run any validation for response data.
 
 For example, when response data contains wrong ``uid`` format field next error

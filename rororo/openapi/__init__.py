@@ -3,7 +3,7 @@
 rororo.openapi
 ==============
 
-Cornerstone of ``rororo`` library, which brings OpenAPI 3 schema support for
+Cornerstone of *rororo* library, which brings OpenAPI 3 schema support for
 aiohttp.web applications.
 
 """

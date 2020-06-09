@@ -127,7 +127,7 @@ class OperationTableDef:
     expects for operation ID ``me`` to be declared in OpenAPI schema.
 
     When the class based view provides mutliple view methods (for example
-    ``delete``, ``get``, ``patch`` & ``put``) ``rororo`` expects that
+    ``delete``, ``get``, ``patch`` & ``put``) *rororo* expects that
     OpenAPI schema contains operation IDs for each of view method.
 
     If supplied ``operation_id`` does not exist in OpenAPI 3 schema,
@@ -153,10 +153,10 @@ class OperationTableDef:
         ...  # pragma: no cover
 
     @overload
-    def register(self, operation_id: str) -> Callable[[F], F]:  # noqa: F811
+    def register(self, operation_id: str) -> Callable[[F], F]:
         ...  # pragma: no cover
 
-    def register(self, mixed):  # type: ignore  # noqa: F811
+    def register(self, mixed):  # type: ignore
         operation_id = mixed if isinstance(mixed, str) else mixed.__qualname__
 
         def decorator(handler: F) -> F:
@@ -356,15 +356,15 @@ def setup_openapi(
 
     Unlike `aiohttp-apispec <https://aiohttp-apispec.readthedocs.io/>`_ and
     other tools, which provides OpenAPI/Swagger support for aiohttp.web
-    applications, ``rororo`` changes the way of using OpenAPI schema with
+    applications, *rororo* changes the way of using OpenAPI schema with
     ``aiohttp.web`` apps.
 
-    ``rororo`` relies on concrete OpenAPI schema file, path to which need to be
+    *rororo* relies on concrete OpenAPI schema file, path to which need to be
     registered on application startup (mostly inside of ``create_app`` factory
     or right after :class:`aiohttp.web.Application` instantiation).
 
     And as valid OpenAPI schema ensure unique ``operationId`` used accross the
-    schema ``rororo`` uses them as a key while telling aiohttp.web to use given
+    schema *rororo* uses them as a key while telling aiohttp.web to use given
     view handler for serving required operation.
 
     With that in mind registering (setting up) OpenAPI schema requires:
@@ -405,7 +405,7 @@ def setup_openapi(
         - url: "http://prod.url/api/"
           description: "Prod environment"
 
-    you have 2 options of telling ``rororo`` to use specific server URL.
+    you have 2 options of telling *rororo* to use specific server URL.
 
     First, is passing ``server_url``, while setting up OpenAPI, for example,
 
@@ -432,18 +432,18 @@ def setup_openapi(
         - url: "http://prod.url/api/"
           x-rororo-level: "prod"
 
-    After, ``rororo`` will try to equal current app settings level with the
+    After, *rororo* will try to equal current app settings level with the
     schema and if URL matched, will use given server URL for finding out
     route prefix.
 
-    By default, ``rororo`` will validate operation responses against OpenAPI
+    By default, *rororo* will validate operation responses against OpenAPI
     schema. To disable this feature, pass ``is_validate_response`` falsy flag.
 
-    By default, ``rororo`` will share the OpenAPI schema which is registered
+    By default, *rororo* will share the OpenAPI schema which is registered
     for your aiohttp.web application. In case if you don't want to share this
     schema, pass ``has_openapi_schema_handler=False`` on setting up OpenAPI.
 
-    By default, ``rororo`` will enable
+    By default, *rororo* will enable
     :func:`aiohttp_middlewares.cors.cors_middleware` without any settings and
     :func:`aiohttp_middlewares.error.error_middleware` with custom error
     handler to ensure that security / validation errors does not provide any
@@ -453,11 +453,11 @@ def setup_openapi(
 
     For passing custom options to CORS middleware, use
     ``cors_middleware_kwargs`` mapping. If kwarg does not support by CORS
-    middleware - ``rororo`` will raise a ``ConfigurationError``. All list of
+    middleware - *rororo* will raise a ``ConfigurationError``. All list of
     options available at documentation for
     :func:`aiohttp_middlewares.cors.cors_middleware`.
 
-    By default, ``rororo`` will use :func:`json.loads` to load OpenAPI schema
+    By default, *rororo* will use :func:`json.loads` to load OpenAPI schema
     content from JSON file and ``yaml.CSafeLoader`` if it is available to load
     schema content from YAML files (with fallback to ``yaml.SafeLoader``). But,
     for performance considreations, you might use any other function to load
@@ -479,7 +479,7 @@ def setup_openapi(
     ``Dict[str, Any]`` as OpenAPI schema dict.
 
     .. danger::
-        By default ``rororo`` does not cache slow calls to read OpenAPI schema
+        By default *rororo* does not cache slow calls to read OpenAPI schema
         and creating its spec. But sometimes, for example in tests, it is
         sufficient to cache those calls. To enable cache behaviour pass
         ``cache_create_schema_and_spec=True`` or even better,

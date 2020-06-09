@@ -1,7 +1,5 @@
 .PHONY: \
 	clean \
-	coveralls \
-	deploy-ci \
 	distclean \
 	docs \
 	example \
@@ -31,25 +29,6 @@ all: install
 clean:
 	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
 
-coveralls:
-	-$(PYTHON) -m coveralls
-
-deploy-ci:
-ifeq ($(TWINE_USERNAME),)
-	# TWINE_USERNAME env var should be supplied
-	exit 1
-endif
-ifeq ($(TWINE_PASSWORD),)
-	# TWINE_PASSWORD env var should be supplied
-	exit 1
-endif
-ifeq ($(CIRCLECI),)
-	$(MAKE) test
-endif
-	-rm -rf build/ dist/
-	$(POETRY) build
-	$(POETRY) publish -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
-
 distclean: clean
 	rm -rf build/ dist/ *.egg*/ .venv/
 
@@ -60,6 +39,7 @@ docs: install
 example: install
 ifeq ($(EXAMPLE),)
 	# USAGE: make EXAMPLE=(hobotnica|petstore) example
+	@exit 1
 else
 	PYTHONPATH=examples $(PYTHON) -m aiohttp.web $(EXAMPLE).app:create_app
 endif
@@ -77,9 +57,6 @@ lint-only:
 
 list-outdated: install
 	$(POETRY) show -o
-
-open-docs: docs
-	open $(DOCS_DIR)/_build/html/index.html
 
 test: install clean lint validate test-only
 

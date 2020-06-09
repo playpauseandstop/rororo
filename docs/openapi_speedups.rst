@@ -65,7 +65,7 @@ for loading schema from ``openapi.json`` file,
 [runtime] Disable validating responses
 ======================================
 
-To satisfy that OpenAPI hander provides proper response ``rororo`` internally
+To satisfy that OpenAPI hander provides proper response *rororo* internally
 run ``ResponseValidator.validate(...)`` function.
 
 In most cases this fact is OK as it will ensure that all responses conform
@@ -74,7 +74,7 @@ results in extra deserializing / validation calls, which will slow down process
 of getting response from OpenAPI handler.
 
 To "fix" this, there is a possibility to entirely turn off validation of
-responses in ``rororo``,
+responses in *rororo*,
 
 .. code-block:: python
 

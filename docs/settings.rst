@@ -12,7 +12,7 @@ Most notable ways of managing settings are:
 - Reading settings from ``.yaml`` or ``.json`` file and store it again, in
   application instance
 
-With that in mind, ``rororo`` insists of their way for setting up
+With that in mind, *rororo* insists of their way for setting up
 ``aiohttp.web`` application.
 
 Step 1. Settings data structure
@@ -34,7 +34,7 @@ Example below illustrates how given Settings data structure may look like,
         level: str
         debug: bool
 
-``rororo`` provides basic data structure, which covers most of common settings,
+*rororo* provides basic data structure, which covers most of common settings,
 used withing ``aiohttp.web`` app. Given data structure available as:
 :class:`rororo.settings.BaseSettings` and it contains next fields,
 
@@ -67,7 +67,7 @@ used withing ``aiohttp.web`` app. Given data structure available as:
 | ``sentry_release`` | ``SENTRY_RELEASE`` | Sentry release. By default: ``None``                                       |
 +--------------------+--------------------+----------------------------------------------------------------------------+
 
-``rororo`` elevates on `12factor <https://12factor.net/config>`_ configuration
+*rororo* elevates on `12factor <https://12factor.net/config>`_ configuration
 principles, which means all values for Settings data structure should come from
 environment.
 

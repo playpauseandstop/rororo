@@ -3,7 +3,7 @@ Known OpenAPI limitations & issues
 ==================================
 
 There are some limitations & issues in providing OpenAPI 3 support for
-aiohttp.web applications via ``rororo`` library.
+aiohttp.web applications via *rororo* library.
 
 .. important::
     In case, if your issue not listed below, feel free to open
@@ -16,11 +16,11 @@ Limitations
 Unsupported Security Schemes
 ----------------------------
 
-As of ``2.0.0rc0`` release
+As of ``2.0.0rc2`` release
 `OAuth2 <https://swagger.io/docs/specification/authentication/oauth2/>`_ &
 `OpenID <https://swagger.io/docs/specification/authentication/openid-connect-discovery/>`_
 security schemes is not supported. And at a moment there is no plans of adding
-support of given security schemes to ``rororo``.
+support of given security schemes to *rororo*.
 
 Issues
 ======
@@ -33,7 +33,7 @@ matches more paths, then expected and as result return invalid operation, when
 multiple paths in OpenAPI 3 schema matches current request path. Github issue:
 `#226 <https://github.com/p1c2u/openapi-core/issues/226>`_
 
-To fix this ``rororo`` uses its own ``PathFinder`` class, which should work in
+To fix this *rororo* uses its own ``PathFinder`` class, which should work in
 most cases, but sometimes it might produce an error as well. In that case,
 consider rename the path to avoid intersections with other paths in schema.
 
