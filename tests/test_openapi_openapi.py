@@ -81,3 +81,8 @@ def test_ignore_non_http_view_methods():
     assert getattr(UserView, HANDLER_OPENAPI_MAPPING_KEY) == pmap(
         {"GET": UserView.get.__qualname__, "PATCH": "update_user"}
     )
+
+
+def test_missed_schema_path_or_schema_and_spec():
+    with pytest.raises(ConfigurationError):
+        setup_openapi(web.Application(), OperationTableDef())

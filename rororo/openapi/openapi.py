@@ -1,9 +1,10 @@
 import inspect
 import json
 import os
+import warnings
 from functools import lru_cache, partial
 from pathlib import Path
-from typing import Callable, Deque, List, overload, Tuple, Union
+from typing import Callable, cast, Deque, List, overload, Tuple, Union
 
 import attr
 import yaml
@@ -337,11 +338,11 @@ def read_openapi_schema(
     )
 
 
+@overload
 def setup_openapi(
     app: web.Application,
     schema_path: Union[str, Path],
     *operations: OperationTableDef,
-    schema_loader: SchemaLoader = None,
     server_url: Url = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
@@ -349,6 +350,43 @@ def setup_openapi(
     error_middleware_kwargs: DictStrAny = None,
     use_cors_middleware: bool = True,
     cors_middleware_kwargs: DictStrAny = None,
+    schema_loader: SchemaLoader = None,
+    cache_create_schema_and_spec: bool = False,
+) -> web.Application:  # pragma: no cover
+    ...
+
+
+@overload
+def setup_openapi(
+    app: web.Application,
+    *operations: OperationTableDef,
+    schema: DictStrAny,
+    spec: Spec,
+    server_url: Url = None,
+    is_validate_response: bool = True,
+    has_openapi_schema_handler: bool = True,
+    use_error_middleware: bool = True,
+    error_middleware_kwargs: DictStrAny = None,
+    use_cors_middleware: bool = True,
+    cors_middleware_kwargs: DictStrAny = None,
+) -> web.Application:  # pragma: no cover
+    ...
+
+
+def setup_openapi(  # type: ignore
+    app: web.Application,
+    schema_path: Union[str, Path] = None,
+    *operations: OperationTableDef,
+    schema: DictStrAny = None,
+    spec: Spec = None,
+    server_url: Url = None,
+    is_validate_response: bool = True,
+    has_openapi_schema_handler: bool = True,
+    use_error_middleware: bool = True,
+    error_middleware_kwargs: DictStrAny = None,
+    use_cors_middleware: bool = True,
+    cors_middleware_kwargs: DictStrAny = None,
+    schema_loader: SchemaLoader = None,
     cache_create_schema_and_spec: bool = False,
 ) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
@@ -358,9 +396,10 @@ def setup_openapi(
     applications, *rororo* changes the way of using OpenAPI schema with
     ``aiohttp.web`` apps.
 
-    *rororo* relies on concrete OpenAPI schema file, path to which need to be
-    registered on application startup (mostly inside of ``create_app`` factory
-    or right after :class:`aiohttp.web.Application` instantiation).
+    *rororo* using schema first approach and relies on concrete OpenAPI schema
+    file, path to which need to be registered on application startup (mostly
+    inside of ``create_app`` factory or right after
+    :class:`aiohttp.web.Application` instantiation).
 
     And as valid OpenAPI schema ensure unique ``operationId`` used accross the
     schema *rororo* uses them as a key while telling aiohttp.web to use given
@@ -404,7 +443,7 @@ def setup_openapi(
         - url: "http://prod.url/api/"
           description: "Prod environment"
 
-    you have 2 options of telling *rororo* to use specific server URL.
+    you have 2 options of telling *rororo* how to use specific server URL.
 
     First, is passing ``server_url``, while setting up OpenAPI, for example,
 
@@ -456,6 +495,43 @@ def setup_openapi(
     options available at documentation for
     :func:`aiohttp_middlewares.cors.cors_middleware`.
 
+    To simplify things *rororo* expects on OpenAPI 3 path and do reading schema
+    from file and specifying ``openapi_core.schema.specs.models.Spec`` instance
+    inside of :func:`rororo.openapi.setup_openapi` call.
+
+    However, it is possible to completely customize this default behaviour and
+    pass OpenAPI ``schema`` and ``spec`` instance directly. In that case
+    ``schema`` keyword argument should contains raw OpenAPI 3 schema as
+    ``Dict[str, Any]``, while ``spec`` to be an
+    ``openapi_core.schema.specs.models.Spec`` instance.
+
+    This behaviour might be helpful if you'd like to cache reading schema and
+    instantiating spec within tests or other environments, which requires
+    multiple :func:`rororo.openapi.setup_openapi` calls.
+
+    .. code-block:: python
+
+        from pathlib import Path
+
+        import yaml
+        from aiohttp import web
+        from openapi_core.shortcuts import create_spec
+        from rororo import setup_openapi
+
+
+        # Reusable OpenAPI data
+        openapi_yaml = Path(__file__).parent / "openapi.yaml"
+        schema = yaml.load(
+            openapi_yaml.read_bytes(), Loader=yaml.CSafeLoader
+        )
+        spec = create_spec(schema)
+
+        # Create OpenAPI 3 aiohttp.web server application
+        app = setup_openapi(web.Application(), schema=schema, spec=spec)
+
+    For default behaviour, with passing ``schema_path``, there are few options
+    on customizing schema load process as well,
+
     By default, *rororo* will use :func:`json.loads` to load OpenAPI schema
     content from JSON file and ``yaml.CSafeLoader`` if it is available to load
     schema content from YAML files (with fallback to ``yaml.SafeLoader``). But,
@@ -490,41 +566,62 @@ def setup_openapi(
         instance.
     """
 
-    # Ensure OpenAPI schema is a readable file
-    path = Path(schema_path) if isinstance(schema_path, str) else schema_path
-    if not path.exists() or not path.is_file():
-        uid = os.getuid()
-        raise ConfigurationError(
-            f"Unable to find OpenAPI schema file at {path}. Please check that "
-            "file exists at given path and readable by current user ID: "
-            f"{uid}"
+    if isinstance(schema_path, OperationTableDef):
+        operations = (schema_path, *operations)
+        schema_path = None
+
+    if schema is None and spec is None:
+        if schema_path is None:
+            raise ConfigurationError(
+                "Please supply only `spec` keyword argument, or only "
+                "`schema_path` positional argumnet, not both."
+            )
+
+        # Ensure OpenAPI schema is a readable file
+        path = (
+            Path(schema_path) if isinstance(schema_path, str) else schema_path
+        )
+        if not path.exists() or not path.is_file():
+            uid = os.getuid()
+            raise ConfigurationError(
+                f"Unable to find OpenAPI schema file at {path}. Please check "
+                "that file exists at given path and readable by current user "
+                f"ID: {uid}"
+            )
+
+        # Create the spec and put it to the application dict as well
+        create_func: CreateSchemaAndSpec = (
+            create_schema_and_spec_with_cache  # type: ignore
+            if cache_create_schema_and_spec
+            else create_schema_and_spec
         )
 
-    # Create the spec and put it to the application dict as well
-    create_func: CreateSchemaAndSpec = (
-        create_schema_and_spec_with_cache  # type: ignore
-        if cache_create_schema_and_spec
-        else create_schema_and_spec
-    )
-
-    try:
-        oas, spec = create_func(path, schema_loader=schema_loader)
-    except Exception:
-        raise ConfigurationError(
-            f"Unable to load valid OpenAPI schema in {path}. In most cases "
-            "it means that given file doesn't contain valid OpenAPI 3 schema. "
-            "To get full details about errors run `openapi-spec-validator "
-            f"{path.absolute()}`"
+        try:
+            schema, spec = create_func(path, schema_loader=schema_loader)
+        except Exception:
+            raise ConfigurationError(
+                f"Unable to load valid OpenAPI schema in {path}. In most "
+                "cases it means that given file doesn't contain valid OpenAPI "
+                "3 schema. To get full details about errors run "
+                f"`openapi-spec-validator {path.absolute()}`"
+            )
+    elif schema_path is not None:
+        warnings.warn(
+            "You supplied `schema_path` positional argument as well as "
+            "supplying `schema` & `spec` keyword arguments. `schema_path` "
+            "will be ignored in favor of `schema` & `spec` args."
         )
 
     # Store schema and spec in application dict
-    app[APP_OPENAPI_SCHEMA_KEY] = oas
+    app[APP_OPENAPI_SCHEMA_KEY] = schema
     app[APP_OPENAPI_SPEC_KEY] = spec
 
     # Register the route to dump openapi schema used for the application if
     # required
     route_prefix = find_route_prefix(
-        oas, server_url=server_url, settings=app.get(APP_SETTINGS_KEY)
+        cast(DictStrAny, schema),
+        server_url=server_url,
+        settings=app.get(APP_SETTINGS_KEY),
     )
     if has_openapi_schema_handler:
         app.router.add_get(

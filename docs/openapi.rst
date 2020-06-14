@@ -65,6 +65,14 @@ To start with OpenAPI 3 schema it is recommended to,
 - Browse through `OpenAPI 3 Examples <https://github.com/OAI/OpenAPI-Specification/tree/master/examples/v3.0>`_
 - Try `Swagger Editor <https://editor.swagger.io>`_ online tool
 
+Supply schema & spec instances instead of schema path
+-----------------------------------------------------
+
+To simplify developer experience *rororo* expects only on OpenAPI 3 schema path.
+However it is possible to pass predefined ``schema`` dict and ``spec`` instance
+instead. Consult :func:`rororo.openapi.setup_openapi` to check how to achieve
+that.
+
 Part 2. Map operation with view handler
 =======================================
 
