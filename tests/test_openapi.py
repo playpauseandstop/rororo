@@ -8,6 +8,7 @@ import pyrsistent
 import pytest
 import yaml
 from aiohttp import web
+from openapi_core.shortcuts import create_spec
 from yarl import URL
 
 from rororo import (
@@ -531,6 +532,59 @@ async def test_request_body_nested_object(aiohttp_client, schema_path):
     )
     assert response.headers["X-Data-UID-Type"] == "<class 'uuid.UUID'>"
     assert await response.json() == TEST_NESTED_OBJECT
+
+
+@pytest.mark.parametrize(
+    "schema_path, loader",
+    (
+        (OPENAPI_JSON_PATH, custom_json_loader),
+        (OPENAPI_YAML_PATH, custom_yaml_loader),
+    ),
+)
+async def test_setup_openapi_schema_and_spec(
+    aiohttp_client, schema_path, loader
+):
+    schema = loader(schema_path.read_bytes())
+    spec = create_spec(schema)
+
+    app = setup_openapi(
+        web.Application(),
+        operations,
+        schema=schema,
+        spec=spec,
+        server_url="/api/",
+    )
+
+    client = await aiohttp_client(app)
+    response = await client.get("/api/hello")
+    assert response.status == 200
+    assert await response.json() == {
+        "message": "Hello, world!",
+        "email": "world@example.com",
+    }
+
+
+@pytest.mark.parametrize(
+    "schema_path, loader",
+    (
+        (OPENAPI_JSON_PATH, custom_json_loader),
+        (OPENAPI_YAML_PATH, custom_yaml_loader),
+    ),
+)
+async def test_setup_openapi_schema_and_path_ignore_invalid_schema_path(
+    aiohttp_client, schema_path, loader
+):
+    schema = loader(schema_path.read_bytes())
+    spec = create_spec(schema)
+
+    setup_openapi(
+        web.Application(),
+        INVALID_OPENAPI_JSON_PATH,
+        operations,
+        schema=schema,
+        spec=spec,
+        server_url="/api/",
+    )
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
