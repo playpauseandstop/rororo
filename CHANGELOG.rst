@@ -1,26 +1,26 @@
 2.0.0 (In Development)
 ======================
 
-2.0.0rc3 (In Development)
--------------------------
+2.0.0rc3 (2020-06-15)
+---------------------
 
-Fix:
-~~~~
+**Features:**
 
-- Handle all errors on loading OpenAPI schema from files & creating OpenAPI
-  spec, not only ``OpenAPIValidationError`` ones
+- Allow passing `schema` and `spec` keyword args to `setup_openapi` (#84)
 
-Docs:
-~~~~~
+**Fixes:**
 
-- Include new *rororo* slogan (aiohttp.web OpenAPI 3 schema first applications)
-  into the docs
+- Handle all errors on creating OpenAPI spec from schema (#74)
+- Allow nullable arrays & objects in request/response data (#85)
 
-Build:
-~~~~~~
+**Other:**
 
-- Do not include ``CHANGELOG.rst`` file in sdist and wheel
-- Use Python 3.8.3 as base version for development
+- Cast return values instead of type ignore comments
+- Do not include changelog into dist (#72)
+- Update docs with new rororo slogan (#76)
+- Create GitHub release at pushing git tag (#78)
+- Bump pre-commit hooks
+- Preserve multiline strings in release body (#78)
 
 2.0.0rc2 (2020-05-15)
 ---------------------
