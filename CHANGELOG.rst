@@ -6,40 +6,44 @@
 
 **Features:**
 
-- Allow passing `schema` and `spec` keyword args to `setup_openapi` (#84)
+- Allow passing ``schema`` and ``spec`` keyword args to ``setup_openapi``
+  (`#84 <https://github.com/playpauseandstop/rororo/issues/84>`_)
 
 **Fixes:**
 
-- Handle all errors on creating OpenAPI spec from schema (#74)
-- Allow nullable arrays & objects in request/response data (#85)
+- Handle all errors on creating OpenAPI spec from schema
+  (`#74 <https://github.com/playpauseandstop/rororo/issues/74>`_)
+- Allow nullable arrays & objects in request/response data
+  (`#85 <https://github.com/playpauseandstop/rororo/issues/85>`_)
 
 **Other:**
 
 - Cast return values instead of type ignore comments
-- Do not include changelog into dist (#72)
-- Update docs with new rororo slogan (#76)
-- Create GitHub release at pushing git tag (#78)
+- Do not include changelog into dist
+  (`#72 <https://github.com/playpauseandstop/rororo/issues/72>`_)
+- Update docs with new rororo slogan
+  (`#76 <https://github.com/playpauseandstop/rororo/issues/76>`_)
+- Create GitHub release at pushing git tag
+  (`#78 <https://github.com/playpauseandstop/rororo/issues/78>`_)
 - Bump pre-commit hooks
-- Preserve multiline strings in release body (#78)
+- Preserve multiline strings in release body
+  (`#78 <https://github.com/playpauseandstop/rororo/issues/78>`_)
 
 2.0.0rc2 (2020-05-15)
 ---------------------
 
-Fix:
-~~~~
+**Fixes:**
 
 - When possible pass request body as string to ``OpenAPIRequest``, not as bytes
 
-Style:
-~~~~~~
+**Other:**
 
 - Update pre-commit hooks, integrate ``flake8-variable-names`` check
 
 2.0.0rc1 (2020-05-04)
 ---------------------
 
-Performance:
-~~~~~~~~~~~~
+**Performance:**
 
 - Use ``yaml.CSafeLoader`` instead of ``yaml.SafeLoader`` when possible. Allow
   to supply schema loader function to use custom loader, for example
@@ -48,22 +52,19 @@ Performance:
   OpenAPI schema when it is requested in YAML format
 - Allow to cache create schema and spec call, usable for speeding up tests
 
-Docs:
-~~~~~
+**Other:**
 
 - Use ``sphinx-autobuild`` for building docs at local env
 
 2.0.0rc0 (2020-04-27)
 ---------------------
 
-Breaking Changes:
-~~~~~~~~~~~~~~~~~
+**Breaking Changes:**
 
 - Use `environ-config <https://pypi.org/project/environ-config/>`_ for settings
   needs, instead of providing extra sugar to `attrs <https://www.attrs.org>`_
 
-Features:
-~~~~~~~~~
+**Features:**
 
 - Upgrade to latest ``openapi-core==0.13.3``
 - Support class based views
@@ -81,14 +82,9 @@ Features:
 - Ensure TZ aware date times works as expected
 - Ensure support of optional security schemes
 
-Chores:
-~~~~~~~
+**Other:**
 
 - Provide ``Todo-Backend`` example to illustrate how to use class based views
-
-Build, CI & Style updates:
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 - Update pre-commit hooks, integrate ``blacken-docs`` & ``commitizen``
   pre-commit hooks
 - Speed up CI exec time, by not waiting on build to start test job
@@ -97,64 +93,93 @@ Build, CI & Style updates:
 2.0.0b3 (2020-01-27)
 --------------------
 
-- feature: Provide human readable security, request & response validation
+**Features:**
+
+- Provide human readable security, request & response validation
   errors
-- feature: Support free form objects in request body
-- feature: Allow to enable CORS / error middleware on setting up OpenAPI
-  support for ``aiohttp.web`` application
-- feature: Provide ``BaseSettings`` and ``env_factory`` helpers to work with
-  settings within ``aiohttp.web`` applications. Cover how to work with settings
-  at docs as well
-- chore: Stricter ``mypy`` config to ensure ``@operations.register`` is a typed
+- Support free form objects in request body
+- Allow to enable CORS / error middleware on setting up OpenAPI support for
+  ``aiohttp.web`` application
+- Provide ``BaseSettings`` and ``env_factory`` helpers to work with settings
+  within ``aiohttp.web`` applications. Cover how to work with settings at docs
+  as well
+
+**Other:**
+
+- Stricter ``mypy`` config to ensure ``@operations.register`` is a typed
   decorator
 
 2.0.0b2 (2019-12-19)
 --------------------
 
-- chore: ``setup_openapi`` function returns ``web.Applicaiton`` instead of None
-- chore: Provide ``ACCESS_LOG_FORMAT`` for ``aiohttp`` applications
+**Other:**
+
+- ``setup_openapi`` function returns ``web.Applicaiton`` instead of ``None``
+- Provide ``ACCESS_LOG_FORMAT`` for ``aiohttp`` applications
 
 2.0.0b1 (2019-11-20)
 --------------------
 
-- fix: Fix type annotation for ``add_resource_context`` context manager
+**Fixes:**
+
+- Fix type annotation for ``add_resource_context`` context manager
 
 2.0.0b0 (2019-11-15)
 --------------------
 
-- feature: Ensure Python 3.8 support. Move ``2.0.0`` release to beta phase
+**Features:**
+
+- Ensure Python 3.8 support. Move ``2.0.0`` release to beta phase
 
 2.0.0a4 (2019-10-22)
 --------------------
 
-- feature: Parse API Key & HTTP security data for OpenAPI operation
-- chore: Cover ``rororo.openapi`` with non-machine docs
-- chore: Provide another example on using OpenAPI schema inside aiohttp web
-  application
-- feature: Allow to remove root handlers on setting up logging config
+**Features:**
+
+- Parse API Key & HTTP security data for OpenAPI operation
+- Allow to remove root handlers on setting up logging config
+
+**Other:**
+
+- Cover ``rororo.openapi`` with non-machine docs
+- Provide another example on using OpenAPI schema inside aiohttp.web application
 
 2.0.0a3 (2019-10-09)
 --------------------
 
-- feature: Support `type: array` request bodies as well
-- feature: Allow to validate responses against OpenAPI schema
-- chore: Do not directly depend on ``jsonschema``
+**Features:**
+
+- Support ``type: array`` request bodies as well
+- Allow to validate responses against OpenAPI schema
+
+**Other:**
+
+- Do not directly depend on ``jsonschema``
 
 2.0.0a2 (2019-10-08)
 --------------------
 
-- fix: Depend on ``aiohttp>=3.5,<4.0``
+**Fixes:**
+
+- Depend on ``aiohttp>=3.5,<4.0``
 
 2.0.0a1 (2019-10-08)
 --------------------
 
-- feature: Add ``rororo.get_openapi_context`` shortcut
-- chore: Update API docs for ``rororo.openapi`` public functions & classes
+**Features:**
+
+- Add ``rororo.get_openapi_context`` shortcut
+
+**Other:**
+
+- Update API docs for ``rororo.openapi`` public functions & classes
 
 2.0.0a0 (2019-10-08)
 --------------------
 
-- **feature: Complete library rewrite**
+**Breaking Changes:**
+
+- Complete library rewrite
 
   - Instead of targeting any Python web framework, make ``rororo`` support only
     ``aiohttp.web`` applications
