@@ -11,4 +11,4 @@ Usage
 
     make EXAMPLE=hobotnica example
 
-**IMPORTANT:** To run from ``rororo`` root directory.
+**IMPORTANT:** To run from *rororo* root directory.

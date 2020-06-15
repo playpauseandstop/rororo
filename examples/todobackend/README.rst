@@ -3,7 +3,7 @@ Todo-Backend
 ============
 
 `Todo-Backend <http://todobackend.com>`_ implementation built on top of
-``rororo``, which highlights class based views usage.
+*rororo*, which highlights class based views usage.
 
 Requirements
 ============
@@ -17,7 +17,7 @@ Usage
 
     make EXAMPLE=todobackend example
 
-**IMPORTANT:** To run from ``rororo`` root directory.
+**IMPORTANT:** To run from *rororo* root directory.
 
 After, feel free to run Todo-Backend tests by opening
 http://www.todobackend.com/specs/index.html?http://localhost:8080/todos/ in

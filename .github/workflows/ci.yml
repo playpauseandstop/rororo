@@ -100,6 +100,7 @@ jobs:
         run: |
           poetry run python -m openapi_spec_validator examples/hobotnica/openapi.yaml
           poetry run python -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
+          poetry run python -m openapi_spec_validator examples/simulations/openapi.yaml
           poetry run python -m openapi_spec_validator examples/todobackend/openapi.yaml
           poetry run python -m openapi_spec_validator tests/openapi.json
           poetry run python -m openapi_spec_validator tests/openapi.yaml

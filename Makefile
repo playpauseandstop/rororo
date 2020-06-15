@@ -67,6 +67,7 @@ test-only:
 validate: install
 	$(PYTHON) -m openapi_spec_validator examples/hobotnica/openapi.yaml
 	$(PYTHON) -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
+	$(PYTHON) -m openapi_spec_validator examples/simulations/openapi.yaml
 	$(PYTHON) -m openapi_spec_validator examples/todobackend/openapi.yaml
 	$(PYTHON) -m openapi_spec_validator tests/openapi.json
 	$(PYTHON) -m openapi_spec_validator tests/openapi.yaml

@@ -1,0 +1,65 @@
+openapi: "3.0.3"
+
+info:
+  title: "Simulations Example"
+  version: "1.0.0"
+
+servers:
+  - url: "/"
+
+paths:
+  "/simulations":
+    post:
+      operationId: "create_simulation"
+      summary: "Create new simulation"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Simulation"
+      responses:
+        "201":
+          description: "Simulation details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Simulation"
+
+    get:
+      operationId: "list_simulations"
+      summary: "List all available simulations"
+      responses:
+        "200":
+          description: "Simulations list"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Simulation"
+                nullable: true
+
+components:
+  schemas:
+     Simulation:
+      type: "object"
+      properties:
+        simulation_id:
+          type: "string"
+        encoded_payload_file_id:
+          type: "string"
+          nullable: true
+        reconstructed_payload_file_id:
+          type: "string"
+          nullable: true
+        dataset_id:
+          type: "string"
+        model_id:
+          type: "string"
+        simulation_metrics:
+          type: "object"
+          nullable: true
+        batch_size:
+          type: "integer"
+          nullable: true
+      required: ["simulation_id", "dataset_id", "model_id"]

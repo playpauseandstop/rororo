@@ -1,6 +1,6 @@
 from collections import deque
 from functools import partial
-from typing import Any, Dict, Iterator, List, Tuple
+from typing import Any, cast, Dict, Iterator, List, Optional, Tuple
 
 import pyrsistent
 from email_validator import EmailNotValidError, validate_email
@@ -12,7 +12,8 @@ from openapi_core.exceptions import OpenAPIError as CoreOpenAPIError
 from openapi_core.schema.operations.models import Operation
 from openapi_core.schema.parameters.models import Parameter
 from openapi_core.schema.paths.models import Path
-from openapi_core.schema.schemas.enums import SchemaFormat
+from openapi_core.schema.schemas.enums import SchemaFormat, SchemaType
+from openapi_core.schema.schemas.types import NoValue
 from openapi_core.schema.servers.models import Server
 from openapi_core.schema.specs.models import Spec
 from openapi_core.templating.datatypes import TemplateResult
@@ -28,6 +29,10 @@ from openapi_core.unmarshalling.schemas.factories import (
     SchemaUnmarshallersFactory as CoreSchemaUnmarshallersFactory,
 )
 from openapi_core.unmarshalling.schemas.formatters import Formatter
+from openapi_core.unmarshalling.schemas.unmarshallers import (
+    ArrayUnmarshaller as CoreArrayUnmarshaller,
+    ObjectUnmarshaller as CoreObjectUnmarshaller,
+)
 from openapi_core.validation.request.datatypes import (
     OpenAPIRequest,
     RequestParameters,
@@ -57,6 +62,19 @@ DATE_TIME_FORMATTER = Formatter.from_callables(
 PathTuple = Tuple[Path, Operation, Server, TemplateResult, TemplateResult]
 
 
+class ArrayUnmarshaller(CoreArrayUnmarshaller):
+    """Custom array unmarshaller to support nullable arrays.
+
+    To be removed after ``openapi-core`` fixed an issue of supporting nullable
+    arrays: https://github.com/p1c2u/openapi-core/issues/251
+    """
+
+    def __call__(self, value: Any = NoValue) -> Optional[List[Any]]:
+        if value is None and self.schema.nullable:
+            return None
+        return cast(List[Any], super().__call__(value))
+
+
 class EmailFormatter(Formatter):
     """Formatter to support email strings.
 
@@ -70,6 +88,19 @@ class EmailFormatter(Formatter):
         except EmailNotValidError as err:
             raise FormatError(f"{value!r} is not an 'email'", cause=err)
         return True
+
+
+class ObjectUnmarshaller(CoreObjectUnmarshaller):
+    """Custom object unmarshaller to support nullable objects.
+
+    To be removed after ``openapi-core`` fixed an issue of` supporting nullable
+    objects: https://github.com/p1c2u/openapi-core/issues/232
+    """
+
+    def __call__(self, value: Any = NoValue) -> Optional[Dict[Any, Any]]:
+        if value is None and self.schema.nullable:
+            return None
+        return cast(Dict[Any, Any], super().__call__(value))
 
 
 class PathFinder(CorePathFinder):
@@ -118,6 +149,12 @@ class SchemaUnmarshallersFactory(CoreSchemaUnmarshallersFactory):
     Temporary fix to https://github.com/p1c2u/openapi-core/issues/235, to be
     removed from *rororo* after next ``openapi-core`` release.
     """
+
+    COMPLEX_UNMARSHALLERS = {
+        **CoreSchemaUnmarshallersFactory.COMPLEX_UNMARSHALLERS,
+        SchemaType.ARRAY: ArrayUnmarshaller,
+        SchemaType.OBJECT: ObjectUnmarshaller,
+    }
 
     def get_formatter(
         self,

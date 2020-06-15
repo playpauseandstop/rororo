@@ -13,4 +13,4 @@ Usage
 
     make EXAMPLE=petstore example
 
-**IMPORTANT:** To run from ``rororo`` root directory.
+**IMPORTANT:** To run from *rororo* root directory.
