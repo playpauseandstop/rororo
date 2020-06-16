@@ -46,8 +46,7 @@ else
 endif
 
 install: .install
-.install: pyproject.toml poetry.lock
-	$(POETRY) config --local virtualenvs.in-project true
+.install: pyproject.toml poetry.toml poetry.lock
 	$(POETRY) install
 	touch $@
 
@@ -58,6 +57,10 @@ lint-only:
 
 list-outdated: install
 	$(POETRY) show -o
+
+poetry.toml:
+	$(POETRY) config --local virtualenvs.create true
+	$(POETRY) config --local virtualenvs.in-project true
 
 test: install clean lint validate test-only
 

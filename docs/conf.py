@@ -31,6 +31,7 @@ PROJECT = "rororo"
 INIT_PY = (rel / PROJECT / "__init__.py").read_text()
 AUTHOR = re.findall('__author__ = "([^"]+)"', INIT_PY)[0]
 VERSION = re.findall('__version__ = "([^"]+)"', INIT_PY)[0]
+TODAY = datetime.date.today()
 
 
 extensions = [
@@ -48,7 +49,7 @@ master_doc = "index"
 
 project = PROJECT
 author = AUTHOR
-copyright = "2017-{0}, {1}".format(datetime.date.today().year, AUTHOR)
+copyright = f"2017-{TODAY.year}, {AUTHOR}"
 
 version = ".".join(VERSION.split(".")[:2])
 release = VERSION
