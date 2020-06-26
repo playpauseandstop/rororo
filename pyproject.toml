@@ -15,12 +15,12 @@ show_missing = true
 
 [tool.poetry]
 name = "rororo"
-version = "2.0.0rc3"
-description = "OpenAPI 3 schema support for aiohttp.web applications."
+version = "2.0.0"
+description = "aiohttp.web OpenAPI 3 schema first server applications."
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
 readme = "README.rst"
-homepage = "https://igordavydenko.com/projects.html#rororo"
+homepage = "https://igordavydenko.com/projects/#rororo"
 repository = "https://github.com/playpauseandstop/rororo"
 documentation = "https://rororo.readthedocs.io/"
 keywords = ["aiohttp", "aiohttp.web", "oas", "openapi", "openapi3", "helpers", "utilities"]

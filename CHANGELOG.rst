@@ -2,8 +2,53 @@
 Changelog
 =========
 
-2.0.0 (In Development)
-======================
+2.0.0 (2020-06-29)
+==================
+
+Final **2.0.0** release, which completes reimplementing *rororo* as library
+for implementing aiohttp.web OpenAPI 3 server applications with schema first
+approach.
+
+**Quickstart:**
+
+*rororo* relies on valid OpenAPI 3 schema (both JSON & YAML formats supported).
+Example below illustrates using ``openapi.yaml`` schema file, stored next to
+``app`` module,
+
+.. code-block:: python
+
+    from pathlib import Path
+    from typing import List
+
+    from aiohttp import web
+    from rororo import setup_openapi
+
+    from .views import operations
+
+
+    def create_app(argv: List[str] = None) -> web.Application:
+        return setup_openapi(
+            web.Application(),
+            Path(__file__).parent / "openapi.yaml",
+            operations,
+        )
+
+Then, you need to *register* operation handlers in ``views`` module. Example
+below shows registering handler for *operationId* ``hello_world``,
+
+.. code-block:: python
+
+    from aiohttp import web
+    from rororo import OperationTableDef
+
+
+    @operations.register
+    async def hello_world(request: web.Request) -> web.Response:
+        return web.json_response({"data": "Hello, world!"})
+
+`Documentation <https://rororo.readthedocs.io/en/latest/openapi.html>`_
+provides more information on implementing aiohttp.web OpenAPI 3 server
+applications with schema first approach using *rororo*.
 
 2.0.0rc3 (2020-06-15)
 ---------------------

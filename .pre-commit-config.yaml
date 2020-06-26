@@ -72,7 +72,5 @@ repos:
       - id: "mypy"
         name: "Lint code (mypy)"
         language_version: "python3.8"
-        args: [
-          "--python-executable=.venv/bin/python"
-        ]
+        args: ["--python-executable=.venv/bin/python3"]
         exclude: ^docs/.*$
