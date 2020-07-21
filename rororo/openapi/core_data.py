@@ -118,9 +118,16 @@ def to_core_openapi_response_data(
 
 
 def to_core_request_parameters(request: web.Request) -> RequestParameters:
+    header_attr = [
+        item
+        for item in RequestParameters.__attrs_attrs__
+        if item.name == "header"
+    ][0]
+    is_dict_factory = header_attr.default.factory == dict
+
     return RequestParameters(
         query=request.rel_url.query,
-        header=request.headers,
+        header=request.headers if is_dict_factory else request.headers.items(),
         cookie=request.cookies,
         path=request.match_info,
     )

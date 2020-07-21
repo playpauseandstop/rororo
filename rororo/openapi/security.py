@@ -19,6 +19,15 @@ from ..annotations import MappingStrAny
 AUTHORIZATION_HEADER = hdrs.AUTHORIZATION
 
 
+def basic_auth_factory(value: str) -> BasicAuth:
+    # Workaround for ``openapi-core==0.13.3``
+    if ":" in value:
+        return BasicAuth(*(item.strip() for item in value.split(":", 1)))
+    # In ``openapi-core==0.13.4`` parsing security schemas changed, now the
+    # value for basic auth is base64 encoded string
+    return BasicAuth.decode(f"Basic {value}")
+
+
 def get_jwt_security_data(request: OpenAPIRequest) -> Optional[str]:
     """Get JWT bearer security data.
 
@@ -59,7 +68,7 @@ def get_security_data(
         return None
 
     if is_basic_auth_security_scheme(validator, scheme_name):
-        return BasicAuth(*(item.strip() for item in value.split(":", 1)))
+        return basic_auth_factory(value)
     return value
 
 

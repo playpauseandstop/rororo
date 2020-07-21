@@ -2,6 +2,13 @@
 Changelog
 =========
 
+2.0.1 (In Development)
+======================
+
+**Features:**
+
+- Ensure *rororo* to work properly with ``openapi-core==0.13.4``
+
 2.0.0 (2020-06-29)
 ==================
 
