@@ -1,6 +1,8 @@
 aiohttp
 aiohttp-middlewares
 attrs
+email_validator
+environ-config
 openapi-core
 PyYAML
 Sphinx==3.0.4
