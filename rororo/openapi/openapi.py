@@ -322,6 +322,19 @@ def get_route_prefix(mixed: Url) -> str:
 def read_openapi_schema(
     path: Path, *, loader: SchemaLoader = None
 ) -> DictStrAny:
+    """Read OpenAPI Schema from given path.
+
+    By default, when ``loader`` is not explicitly passed, attempt to guess
+    schema loader function from path extension.
+
+    ``loader`` should be a callable, which receives ``bytes`` and returns
+    ``Dict[str, Any]`` of OpenAPI Schema.
+
+    By default, next schema loader used,
+
+    - :func:`json.loads` for ``openapi.json``
+    - ``yaml.load`` for ``openapi.yaml``
+    """
     if loader is None:
         if path.suffix == ".json":
             loader = json.loads

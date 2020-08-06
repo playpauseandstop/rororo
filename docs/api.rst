@@ -20,6 +20,11 @@ OpenAPI
 
 .. autofunction:: rororo.openapi.openapi.read_openapi_schema
 
+rororo.openapi.exceptions
+-------------------------
+
+.. autoclass:: rororo.openapi.exceptions.ValidationError
+
 Settings
 ========
 
