@@ -2,6 +2,19 @@
 Changelog
 =========
 
+2.0.2 (2020-09-04)
+==================
+
+**Features:**
+
+- Depend on ``attrs>=19.1,<21`` to allow use ``attrs==20.1.0`` in dependent
+  projects
+
+**Other:**
+
+- Massive infrastrucutre update: move code to ``src/`` directory, use latest
+  ``pytest`` for tests, better ``Makefile`` targets, etc
+
 2.0.1 (2020-07-21)
 ==================
 
