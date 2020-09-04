@@ -24,7 +24,9 @@ async def default_error_handler(request: web.Request) -> web.Response:
             logger.error(context.message, exc_info=True)
 
         return web.json_response(
-            context.data, status=context.status, headers=headers,
+            context.data,
+            status=context.status,
+            headers=headers,
         )
 
 

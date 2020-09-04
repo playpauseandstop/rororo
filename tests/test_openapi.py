@@ -300,7 +300,10 @@ async def test_create_post_422(
     aiohttp_client, schema_path, invalid_data, expected_detail
 ):
     app = setup_openapi(
-        web.Application(), schema_path, operations, server_url=URL("/dev-api"),
+        web.Application(),
+        schema_path,
+        operations,
+        server_url=URL("/dev-api"),
     )
 
     client = await aiohttp_client(app)

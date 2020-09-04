@@ -53,7 +53,10 @@ async def test_custom_default_error_handler(aiohttp_client, schema_path):
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_default_error_handler(aiohttp_client, schema_path):
     app = setup_openapi(
-        web.Application(), schema_path, operations, server_url="/api/",
+        web.Application(),
+        schema_path,
+        operations,
+        server_url="/api/",
     )
     client = await aiohttp_client(app)
 

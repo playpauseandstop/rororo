@@ -16,6 +16,10 @@ indent_size = 2
 [*.{elm,nginx,py,rst,sh}]
 indent_size = 4
 
-[Makefile]
+[*Makefile*]
+indent_style = tab
+tab_width = 4
+
+[*.mk]
 indent_style = tab
 tab_width = 4

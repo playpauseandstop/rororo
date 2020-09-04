@@ -24,11 +24,12 @@ import sys
 from pathlib import Path
 
 
-rel = Path(__file__).parent.parent
-sys.path.insert(0, str(rel))
+ROOT_PATH = Path(__file__).parent.parent
+SRC_PATH = ROOT_PATH / "src"
+sys.path.insert(0, str(SRC_PATH))
 
 PROJECT = "rororo"
-INIT_PY = (rel / PROJECT / "__init__.py").read_text()
+INIT_PY = (SRC_PATH / PROJECT / "__init__.py").read_text()
 AUTHOR = re.findall('__author__ = "([^"]+)"', INIT_PY)[0]
 VERSION = re.findall('__version__ = "([^"]+)"', INIT_PY)[0]
 TODAY = datetime.date.today()
@@ -100,7 +101,7 @@ texinfo_documents = [
 
 intersphinx_mapping = {
     "https://docs.python.org/3/": None,
-    "https://aiohttp.readthedocs.io/en/stable/": None,
+    "https://docs.aiohttp.org/en/stable/": None,
     "https://aiohttp-middlewares.readthedocs.io/en/stable/": None,
     "https://pyrsistent.readthedocs.io/en/stable/": None,
 }

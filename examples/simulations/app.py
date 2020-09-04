@@ -21,7 +21,10 @@ def create_app(argv: List[str] = None) -> web.Application:
     app["storage"] = copy.deepcopy(DEFAULT_STORAGE)
 
     return setup_openapi(
-        app, operations, schema=schema, spec=create_spec(schema),
+        app,
+        operations,
+        schema=schema,
+        spec=create_spec(schema),
     )
 
 

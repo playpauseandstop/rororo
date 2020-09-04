@@ -249,9 +249,10 @@ def convert_operations_to_routes(
         core_operation = get_core_operation(spec, first_operation_id)
 
         path = add_prefix(core_operation.path_name, prefix)
-        routes.view(path, name=get_route_name(core_operation.operation_id),)(
-            view
-        )
+        routes.view(
+            path,
+            name=get_route_name(core_operation.operation_id),
+        )(view)
 
         # Hacky way of adding aliases to class based views with multiple
         # registered view methods

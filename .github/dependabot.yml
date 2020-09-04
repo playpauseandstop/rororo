@@ -1,0 +1,16 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "03:00"
+  open-pull-requests-limit: 10
+  reviewers:
+  - playpauseandstop
+  assignees:
+  - playpauseandstop
+  labels:
+  - build
+  allow:
+  - dependency-type: direct

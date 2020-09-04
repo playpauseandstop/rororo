@@ -179,7 +179,10 @@ class ValidationError(OpenAPIError):
     status = 422
 
     def __init__(
-        self, *, message: str = None, errors: List[ValidationErrorItem] = None,
+        self,
+        *,
+        message: str = None,
+        errors: List[ValidationErrorItem] = None,
     ) -> None:
         super().__init__(message or self.default_message)
 
@@ -319,7 +322,8 @@ def get_media_type_error_details(
 
 
 def get_parameter_error_details(
-    loc: List[PathItem], err: OpenAPIParameterError,
+    loc: List[PathItem],
+    err: OpenAPIParameterError,
 ) -> ValidationErrorItem:
     parameter_name: str = getattr(err, "name", None)
     if parameter_name is None:

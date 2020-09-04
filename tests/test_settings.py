@@ -256,10 +256,10 @@ def test_setup_logging():
     setup_logging(default_logging_dict("rororo"))
 
 
-@pytest.mark.parametrize("remove, expected", ((False, 1), (True, 0)))
+@pytest.mark.parametrize("remove, expected", ((False, 2), (True, 0)))
 def test_setup_logging_remove_root_handlers(remove, expected):
     logging.basicConfig(level="INFO")
-    assert len(logging.root.handlers) == 1
+    assert len(logging.root.handlers) == 2
 
     setup_logging(default_logging_dict("rororo"), remove_root_handlers=remove)
     assert len(logging.root.handlers) == expected
