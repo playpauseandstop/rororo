@@ -6,7 +6,8 @@ repos:
     rev: "v2.4.1"
     hooks:
       - id: "commitizen"
-        # By default commitizen using `python3` instead of concrete version
+        # By default commitizen using `python3` instead `python` language, so
+        # needed to provide concrete version here as well
         language_version: "python3.9"
         stages: ["commit-msg"]
 
@@ -14,7 +15,8 @@ repos:
     rev: "20.8b1"
     hooks:
       - id: "black"
-        # By default black using `python3` instead of concrete version
+        # By default black using `python3` instead `python` language, so
+        # needed to provide concrete version here as well
         language_version: "python3.9"
         name: "Format code (black)"
         exclude: ^docs/.*$
