@@ -13,10 +13,10 @@ on:
 
 env:
   COVERALLS_VERSION: "2.1.2"
-  DEV_PYTHON_VERSION: "3.8"
-  POETRY_VERSION: "1.0.10"
+  DEV_PYTHON_VERSION: "3.9"
+  POETRY_VERSION: "1.1.3"
   TOX_GH_ACTIONS_VERSION: "1.3.0"
-  TOX_VERSION: "3.20.0"
+  TOX_VERSION: "3.20.1"
   TWINE_VERSION: "3.2.0"
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8"]
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
 
     runs-on: "ubuntu-latest"
 
@@ -65,10 +65,10 @@ jobs:
         options: "--entrypoint redis-server"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.1.2"
+        uses: "actions/setup-python@v2.1.4"
         with:
           python-version: "${{ matrix.python-version }}"
 
@@ -109,7 +109,7 @@ jobs:
       - name: "Run tests with attrs 19.3.0 & openapi-core 0.13.3"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
         env:
-          TOXENV: "py38-prev"
+          TOXENV: "py39-prev"
           PYTEST_ADDOPTS: "--no-cov"
           REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         run: "python -m tox"
@@ -129,10 +129,10 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.1.2"
+        uses: "actions/setup-python@v2.1.4"
         with:
           python-version: "${{ env.DEV_PYTHON_VERSION }}"
 
@@ -151,7 +151,7 @@ jobs:
 
       - name: "Publish package"
         if: "github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')"
-        uses: "pypa/gh-action-pypi-publish@v1.3.1"
+        uses: "pypa/gh-action-pypi-publish@v1.4.1"
         with:
           user: "${{ secrets.PYPI_USERNAME }}"
           password: "${{ secrets.PYPI_PASSWORD }}"
@@ -162,7 +162,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Fetch git data"
         run: |
@@ -196,7 +196,7 @@ jobs:
           echo "::set-output name=prerelease::${prerelease}"
 
       - name: "Create new release"
-        uses: "actions/create-release@v1.1.3"
+        uses: "actions/create-release@v1.1.4"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
