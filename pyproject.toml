@@ -15,7 +15,7 @@ show_missing = true
 
 [tool.poetry]
 name = "rororo"
-version = "2.1.0"
+version = "2.1.0a0"
 description = "aiohttp.web OpenAPI 3 schema first server applications."
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
@@ -109,7 +109,7 @@ commands_pre =
 commands =
   poetry run python -m pytest
 
-[testenv:py38-prev]
+[testenv:py39-prev]
 commands_pre =
   poetry install
   poetry run python -m pip install attrs==19.3.0 openapi-core==0.13.3
