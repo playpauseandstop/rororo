@@ -12,15 +12,55 @@ on:
     branches: ["master"]
 
 env:
+  COMMITIZEN_VERSION: "2.4.1"
   COVERALLS_VERSION: "2.1.2"
-  DEV_PYTHON_VERSION: "3.8"
-  POETRY_VERSION: "1.0.10"
+  DEV_PYTHON_VERSION: "3.9"
+  POETRY_VERSION: "1.1.3"
   TOX_GH_ACTIONS_VERSION: "1.3.0"
-  TOX_VERSION: "3.20.0"
+  TOX_VERSION: "3.20.1"
   TWINE_VERSION: "3.2.0"
 
 jobs:
+  commitizen:
+    name: "Check commit message"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v2.3.3"
+
+      - name: "Fetch ${{ github.base_ref }}"
+        if: "github.event_name == 'pull_request'"
+        run: |
+          set -e
+          git fetch --depth=1 origin +refs/heads/${{ github.base_ref }}:refs/heads/${{ github.base_ref }}
+          git fetch --prune --unshallow
+
+      - name: "Install Python"
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: "actions/setup-python@v2.1.4"
+        with:
+          python-version: "${{ env.DEV_PYTHON_VERSION }}"
+
+      - name: "Install commitizen"
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        run: "pip install commitizen==${{ env.COMMITIZEN_VERSION }}"
+
+      - name: "Check pull request commit messages"
+        if: "github.event_name == 'pull_request'"
+        run: |
+          set -e
+          for commit in $(git log --pretty=%H ${{ github.base_ref }}..HEAD); do
+            echo "Checking commit: ${commit}"
+            cz check -m "$(git log -1 --pretty=%B ${commit})"
+          done
+
+      - name: "Check last commit message"
+        if: "github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/')"
+        run: 'cz check -m "$(git log -1 --pretty=%B)"'
+
   dev:
+    needs: ["commitizen"]
     name: "Verify package is installed well"
 
     strategy:
@@ -30,10 +70,10 @@ jobs:
     runs-on: "${{ matrix.os }}"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.1.2"
+        uses: "actions/setup-python@v2.1.4"
         with:
           python-version: "${{ env.DEV_PYTHON_VERSION }}"
 
@@ -49,11 +89,12 @@ jobs:
         run: "poetry run python -c 'import rororo'"
 
   test:
+    needs: ["commitizen"]
     name: "Python ${{ matrix.python-version }}"
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8"]
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
 
     runs-on: "ubuntu-latest"
 
@@ -65,10 +106,10 @@ jobs:
         options: "--entrypoint redis-server"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.1.2"
+        uses: "actions/setup-python@v2.1.4"
         with:
           python-version: "${{ matrix.python-version }}"
 
@@ -109,7 +150,7 @@ jobs:
       - name: "Run tests with attrs 19.3.0 & openapi-core 0.13.3"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
         env:
-          TOXENV: "py38-prev"
+          TOXENV: "py39-prev"
           PYTEST_ADDOPTS: "--no-cov"
           REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         run: "python -m tox"
@@ -123,16 +164,16 @@ jobs:
           python -m coveralls
 
   package:
-    needs: "test"
+    needs: ["test"]
     name: "Build & deploy package"
 
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.1.2"
+        uses: "actions/setup-python@v2.1.4"
         with:
           python-version: "${{ env.DEV_PYTHON_VERSION }}"
 
@@ -151,18 +192,20 @@ jobs:
 
       - name: "Publish package"
         if: "github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')"
-        uses: "pypa/gh-action-pypi-publish@v1.3.1"
+        uses: "pypa/gh-action-pypi-publish@v1.4.1"
         with:
           user: "${{ secrets.PYPI_USERNAME }}"
           password: "${{ secrets.PYPI_PASSWORD }}"
 
   release:
-    if: "startsWith(github.ref, 'refs/tags')"
-    needs: "package"
+    needs: ["package"]
+    if: "startsWith(github.ref, 'refs/tags/')"
+    name: "Create GitHub release"
+
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.2"
+      - uses: "actions/checkout@v2.3.3"
 
       - name: "Fetch git data"
         run: |
@@ -196,7 +239,7 @@ jobs:
           echo "::set-output name=prerelease::${prerelease}"
 
       - name: "Create new release"
-        uses: "actions/create-release@v1.1.3"
+        uses: "actions/create-release@v1.1.4"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:

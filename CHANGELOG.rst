@@ -2,12 +2,25 @@
 Changelog
 =========
 
+2.1.0 (In Development)
+======================
+
+**Features:**
+
+- Ensure Python 3.9 support
+- Require ``pyrsistent>=0.16,<0.18`` to allow use ``pyrsistent==0.17.3`` in
+  dependent projects
+
+**Other:**
+
+- Update dev dependencies
+
 2.0.2 (2020-09-04)
 ==================
 
 **Features:**
 
-- Depend on ``attrs>=19.1,<21`` to allow use ``attrs==20.1.0`` in dependent
+- Require ``attrs>=19.1,<21`` to allow use ``attrs==20.1.0`` in dependent
   projects
 
 **Other:**
