@@ -1,3 +1,18 @@
+2.1.0 (2020-10-25)
+==================
+
+**Features:**
+
+- Ensure Python 3.9 support (#109)
+
+**Other:**
+
+- (**deps**) bump attrs from 20.1.0 to 20.2.0 (#108)
+- (**deps-dev**) bump pytest from 6.0.1 to 6.1.0 (#107)
+- (**deps-dev**) bump coverage from 5.2.1 to 5.3 (#106)
+- (**deps**) bump pyrsistent from 0.16.0 to 0.17.3 (#105)
+- Integrate badabump for release needs (#110)
+
 2.0.2 (2020-09-04)
 ==================
 
