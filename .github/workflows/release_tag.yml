@@ -1,0 +1,53 @@
+defaults:
+  run:
+    shell: "bash"
+
+on:
+  pull_request:
+    types: ["closed"]
+
+env:
+  BADABUMP_VERSION: "20.1.0b0"
+  PYTHON_VERSION: "3.9.0"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  create_release_tag:
+    if: "startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true"
+    name: "Create release tag"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - id: "token"
+        uses: "tibdex/github-app-token@v1.1.0"
+        with:
+          app_id: "${{ secrets.BADABUMP_APP_ID }}"
+          private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
+
+      - uses: "actions/checkout@v2.3.3"
+        with:
+          ref: "master"
+          token: "${{ steps.token.outputs.token }}"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v2.1.4"
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: "Install badabump"
+        run: "python3 -m pip install badabump==${{ env.BADABUMP_VERSION }}"
+
+      - id: "badabump"
+        name: "Run badabump"
+        run: "python3 -m badabump.ci prepare_tag"
+
+      - name: "Create release tag from latest commit"
+        run: |
+          set -e
+
+          git config user.name badabump-release-bot[bot]
+          git config user.email badabump-release-bot[bot]@users.noreply.github.com
+
+          git tag -a ${{ steps.badabump.outputs.tag_name }} -m "${{ steps.badabump.outputs.tag_message }}"
+          git push --tag

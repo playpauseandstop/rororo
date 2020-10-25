@@ -1,20 +1,3 @@
-=========
-Changelog
-=========
-
-2.1.0 (In Development)
-======================
-
-**Features:**
-
-- Ensure Python 3.9 support
-- Require ``pyrsistent>=0.16,<0.18`` to allow use ``pyrsistent==0.17.3`` in
-  dependent projects
-
-**Other:**
-
-- Update dev dependencies
-
 2.0.2 (2020-09-04)
 ==================
 
