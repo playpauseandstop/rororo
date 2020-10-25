@@ -1,3 +1,12 @@
+[tool.badabump]
+version_type = "semver"
+version_files = [
+  "pyproject.toml",
+  "src/rororo/__init__.py",
+  "tests/openapi.json",
+  "tests/openapi.yaml"
+]
+
 [tool.black]
 line_length = 79
 
@@ -15,7 +24,7 @@ show_missing = true
 
 [tool.poetry]
 name = "rororo"
-version = "2.1.0a0"
+version = "2.0.2"
 description = "aiohttp.web OpenAPI 3 schema first server applications."
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"

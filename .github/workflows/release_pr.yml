@@ -1,0 +1,68 @@
+defaults:
+  run:
+    shell: "bash"
+
+on:
+  workflow_dispatch:
+    inputs:
+      args:
+        description: "Badabump arguments (pass `--pre` to start or keep pre-release cycle)"
+        required: false
+        default: ""
+
+env:
+  BADABUMP_VERSION: "20.1.0b0"
+  PYTHON_VERSION: "3.9.0"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  create_release_pr:
+    if: "github.actor == 'playpauseandstop'"
+    name: "Create release PR"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v2.3.3"
+        with:
+          ref: "master"
+
+      - name: "Fetch git tags"
+        run: |
+          set -e
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git fetch --prune --unshallow
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v2.1.4"
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: "Install badabump"
+        run: "python3 -m pip install badabump==${{ env.BADABUMP_VERSION }}"
+
+      - id: "badabump"
+        name: "Run badabump"
+        run: "python3 -m badabump --ci ${{ github.event.inputs.args }}"
+
+      - id: "token"
+        uses: "tibdex/github-app-token@v1.1.0"
+        with:
+          app_id: "${{ secrets.BADABUMP_APP_ID }}"
+          private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
+
+      - name: "Create pull request with changed files"
+        uses: "peter-evans/create-pull-request@v3.4.1"
+        with:
+          token: "${{ steps.token.outputs.token }}"
+          commit-message: |
+            ${{ steps.badabump.outputs.pr_title }}
+
+            ${{ steps.badabump.outputs.changelog }}
+          branch: "${{ steps.badabump.outputs.pr_branch }}"
+          delete-branch: true
+          title: "${{ steps.badabump.outputs.pr_title }}"
+          body: "${{ steps.badabump.outputs.changelog }}"
+          labels: "chore"
+          reviewers: "playpauseandstop"
+          assignees: "playpauseandstop"
