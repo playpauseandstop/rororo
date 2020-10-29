@@ -1,3 +1,14 @@
+2.1.1 (2020-10-29)
+==================
+
+**Fixes:**
+
+- (**openapi**) Proper handling of operations with empty security list (#115)
+
+**Other:**
+
+- Do not enforce commitizen check at CI (#113)
+
 2.1.0 (2020-10-25)
 ==================
 
