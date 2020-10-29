@@ -8,6 +8,7 @@ from openapi_core.shortcuts import create_spec
 from pyrsistent import thaw
 
 from rororo import get_validated_data, OperationTableDef, setup_openapi
+from rororo.openapi.openapi import get_default_yaml_loader
 from .storage import DEFAULT_STORAGE
 
 
@@ -15,7 +16,10 @@ operations = OperationTableDef()
 
 
 def create_app(argv: List[str] = None) -> web.Application:
-    schema = yaml.load((Path(__file__).parent / "openapi.yaml").read_bytes())
+    schema = yaml.load(
+        (Path(__file__).parent / "openapi.yaml").read_bytes(),
+        Loader=get_default_yaml_loader(),
+    )
 
     app = web.Application()
     app["storage"] = copy.deepcopy(DEFAULT_STORAGE)

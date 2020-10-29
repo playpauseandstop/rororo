@@ -312,6 +312,10 @@ def find_route_prefix(
     )
 
 
+def get_default_yaml_loader() -> SchemaLoader:
+    return cast(SchemaLoader, getattr(yaml, "CSafeLoader", yaml.SafeLoader))
+
+
 def get_route_name(operation_id: str) -> str:
     return operation_id.replace(" ", "-")
 
@@ -340,8 +344,7 @@ def read_openapi_schema(
         if path.suffix == ".json":
             loader = json.loads
         elif path.suffix in {".yml", ".yaml"}:
-            safe_loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
-            loader = partial(yaml.load, Loader=safe_loader)
+            loader = partial(yaml.load, Loader=get_default_yaml_loader())
 
     if loader is not None:
         return loader(path.read_bytes())

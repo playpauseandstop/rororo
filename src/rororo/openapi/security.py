@@ -1,4 +1,4 @@
-from typing import cast, Optional, Union
+from typing import cast, Dict, List, Optional, Union
 
 from aiohttp import BasicAuth, hdrs
 from openapi_core.schema.operations.models import Operation
@@ -17,6 +17,8 @@ from ..annotations import MappingStrAny
 
 
 AUTHORIZATION_HEADER = hdrs.AUTHORIZATION
+
+SecurityDict = Dict[str, List[str]]
 
 
 def basic_auth_factory(value: str) -> BasicAuth:
@@ -72,6 +74,14 @@ def get_security_data(
     return value
 
 
+def get_security_list(
+    validator: RequestValidator, operation: Operation
+) -> List[SecurityDict]:
+    if operation.security is not None:
+        return cast(List[SecurityDict], operation.security)
+    return cast(List[SecurityDict], validator.spec.security)
+
+
 def get_security_scheme(
     validator: RequestValidator, scheme_name: str
 ) -> Optional[SecurityScheme]:
@@ -117,7 +127,7 @@ def validate_security(
     their data in request. If some of security items is matched - return it
     as result, if not - raise `SecurityError`.
     """
-    security_list = operation.security or validator.spec.security
+    security_list = get_security_list(validator, operation)
     if not security_list:
         return pmap()
 
