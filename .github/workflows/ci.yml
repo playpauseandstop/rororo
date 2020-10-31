@@ -42,11 +42,17 @@ jobs:
       - name: "Install poetry"
         run: "python3 -m pip install poetry==${{ env.POETRY_VERSION }}"
 
+      - name: "Cache venv"
+        uses: "actions/cache@v2.1.2"
+        with:
+          path: ".venv"
+          key: "venv-${{ hashFiles('poetry.lock') }}"
+
       - name: "Install package"
         run: "poetry install --no-dev"
 
       - name: "Import package"
-        run: "poetry run python -c 'import rororo'"
+        run: "poetry run python3 -c 'import rororo'"
 
   test:
     name: "Python ${{ matrix.python-version }}"
@@ -75,15 +81,20 @@ jobs:
       - name: "Install poetry"
         run: "python3 -m pip install poetry==${{ env.POETRY_VERSION }}"
 
+      - name: "Install depencencies"
+        run: "sudo apt install -y locales-all"
+
+      - name: "Cache venv"
+        uses: "actions/cache@v2.1.2"
+        with:
+          path: ".venv"
+          key: "venv-${{ hashFiles('poetry.lock') }}"
+
       - name: "Install package"
         run: |
           set -e
           poetry install --no-dev
           python3 -m pip install tox==${{ env.TOX_VERSION }} tox-gh-actions==${{ env.TOX_GH_ACTIONS_VERSION }}
-
-      - name: "Install depencencies"
-        run: |
-          sudo apt install -y locales-all
 
       - name: "Run pre-commit"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
@@ -92,15 +103,17 @@ jobs:
       - name: "Validate OpenAPI schemas"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
         run: |
-          poetry run python3 -m openapi_spec_validator examples/hobotnica/openapi.yaml
-          poetry run python3 -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
-          poetry run python3 -m openapi_spec_validator examples/simulations/openapi.yaml
-          poetry run python3 -m openapi_spec_validator examples/todobackend/openapi.yaml
-          poetry run python3 -m openapi_spec_validator tests/openapi.json
-          poetry run python3 -m openapi_spec_validator tests/openapi.yaml
+          set -e
+          poetry run python3 -m openapi_spec_validator ./examples/hobotnica/src/hobotnica/openapi.yaml
+          poetry run python3 -m openapi_spec_validator ./examples/petstore/src/petstore/petstore-expanded.yaml
+          poetry run python3 -m openapi_spec_validator ./examples/simulations/src/simulations/openapi.yaml
+          poetry run python3 -m openapi_spec_validator ./examples/todobackend/src/todobackend/openapi.yaml
+          poetry run python3 -m openapi_spec_validator ./tests/rororo/openapi.json
+          poetry run python3 -m openapi_spec_validator ./tests/rororo/openapi.yaml
 
       - name: "Run tests"
         env:
+          PYTHONPATH: "./examples/hobotnica/src:./examples/petstore/src:./examples/simulations/src:./examples/todobackend/src"
           REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         run: "python3 -m tox"
 
@@ -109,6 +122,7 @@ jobs:
         env:
           TOXENV: "py39-prev"
           PYTEST_ADDOPTS: "--no-cov"
+          PYTHONPATH: "./examples/hobotnica/src:./examples/petstore/src:./examples/simulations/src:./examples/todobackend/src"
           REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         run: "python3 -m tox"
 

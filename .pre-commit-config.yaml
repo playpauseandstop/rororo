@@ -74,5 +74,4 @@ repos:
     hooks:
       - id: "mypy"
         name: "Lint code (mypy)"
-        args: ["--python-executable=.venv/bin/python3"]
         exclude: ^docs/.*$

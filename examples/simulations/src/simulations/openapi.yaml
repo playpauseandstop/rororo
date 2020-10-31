@@ -12,7 +12,6 @@ paths:
     post:
       operationId: "create_simulation"
       summary: "Create new simulation"
-      security: []
       requestBody:
         content:
           application/json:
@@ -29,7 +28,6 @@ paths:
     get:
       operationId: "list_simulations"
       summary: "List all available simulations"
-      security: []
       responses:
         "200":
           description: "Simulations list"
@@ -42,12 +40,6 @@ paths:
                 nullable: true
 
 components:
-  securitySchemes:
-    apiKey:
-      type: "apiKey"
-      in: "header"
-      name: "X-API-Key"
-
   schemas:
      Simulation:
       type: "object"
@@ -71,6 +63,3 @@ components:
           type: "integer"
           nullable: true
       required: ["simulation_id", "dataset_id", "model_id"]
-
-security:
-  - apiKey: []

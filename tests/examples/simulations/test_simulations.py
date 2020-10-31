@@ -1,10 +1,9 @@
 import copy
 
 import pytest
+from simulations.app import create_app
+from simulations.storage import DEFAULT_STORAGE
 from yarl import URL
-
-from .app import create_app
-from .storage import DEFAULT_STORAGE
 
 
 TEST_STORAGE_MISSING_VALUES = [
