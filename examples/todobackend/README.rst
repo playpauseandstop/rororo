@@ -32,6 +32,6 @@ run next command,
 .. code-block:: bash
 
     docker run --rm -e URL="http://localhost:8080/todos/openapi.yaml" \
-        -h localhost -p 8081:8080 swaggerapi/swagger-ui:v3.25.0
+        -h localhost -p 8081:8080 swaggerapi/swagger-ui:v3.36.1
 
 After, open http://localhost:8081/ in your browser to access Swagger UI.

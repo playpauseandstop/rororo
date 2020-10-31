@@ -14,6 +14,12 @@
 # Project constants
 PROJECT = rororo
 DOCS_DIR = ./docs
+EXAMPLES_DIR = ./examples
+TESTS_DIR = ./tests
+
+# Setup PYTHONPATH to have all examples
+EXAMPLES_SRC_DIRS = $(addsuffix src, $(wildcard $(EXAMPLES_DIR)/*/))
+PYTHONPATH = $(shell echo "$(EXAMPLES_SRC_DIRS)" | tr ' ' ':')
 
 # Project vars
 PIP_COMPILE ?= pip-compile
@@ -43,10 +49,10 @@ $(DOCS_DIR)/requirements-sphinx.txt: $(DOCS_DIR)/requirements-sphinx.in
 
 example: install
 ifeq ($(EXAMPLE),)
-	@echo "USAGE: make EXAMPLE=(hobotnica|petstore) example"
+	@echo "USAGE: make EXAMPLE=(hobotnica|petstore|simulations|todobackend) example"
 	@exit 1
 else
-	PYTHON_BINPATH=examples $(PYTHON_BIN) -m aiohttp.web $(EXAMPLE).app:create_app
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON_BIN) -m aiohttp.web $(EXAMPLE).app:create_app
 endif
 
 install: install-python
@@ -57,15 +63,15 @@ lint-only: lint-python-only
 
 list-outdated: list-outdated-python
 
-test: install lint clean test-only
+test: install lint clean validate test-only
 
 test-only:
-	TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
+	PYTHONPATH=$(PYTHONPATH) TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
 
 validate: install
-	$(PYTHON_BIN) -m openapi_spec_validator examples/hobotnica/openapi.yaml
-	$(PYTHON_BIN) -m openapi_spec_validator examples/petstore/petstore-expanded.yaml
-	$(PYTHON_BIN) -m openapi_spec_validator examples/simulations/openapi.yaml
-	$(PYTHON_BIN) -m openapi_spec_validator examples/todobackend/openapi.yaml
-	$(PYTHON_BIN) -m openapi_spec_validator tests/openapi.json
-	$(PYTHON_BIN) -m openapi_spec_validator tests/openapi.yaml
+	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/hobotnica/src/hobotnica/openapi.yaml
+	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/petstore/src/petstore/petstore-expanded.yaml
+	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/simulations/src/simulations/openapi.yaml
+	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/todobackend/src/todobackend/openapi.yaml
+	$(PYTHON_BIN) -m openapi_spec_validator $(TESTS_DIR)/$(PROJECT)/openapi.json
+	$(PYTHON_BIN) -m openapi_spec_validator $(TESTS_DIR)/$(PROJECT)/openapi.yaml

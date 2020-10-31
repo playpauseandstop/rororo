@@ -187,14 +187,14 @@ def test_immutable_settings_with_optionals():
 
 def test_inject_settings_fail_silently():
     context = {}
-    inject_settings("tests.settings_error", context, True)
+    inject_settings("tests.rororo.settings_error", context, True)
     assert context == {}
 
 
 def test_inject_settings_failed():
     context = {}
     with pytest.raises(NameError):
-        inject_settings("tests.settings_error", context)
+        inject_settings("tests.rororo.settings_error", context)
     assert context == {}
 
 
@@ -215,7 +215,7 @@ def test_inject_settings_from_module():
 
 def test_inject_settings_from_str():
     context = {"DEBUG": False}
-    inject_settings("tests.settings", context)
+    inject_settings("tests.rororo.settings", context)
     assert context["DEBUG"] is True
     assert "os" not in context
 
