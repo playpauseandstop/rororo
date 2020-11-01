@@ -34,7 +34,7 @@ class Todo:
         )
 
     def get_absolute_url(self, *, request: web.Request) -> URL:
-        return request.url.with_path(  # type: ignore
+        return request.url.with_path(
             str(request.app.router["todo.get"].url_for(todo_uid=str(self.uid)))
         )
 
