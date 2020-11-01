@@ -9,6 +9,7 @@ from hobotnica.data import (
 from yarl import URL
 
 
+URL_REFERENCES = URL("/api/public/references")
 URL_REPOSITORIES = URL("/api/repositories")
 URL_FAVORITES_REPOSITORIES = URL_REPOSITORIES / "favorites"
 URL_OWNER_REPOSITORIES = URL_REPOSITORIES / GITHUB_USERNAME
@@ -28,6 +29,15 @@ async def test_create_repository_201(aiohttp_client):
         },
     )
     assert response.status == 201
+
+
+async def test_list_all_references(aiohttp_client):
+    client = await aiohttp_client(create_app())
+    response = await client.get(URL_REFERENCES)
+    assert response.status == 200
+    assert await response.json() == {
+        "default_env": {"CI": "1", "HOBOTNICA": "1"}
+    }
 
 
 async def test_list_favorites_repositories_204(aiohttp_client):

@@ -4,7 +4,17 @@ import os
 import warnings
 from functools import lru_cache, partial
 from pathlib import Path
-from typing import Callable, cast, Deque, List, overload, Tuple, Union
+from typing import (
+    Callable,
+    cast,
+    Deque,
+    Dict,
+    List,
+    Optional,
+    overload,
+    Tuple,
+    Union,
+)
 
 import attr
 import yaml
@@ -16,6 +26,7 @@ from pyrsistent import pmap
 from yarl import URL
 
 from . import views
+from .annotations import SecurityDict
 from .constants import (
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
@@ -310,6 +321,37 @@ def find_route_prefix(
         "Unable to guess route prefix as no server in OpenAPI schema has "
         f'defined "x-rororo-level" key of "{settings.level}".'
     )
+
+
+def fix_spec_operations(spec: Spec, schema: DictStrAny) -> Spec:
+    """Fix spec operations.
+
+    ``openapi-core`` sets up operation security to an empty list even it is
+    not defined within the operation schema. This function fixes this behaviour
+    by reading schema first and if operation schema misses ``security``
+    definition - sets up a ``None`` as an operation security.
+
+    This allows properly distinct empty operation security and missed operation
+    security. With empty operation security (empty list) - mark an operation
+    as unsecured. With missed operation security - use global security schema
+    if it is defined.
+    """
+    mapping: Dict[str, Optional[SecurityDict]] = {}
+
+    for path_data in schema["paths"].values():
+        for operation_data in path_data.values():
+            mapping[operation_data["operationId"]] = operation_data.get(
+                "security"
+            )
+
+    for path in spec.paths.values():
+        for operation in path.operations.values():
+            if operation.security != []:
+                continue
+
+            operation.security = mapping[operation.operation_id]
+
+    return spec
 
 
 def get_default_yaml_loader() -> SchemaLoader:
@@ -628,6 +670,9 @@ def setup_openapi(  # type: ignore
             "supplying `schema` & `spec` keyword arguments. `schema_path` "
             "will be ignored in favor of `schema` & `spec` args."
         )
+
+    # Fix all operation securities within OpenAPI spec
+    spec = fix_spec_operations(spec, cast(DictStrAny, schema))
 
     # Store schema and spec in application dict
     app[APP_OPENAPI_SCHEMA_KEY] = schema

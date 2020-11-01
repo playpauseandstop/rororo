@@ -1,4 +1,4 @@
-from typing import cast, Dict, List, Optional, Union
+from typing import cast, List, Optional, Union
 
 from aiohttp import BasicAuth, hdrs
 from openapi_core.schema.operations.models import Operation
@@ -12,13 +12,12 @@ from openapi_core.validation.request.datatypes import OpenAPIRequest
 from openapi_core.validation.request.validators import RequestValidator
 from pyrsistent import pmap
 
+from .annotations import SecurityDict
 from .exceptions import BasicSecurityError, SecurityError
 from ..annotations import MappingStrAny
 
 
 AUTHORIZATION_HEADER = hdrs.AUTHORIZATION
-
-SecurityDict = Dict[str, List[str]]
 
 
 def basic_auth_factory(value: str) -> BasicAuth:

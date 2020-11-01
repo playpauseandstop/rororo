@@ -27,6 +27,11 @@ async def create_repository(request: web.Request) -> web.Response:
 
 
 @operations.register
+async def list_all_references(request: web.Request) -> web.Response:
+    return web.json_response({"default_env": {"CI": "1", "HOBOTNICA": "1"}})
+
+
+@operations.register
 @login_required
 async def list_favorites_repositories(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
