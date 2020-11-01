@@ -3,7 +3,7 @@ default_language_version:
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.4.1"
+    rev: "v2.4.2"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -31,7 +31,7 @@ repos:
           - "black==20.8b1"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
-    rev: "v3.2.0"
+    rev: "v3.3.0"
     hooks:
       - id: "end-of-file-fixer"
       - id: "trailing-whitespace"
@@ -46,10 +46,10 @@ repos:
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
           - "flake8==3.8.4"
-          - "flake8-broken-line==0.2.1"
+          - "flake8-broken-line==0.3.0"
           - "flake8-bugbear==20.1.4"
           - "flake8-builtins==1.5.3"
-          - "flake8-comprehensions==3.2.3"
+          - "flake8-comprehensions==3.3.0"
           - "flake8-eradicate==1.0.0"
           - "flake8-import-order==0.18.1"
           - "flake8-mutable==1.2.0"
@@ -74,4 +74,5 @@ repos:
     hooks:
       - id: "mypy"
         name: "Lint code (mypy)"
+        args: ["--python-executable=./.venv/bin/python3"]
         exclude: ^docs/.*$
