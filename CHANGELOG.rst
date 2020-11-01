@@ -1,3 +1,15 @@
+2.1.2 (2020-11-01)
+==================
+
+**Fixes:**
+
+- Proper handling of operations with empty security list (#120)
+
+**Other:**
+
+- Improve examples & tests structure (#118)
+- (**deps**) bump aiohttp from 3.6.3 to 3.7.2 (#119)
+
 2.1.1 (2020-10-29)
 ==================
 
