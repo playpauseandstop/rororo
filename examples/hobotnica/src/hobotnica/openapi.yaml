@@ -23,11 +23,29 @@ x-default-responses: &default_responses
     $ref: "#/components/responses/DefaultResponse"
 
 paths:
+  "/public/references":
+    get:
+      operationId: "list_all_references"
+      summary: "List references for UI needs"
+      tags: ["public"]
+      security: []
+      responses:
+        <<: *default_responses
+        "200":
+          description: "References list"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnyObject"
+
   "/repositories":
     get:
       operationId: "list_repositories"
-      tags: ["repositories"]
       summary: "List user repositories registered in Hobotnica"
+      tags: ["repositories"]
+      security:
+        - jwt: []
+        - personalToken: []
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
       responses:
@@ -40,14 +58,11 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/Repository"
-      security:
-        - jwt: []
-        - personalToken: []
 
     post:
       operationId: "create_repository"
-      tags: ["repositories"]
       summary: "Add new user repository to Hobotnica"
+      tags: ["repositories"]
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
       requestBody:
@@ -63,14 +78,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Repository"
-      security:
-        - personalToken: []
 
   "/repositories/favorites":
     get:
       operationId: "list_favorites_repositories"
-      tags: ["repositories"]
       summary: "List favorites respositories for logged in user (not implemented yet)"
+      tags: ["repositories"]
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
         - $ref: "#/components/parameters/Order"
@@ -78,14 +91,14 @@ paths:
         <<: *default_responses
         "204":
           description: "Favorite repositories (not implemented yet)"
-      security:
-        - personalToken: []
 
   "/repositories/{owner}":
     get:
       operationId: "list_owner_repositories"
-      tags: ["repositories"]
       summary: "List repositories owned by user"
+      tags: ["repositories"]
+      security:
+        - basic: []
       parameters:
         - $ref: "#/components/parameters/RepositoryOwner"
       responses:
@@ -98,14 +111,14 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/Repository"
-      security:
-        - basic: []
 
   "/repositories/{owner}/env":
     get:
       operationId: "retrieve_owner_env"
-      tags: ["environment"]
       summary: "Retrieve common environment vars for user"
+      tags: ["environment"]
+      security:
+        - basic: []
       parameters:
         - $ref: "#/components/parameters/RepositoryOwner"
       responses:
@@ -116,15 +129,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AnyObject"
-      security:
-        - basic: []
 
   "/repositories/{owner}/{name}":
     get:
       operationId: "retrieve_repository"
-      tags:
-        - "repositories"
       summary: "Retrieve details of user repository"
+      tags: ["repositories"]
+      security:
+        - jwt: []
+          personalToken: []
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
         - $ref: "#/components/parameters/RepositoryOwner"
@@ -137,16 +150,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Repository"
-      security:
-        - jwt: []
-          personalToken: []
 
   "/repositories/{owner}/{name}/env":
     get:
       operationId: "retrieve_repository_env"
-      tags:
-        - "environment"
       summary: "Retrieve common env vars for the repository"
+      tags: ["environment"]
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
         - $ref: "#/components/parameters/RepositoryOwner"
@@ -159,8 +168,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AnyObject"
-      security:
-        - personalToken: []
 
 components:
   parameters:
@@ -309,9 +316,15 @@ components:
       scheme: "bearer"
       bearerFormat: "JWT"
 
+security:
+  - personalToken: []
+
 tags:
   - name: "repositories"
     description: "Repositories endpoints"
 
   - name: "environment"
     description: "Environment endpoints"
+
+  - name: "public"
+    description: "Public endpoints"
