@@ -8,6 +8,14 @@ from .utils import get_openapi_spec
 
 
 async def validate_request(request: web.Request) -> web.Request:
+      """
+      Validate the request.
+
+      Args:
+          request: (todo): write your description
+          web: (str): write your description
+          Request: (todo): write your description
+      """
     config_dict = request.config_dict
 
     core_request = await to_core_openapi_request(request)
@@ -31,6 +39,17 @@ async def validate_request(request: web.Request) -> web.Request:
 def validate_response(
     request: web.Request, response: web.StreamResponse
 ) -> web.StreamResponse:
+    """
+    Validate the response.
+
+    Args:
+        request: (todo): write your description
+        web: (todo): write your description
+        Request: (todo): write your description
+        response: (todo): write your description
+        web: (todo): write your description
+        StreamResponse: (todo): write your description
+    """
     validate_core_response(
         get_openapi_spec(request.config_dict),
         request[REQUEST_CORE_REQUEST_KEY],

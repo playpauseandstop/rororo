@@ -21,6 +21,12 @@ AUTHORIZATION_HEADER = hdrs.AUTHORIZATION
 
 
 def basic_auth_factory(value: str) -> BasicAuth:
+    """
+    Return a basic auth.
+
+    Args:
+        value: (str): write your description
+    """
     # Workaround for ``openapi-core==0.13.3``
     if ":" in value:
         return BasicAuth(*(item.strip() for item in value.split(":", 1)))
@@ -76,6 +82,13 @@ def get_security_data(
 def get_security_list(
     validator: RequestValidator, operation: Operation
 ) -> List[SecurityDict]:
+    """
+    Return a list of security groups.
+
+    Args:
+        validator: (str): write your description
+        operation: (str): write your description
+    """
     if operation.security is not None:
         return cast(List[SecurityDict], operation.security)
     return cast(List[SecurityDict], validator.spec.security)
@@ -84,12 +97,26 @@ def get_security_list(
 def get_security_scheme(
     validator: RequestValidator, scheme_name: str
 ) -> Optional[SecurityScheme]:
+    """
+    Return a security scheme.
+
+    Args:
+        validator: (todo): write your description
+        scheme_name: (str): write your description
+    """
     return validator.spec.components.security_schemes.get(scheme_name)
 
 
 def is_basic_auth_security_scheme(
     validator: RequestValidator, scheme_name: str
 ) -> bool:
+    """
+    Checks if the given scheme is valid.
+
+    Args:
+        validator: (todo): write your description
+        scheme_name: (str): write your description
+    """
     scheme = get_security_scheme(validator, scheme_name)
     if scheme is None:
         return False
@@ -103,6 +130,13 @@ def is_basic_auth_security_scheme(
 def is_jwt_bearer_security_scheme(
     validator: RequestValidator, scheme_name: str
 ) -> bool:
+    """
+    Check if a security scheme is a valid.
+
+    Args:
+        validator: (todo): write your description
+        scheme_name: (str): write your description
+    """
     scheme = get_security_scheme(validator, scheme_name)
     if scheme is None:
         return False

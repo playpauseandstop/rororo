@@ -123,18 +123,42 @@ class BaseSettings:
 
     @property
     def is_dev(self) -> bool:
+        """
+        Return true if the device is a device.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.level == "dev"
 
     @property
     def is_prod(self) -> bool:
+        """
+        Return true if this node?
+
+        Args:
+            self: (todo): write your description
+        """
         return self.level == "prod"
 
     @property
     def is_staging(self) -> bool:
+        """
+        Returns true if this node is a staging.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.level == "staging"
 
     @property
     def is_test(self) -> bool:
+        """
+        Returns true if the test is test.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.level == "test"
 
 

@@ -10,6 +10,15 @@ URL_TODOS = URL("/todos/")
 async def test_flow(
     aiohttp_client, todobackend_data, todobackend_redis, todobackend_settings
 ):
+      """
+      Test for a flow.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          todobackend_data: (todo): write your description
+          todobackend_redis: (todo): write your description
+          todobackend_settings: (str): write your description
+      """
     settings = todobackend_settings()
     async with todobackend_redis(settings=settings):
         client = await aiohttp_client(create_app(settings=settings))
@@ -50,6 +59,13 @@ async def test_flow(
 
 
 async def test_openapi_schema(aiohttp_client, todobackend_settings):
+      """
+      Test to aiohttp schema.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          todobackend_settings: (todo): write your description
+      """
     settings = todobackend_settings()
     client = await aiohttp_client(create_app(settings=settings))
     response = await client.get(URL_TODOS / "openapi.yaml")
@@ -68,5 +84,12 @@ async def test_openapi_schema(aiohttp_client, todobackend_settings):
     ),
 )
 async def test_url(route_name, kwargs, expected):
+      """
+      Create a url for a given route.
+
+      Args:
+          route_name: (str): write your description
+          expected: (str): write your description
+      """
     app = create_app()
     assert app.router[route_name].url_for(**kwargs) == expected

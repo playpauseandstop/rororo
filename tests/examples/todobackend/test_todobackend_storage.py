@@ -9,6 +9,14 @@ from todobackend.storage import Storage
 async def test_storage(
     todobackend_data, todobackend_redis, todobackend_settings
 ):
+      """
+      Create a new data in storage.
+
+      Args:
+          todobackend_data: (todo): write your description
+          todobackend_redis: (todo): write your description
+          todobackend_settings: (str): write your description
+      """
     settings = todobackend_settings()
     async with todobackend_redis(settings=settings) as redis:
         storage = Storage(redis=redis, data_key=settings.redis_data_key)

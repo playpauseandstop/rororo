@@ -57,6 +57,15 @@ def openapi_middleware(
     async def get_response(
         request: web.Request, handler: Handler
     ) -> web.StreamResponse:
+          """
+          Returns a request.
+
+          Args:
+              request: (todo): write your description
+              web: (str): write your description
+              Request: (todo): write your description
+              handler: (todo): write your description
+          """
         if error_middleware_instance is None:
             return await handler(request)
         return await error_middleware_instance(request, handler)
@@ -65,6 +74,15 @@ def openapi_middleware(
     async def middleware(
         request: web.Request, handler: Handler
     ) -> web.StreamResponse:
+          """
+          Middleware middleware that processes.
+
+          Args:
+              request: (todo): write your description
+              web: (todo): write your description
+              Request: (todo): write your description
+              handler: (todo): write your description
+          """
         # At first, check that given handler registered as OpenAPI operation
         # handler. For this check remove all partially applied middlewares
         # from the handler,

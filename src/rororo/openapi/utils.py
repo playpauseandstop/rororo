@@ -17,6 +17,13 @@ from ..annotations import DictStrAny
 
 
 def add_prefix(path: str, prefix: Optional[str]) -> str:
+    """
+    Add prefix to the given path.
+
+    Args:
+        path: (str): write your description
+        prefix: (str): write your description
+    """
     if prefix:
         if prefix[-1] == "/":
             prefix = prefix[:-1]
@@ -25,6 +32,12 @@ def add_prefix(path: str, prefix: Optional[str]) -> str:
 
 
 def get_base_url(core_request: OpenAPIRequest) -> str:
+    """
+    Return the base url for a given core.
+
+    Args:
+        core_request: (todo): write your description
+    """
     return str(URL(core_request.full_url_pattern).with_path("/"))
 
 

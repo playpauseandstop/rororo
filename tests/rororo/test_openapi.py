@@ -55,20 +55,48 @@ invalid_operations = OperationTableDef()
 
 
 def custom_json_loader(content: bytes) -> DictStrAny:
+    """
+    Loads the content - serialization.
+
+    Args:
+        content: (str): write your description
+    """
     return json.load(io.BytesIO(content))
 
 
 def custom_yaml_loader(content: bytes) -> DictStrAny:
+    """
+    Custom yaml file.
+
+    Args:
+        content: (str): write your description
+    """
     return yaml.load(content, Loader=yaml.SafeLoader)
 
 
 @invalid_operations.register("does-not-exist")
 async def does_not_exist(request: web.Request) -> web.Response:
+      """
+      Return true if the user exist.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.Response(text="Hello, world!")
 
 
 @operations.register("create-post")
 async def create_post(request: web.Request) -> web.Response:
+      """
+      Create a post request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     data = get_validated_data(request)
 
     published_at: datetime.datetime = data["published_at"]
@@ -83,6 +111,14 @@ async def create_post(request: web.Request) -> web.Response:
 
 @operations.register
 async def hello_world(request: web.Request) -> web.Response:
+      """
+      Displays the world.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         name = context.parameters.query.get("name") or "world"
         email = context.parameters.query.get("email") or "world@example.com"
@@ -95,6 +131,14 @@ async def hello_world(request: web.Request) -> web.Response:
 async def retrieve_any_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
+      """
+      Retrieves a request from the given request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.json_response(pyrsistent.thaw(get_validated_data(request)))
 
 
@@ -102,12 +146,28 @@ async def retrieve_any_object_from_request_body(
 async def retrieve_array_from_request_body(
     request: web.Request,
 ) -> web.Response:
+      """
+      Retrieve a single array of the given request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         return web.json_response(pyrsistent.thaw(context.data))
 
 
 @operations.register
 async def retrieve_empty(request: web.Request) -> web.Response:
+      """
+      Retrieve the empty empty string.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     context = get_openapi_context(request)
     return web.Response(
         status=204, headers={"X-API-Key": context.security.get("apiKey") or ""}
@@ -116,11 +176,27 @@ async def retrieve_empty(request: web.Request) -> web.Response:
 
 @operations.register
 async def retrieve_invalid_response(request: web.Request) -> web.Response:
+      """
+      Retrieves a json response for a request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.json_response({})
 
 
 @operations.register
 async def retrieve_post(request: web.Request) -> web.Response:
+      """
+      Retrieve the post request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     context = get_openapi_context(request)
     return web.json_response(
         {"id": context.parameters.path["post_id"], "title": "The Post"}
@@ -131,6 +207,14 @@ async def retrieve_post(request: web.Request) -> web.Response:
 async def retrieve_nested_object_from_request_body(
     request: web.Request,
 ) -> web.Response:
+      """
+      Retrieve a json object from a json object.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         data = pyrsistent.thaw(context.data)
         data["uid"] = str(data["uid"])
@@ -152,6 +236,14 @@ async def retrieve_nested_object_from_request_body(
 
 @operations.register
 async def retrieve_zip(request: web.Request) -> web.Response:
+      """
+      Retrieve a zip file
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     output = io.BytesIO()
 
     with zipfile.ZipFile(output, "w") as handler:
@@ -167,6 +259,14 @@ async def retrieve_zip(request: web.Request) -> web.Response:
 
 @operations.register
 async def upload_image(request: web.Request) -> web.Response:
+      """
+      Uploads an image.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.Response(
         body=get_openapi_context(request).data,
         content_type=request.content_type,
@@ -176,6 +276,14 @@ async def upload_image(request: web.Request) -> web.Response:
 
 @operations.register
 async def upload_text(request: web.Request) -> web.Response:
+      """
+      Upload text to webapi.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.Response(
         text=get_openapi_context(request).data,
         content_type=request.content_type,
@@ -185,6 +293,13 @@ async def upload_text(request: web.Request) -> web.Response:
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_any_object_request_body(aiohttp_client, schema_path):
+      """
+      Sends an object in aio.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url=URL("/api/")
     )
@@ -219,6 +334,15 @@ async def test_any_object_request_body(aiohttp_client, schema_path):
 async def test_array_request_body(
     aiohttp_client, data, expected_status, expected_response
 ):
+      """
+      Sends an array of arrays.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          data: (array): write your description
+          expected_status: (str): write your description
+          expected_response: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         OPENAPI_YAML_PATH,
@@ -234,6 +358,13 @@ async def test_array_request_body(
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_create_post_201(aiohttp_client, schema_path):
+      """
+      Create a new post request.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -299,6 +430,15 @@ async def test_create_post_201(aiohttp_client, schema_path):
 async def test_create_post_422(
     aiohttp_client, schema_path, invalid_data, expected_detail
 ):
+      """
+      Create a new post on the server.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          invalid_data: (str): write your description
+          expected_detail: (todo): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -320,6 +460,13 @@ async def test_create_post_422(
     ),
 )
 def test_custom_schema_loader(schema_path, schema_loader):
+    """
+    Creates a schema loader.
+
+    Args:
+        schema_path: (str): write your description
+        schema_loader: (todo): write your description
+    """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -332,6 +479,13 @@ def test_custom_schema_loader(schema_path, schema_loader):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_email_format(aiohttp_client, schema_path):
+      """
+      Format an email format.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -346,6 +500,13 @@ async def test_email_format(aiohttp_client, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_invalid_parameter_format(aiohttp_client, schema_path):
+      """
+      Validate the api endpoint.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -365,6 +526,13 @@ async def test_invalid_parameter_format(aiohttp_client, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_invalid_parameter_value(aiohttp_client, schema_path):
+      """
+      Requests the value of a webhook.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -383,17 +551,34 @@ async def test_invalid_parameter_value(aiohttp_client, schema_path):
 
 
 def test_get_openapi_schema_no_schema():
+    """
+    Retrieve the openapi file.
+
+    Args:
+    """
     with pytest.raises(ConfigurationError):
         get_openapi_schema(web.Application())
 
 
 def test_get_openapi_spec_no_spec():
+    """
+    Get the openapi specification
+
+    Args:
+    """
     with pytest.raises(ConfigurationError):
         get_openapi_spec(web.Application())
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_multiple_request_errors(aiohttp_client, schema_path):
+      """
+      Test for valid http errors.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -431,6 +616,15 @@ async def test_multiple_request_errors(aiohttp_client, schema_path):
 async def test_openapi(
     aiohttp_client, schema_path, query_string, expected_message
 ):
+      """
+      Perform an openapi.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          query_string: (str): write your description
+          expected_message: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api"
     )
@@ -447,6 +641,13 @@ async def test_openapi(
 
 @pytest.mark.parametrize("is_enabled", (False, True))
 async def test_openapi_validate_response(aiohttp_client, is_enabled):
+      """
+      Test if the openapi server.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          is_enabled: (bool): write your description
+      """
     app = web.Application()
     setup_openapi(
         app,
@@ -479,6 +680,15 @@ async def test_openapi_validate_response(aiohttp_client, is_enabled):
 async def test_openapi_schema_handler(
     aiohttp_client, has_openapi_schema_handler, url, expected_status
 ):
+      """
+      Test for openapi schema handler.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          has_openapi_schema_handler: (todo): write your description
+          url: (str): write your description
+          expected_status: (str): write your description
+      """
     app = web.Application()
     setup_openapi(
         app,
@@ -505,6 +715,15 @@ async def test_openapi_schema_handler(
 async def test_optional_security_scheme(
     aiohttp_client, schema_path, headers, expected
 ):
+      """
+      Test if security security security security optional optional.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          headers: (str): write your description
+          expected: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -517,6 +736,13 @@ async def test_optional_security_scheme(
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_request_body_nested_object(aiohttp_client, schema_path):
+      """
+      Test for aiohttp request object.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(), schema_path, operations, server_url="/api/"
     )
@@ -547,6 +773,14 @@ async def test_request_body_nested_object(aiohttp_client, schema_path):
 async def test_setup_openapi_schema_and_spec(
     aiohttp_client, schema_path, loader
 ):
+      """
+      Test for openiohttp specification.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          loader: (todo): write your description
+      """
     schema = loader(schema_path.read_bytes())
     spec = create_spec(schema)
 
@@ -577,6 +811,14 @@ async def test_setup_openapi_schema_and_spec(
 async def test_setup_openapi_schema_and_path_ignore_invalid_schema_path(
     aiohttp_client, schema_path, loader
 ):
+      """
+      Test for openiohttp specification.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (todo): write your description
+          loader: (todo): write your description
+      """
     schema = loader(schema_path.read_bytes())
     spec = create_spec(schema)
 
@@ -592,6 +834,12 @@ async def test_setup_openapi_schema_and_path_ignore_invalid_schema_path(
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 def test_setup_openapi_invalid_operation(schema_path):
+    """
+    Test if the schema is valid.
+
+    Args:
+        schema_path: (str): write your description
+    """
     with pytest.raises(OperationError):
         setup_openapi(
             web.Application(),
@@ -602,6 +850,11 @@ def test_setup_openapi_invalid_operation(schema_path):
 
 
 def test_setup_openapi_invalid_path():
+    """
+    Test if the testapi setup. pytest
+
+    Args:
+    """
     with pytest.raises(ConfigurationError):
         setup_openapi(
             web.Application(), ROOT_PATH / "does-not-exist.yaml", operations
@@ -609,6 +862,11 @@ def test_setup_openapi_invalid_path():
 
 
 def test_setup_openapi_invalid_file():
+    """
+    Setup the testapi setup.
+
+    Args:
+    """
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), ROOT_PATH / "settings.py", operations)
 
@@ -617,6 +875,12 @@ def test_setup_openapi_invalid_file():
     "schema_path", (INVALID_OPENAPI_JSON_PATH, INVALID_OPENAPI_YAML_PATH)
 )
 def test_setup_openapi_invalid_spec(schema_path):
+    """
+    Validate the specification of a schema against a schema.
+
+    Args:
+        schema_path: (str): write your description
+    """
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), schema_path, operations)
 
@@ -637,6 +901,17 @@ def test_setup_openapi_invalid_spec(schema_path):
 async def test_setup_openapi_server_url_from_settings(
     monkeypatch, aiohttp_client, schema_path, level, url, expected_status
 ):
+      """
+      Make a url for a patch.
+
+      Args:
+          monkeypatch: (todo): write your description
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          level: (str): write your description
+          url: (str): write your description
+          expected_status: (str): write your description
+      """
     monkeypatch.setenv("LEVEL", level)
 
     app = setup_openapi(
@@ -652,6 +927,13 @@ async def test_setup_openapi_server_url_from_settings(
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
+    """
+    Setup the openapi environment.
+
+    Args:
+        monkeypatch: (todo): write your description
+        schema_path: (str): write your description
+    """
     monkeypatch.setenv("LEVEL", "prod")
 
     with pytest.raises(ConfigurationError):
@@ -664,12 +946,25 @@ def test_setup_openapi_server_url_invalid_level(monkeypatch, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 def test_setup_openapi_server_url_does_not_set(schema_path):
+    """
+    Sets the openapi server url.
+
+    Args:
+        schema_path: (str): write your description
+    """
     with pytest.raises(ConfigurationError):
         setup_openapi(web.Application(), schema_path, operations)
 
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_upload_image(aiohttp_client, schema_path):
+      """
+      Upload image for image.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     blank_png = (Path(__file__).parent / "data" / "blank.png").read_bytes()
 
     app = setup_openapi(
@@ -688,6 +983,13 @@ async def test_upload_image(aiohttp_client, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_upload_text(aiohttp_client, schema_path):
+      """
+      Test for upload text to aio.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     text = "Hello, world! And other things..."
 
     app = setup_openapi(
@@ -706,6 +1008,13 @@ async def test_upload_text(aiohttp_client, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_validate_binary_response(aiohttp_client, schema_path):
+      """
+      Perform binary response.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -727,6 +1036,13 @@ async def test_validate_binary_response(aiohttp_client, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_validate_empty_response(aiohttp_client, schema_path):
+      """
+      Validate the condition response contains aiohttp response.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -752,6 +1068,15 @@ async def test_validate_empty_response(aiohttp_client, schema_path):
 async def test_validate_response(
     aiohttp_client, schema_path, is_validate_response, expected_status
 ):
+      """
+      Perform aio.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          is_validate_response: (bool): write your description
+          expected_status: (todo): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -767,6 +1092,13 @@ async def test_validate_response(
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_validate_response_error(aiohttp_client, schema_path):
+      """
+      Validate the response for an api server.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,

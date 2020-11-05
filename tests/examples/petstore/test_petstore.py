@@ -10,6 +10,12 @@ ADD_PET_JSON = {"name": TEST_PET_NAME}
 
 
 async def test_add_pet_200(aiohttp_client):
+      """
+      Add aiohttp
+
+      Args:
+          aiohttp_client: (todo): write your description
+      """
     client = await aiohttp_client(create_app())
     response = await client.post("/api/pets", json=ADD_PET_JSON)
     assert response.status == 200
@@ -29,6 +35,14 @@ async def test_add_pet_200(aiohttp_client):
     ),
 )
 async def test_add_pet_422(aiohttp_client, invalid_data, expected):
+      """
+      Add aiohttp.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          invalid_data: (str): write your description
+          expected: (todo): write your description
+      """
     client = await aiohttp_client(create_app())
     response = await client.post("/api/pets", json=invalid_data)
     assert response.status == 422
@@ -38,6 +52,12 @@ async def test_add_pet_422(aiohttp_client, invalid_data, expected):
 
 
 async def test_delete_pet(aiohttp_client):
+      """
+      Test for aio.
+
+      Args:
+          aiohttp_client: (todo): write your description
+      """
     client = await aiohttp_client(create_app())
     await client.post("/api/pets", json=ADD_PET_JSON)
 
@@ -50,6 +70,12 @@ async def test_delete_pet(aiohttp_client):
 
 
 async def test_delete_pet_does_not_exist(aiohttp_client):
+      """
+      Test if aio - api.
+
+      Args:
+          aiohttp_client: (str): write your description
+      """
     client = await aiohttp_client(create_app())
     response = await client.delete("/api/pets/1")
     assert response.status == 404
@@ -57,6 +83,12 @@ async def test_delete_pet_does_not_exist(aiohttp_client):
 
 
 async def test_get_pet(aiohttp_client):
+      """
+      Test for a get request.
+
+      Args:
+          aiohttp_client: (todo): write your description
+      """
     client = await aiohttp_client(create_app())
     await client.post("/api/pets", json=ADD_PET_JSON)
 
@@ -69,6 +101,12 @@ async def test_get_pet(aiohttp_client):
 
 
 async def test_get_pet_does_not_exist(aiohttp_client):
+      """
+      Test whether a get_get_pet.
+
+      Args:
+          aiohttp_client: (str): write your description
+      """
     client = await aiohttp_client(create_app())
     response = await client.get("/api/pets/1")
     assert response.status == 404
@@ -76,6 +114,12 @@ async def test_get_pet_does_not_exist(aiohttp_client):
 
 
 async def test_list_pets(aiohttp_client):
+      """
+      Create a list of available in the sensors.
+
+      Args:
+          aiohttp_client: (todo): write your description
+      """
     client = await aiohttp_client(create_app())
     await client.post("/api/pets", json=ADD_PET_JSON)
 
@@ -85,6 +129,12 @@ async def test_list_pets(aiohttp_client):
 
 
 async def test_list_pets_empty(aiohttp_client):
+      """
+      List all empty empty empty empty empty lists.
+
+      Args:
+          aiohttp_client: (todo): write your description
+      """
     client = await aiohttp_client(create_app())
     response = await client.get("/api/pets")
     assert response.status == 200

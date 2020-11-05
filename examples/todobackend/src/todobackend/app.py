@@ -16,6 +16,13 @@ from .storage import Storage
 def create_app(
     argv: List[str] = None, *, settings: Settings = None
 ) -> web.Application:
+    """
+    Creates a application.
+
+    Args:
+        argv: (list): write your description
+        settings: (dict): write your description
+    """
     if settings is None:
         settings = Settings.from_environ()  # type: ignore
 
@@ -51,6 +58,14 @@ def create_app(
 
 
 async def storage_context(app: web.Application) -> AsyncIterator[None]:
+      """
+      A context manager for a redis context.
+
+      Args:
+          app: (todo): write your description
+          web: (todo): write your description
+          Application: (todo): write your description
+      """
     settings: Settings = app[APP_SETTINGS_KEY]
 
     redis = app[APP_REDIS_KEY] = await create_redis(

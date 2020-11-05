@@ -17,6 +17,14 @@ operations = OperationTableDef()
 
 @operations.register("addPet")
 async def create_pet(request: web.Request) -> web.Response:
+      """
+      Create a new tag
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     data = get_validated_data(request)
     new_pet = NewPet(name=data["name"], tag=data.get("tag"))
 
@@ -28,6 +36,14 @@ async def create_pet(request: web.Request) -> web.Response:
 
 @operations.register("deletePet")
 async def delete_pet(request: web.Request) -> web.Response:
+      """
+      Deletes an existing poll.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     pet_id = get_validated_parameters(request).path["id"]
     pet = get_pet_or_404(request.app["pets"], pet_id)
     request.app["pets"] = [item for item in request.app["pets"] if item != pet]
@@ -36,6 +52,14 @@ async def delete_pet(request: web.Request) -> web.Response:
 
 @operations.register("findPets")
 async def list_pets(request: web.Request) -> web.Response:
+      """
+      List all tags
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         limit = context.parameters.query.get("limit")
         tags = set(context.parameters.query.get("pets") or [])
@@ -51,6 +75,14 @@ async def list_pets(request: web.Request) -> web.Response:
 
 @operations.register("find pet by id")
 async def retrieve_pet(request: web.Request) -> web.Response:
+      """
+      Retrieve a requests.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         pet = get_pet_or_404(
             request.app["pets"], context.parameters.path["id"]

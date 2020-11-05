@@ -8,6 +8,14 @@ from .storage import Storage
 
 
 async def get_todo_or_404(request: web.Request) -> Todo:
+      """
+      Get a todoist value.
+
+      Args:
+          request: (todo): write your description
+          web: (str): write your description
+          Request: (todo): write your description
+      """
     storage: Storage = request.config_dict[APP_STORAGE_KEY]
 
     with openapi_context(request) as context:

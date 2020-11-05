@@ -11,6 +11,11 @@ TEST_SENTRY_DSN = "https://username:password@app.getsentry.com/project-id"
 
 
 def test_default_logging_dict():
+    """
+    Default logging defaults.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo")
 
     assert logging_dict["filters"]["ignore_errors"]["()"] == IgnoreErrorsFilter
@@ -34,11 +39,21 @@ def test_default_logging_dict():
 
 
 def test_default_logging_dict_keyword_arguments():
+    """
+    Set the default configuration.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo", level="DEBUG")
     assert logging_dict["loggers"]["rororo"]["level"] == "DEBUG"
 
 
 def test_default_logging_dict_multiple_loggers():
+    """
+    Test if there are any default values.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo", "tests")
 
     assert len(logging_dict["loggers"]) == 2
@@ -47,6 +62,11 @@ def test_default_logging_dict_multiple_loggers():
 
 
 def test_ignore_errors_filter():
+    """
+    Convert filter filter filter.
+
+    Args:
+    """
     filter_obj = IgnoreErrorsFilter()
 
     debug = type("FakeRecord", (object,), {"levelname": "DEBUG"})()
@@ -63,6 +83,11 @@ def test_ignore_errors_filter():
 
 
 def test_update_sentry_logging():
+    """
+    Update the log entries to log file.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo")
     update_sentry_logging(logging_dict, TEST_SENTRY_DSN, "rororo")
     assert "sentry" in logging_dict["handlers"]
@@ -70,6 +95,11 @@ def test_update_sentry_logging():
 
 
 def test_update_sentry_logging_empty_dsn():
+    """
+    Update logging log entries dict
+
+    Args:
+    """
     empty = choice((False, None, ""))
 
     logging_dict = default_logging_dict("rororo")
@@ -80,6 +110,11 @@ def test_update_sentry_logging_empty_dsn():
 
 
 def test_update_sentry_logging_empty_loggers():
+    """
+    Update the sentry dict to loggers.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo", "tests")
     update_sentry_logging(logging_dict, TEST_SENTRY_DSN)
     assert "sentry" in logging_dict["loggers"]["rororo"]["handlers"]
@@ -87,6 +122,11 @@ def test_update_sentry_logging_empty_loggers():
 
 
 def test_update_sentry_logging_ignore_sentry():
+    """
+    Update the sentry dict to log entries.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo", "tests")
     logging_dict["loggers"]["rororo"]["ignore_sentry"] = True
     update_sentry_logging(logging_dict, TEST_SENTRY_DSN)
@@ -95,12 +135,22 @@ def test_update_sentry_logging_ignore_sentry():
 
 
 def test_update_sentry_logging_kwargs():
+    """
+    Update the default logging config.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo")
     update_sentry_logging(logging_dict, TEST_SENTRY_DSN, key="value")
     assert logging_dict["handlers"]["sentry"]["key"] == "value"
 
 
 def test_update_sentry_logging_missed_logger():
+    """
+    Update the log entries to log entries to logging.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo")
     update_sentry_logging(
         logging_dict, TEST_SENTRY_DSN, "rororo", "does-not-exist"
@@ -108,6 +158,11 @@ def test_update_sentry_logging_missed_logger():
 
 
 def test_update_sentry_logging_overwrite_level():
+    """
+    Update the default log level.
+
+    Args:
+    """
     logging_dict = default_logging_dict("rororo")
     update_sentry_logging(logging_dict, TEST_SENTRY_DSN, level="INFO")
     assert logging_dict["handlers"]["sentry"]["level"] == "INFO"

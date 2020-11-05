@@ -33,6 +33,15 @@ class AddResourceFunc(Protocol):
         name: str = None,
         **kwargs: Handler
     ) -> web.Resource:
+        """
+        Make a call to the api.
+
+        Args:
+            self: (todo): write your description
+            url: (str): write your description
+            get: (array): write your description
+            name: (str): write your description
+        """
         ...
 
 

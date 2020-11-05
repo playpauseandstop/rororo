@@ -25,6 +25,12 @@ class TodosView(web.View):
     """
 
     async def delete(self) -> web.Response:
+          """
+          Deletes the specified key.
+
+          Args:
+              self: (todo): write your description
+          """
         storage: Storage = self.request.config_dict[APP_STORAGE_KEY]
         await storage.delete_todos()
 
@@ -32,6 +38,12 @@ class TodosView(web.View):
 
     @operations.register("list_todos")
     async def get(self) -> web.Response:
+          """
+          Returns a list of all of the information.
+
+          Args:
+              self: (todo): write your description
+          """
         request = self.request
 
         storage: Storage = request.config_dict[APP_STORAGE_KEY]
@@ -43,6 +55,12 @@ class TodosView(web.View):
 
     @operations.register("create_todo")
     async def post(self) -> web.Response:
+          """
+          Create a new tag.
+
+          Args:
+              self: (todo): write your description
+          """
         request = self.request
 
         with openapi_context(request) as context:
@@ -60,6 +78,12 @@ class TodosView(web.View):
 @operations.register("todo")
 class TodoView(web.View):
     async def delete(self) -> web.Response:
+          """
+          Deletes the task.
+
+          Args:
+              self: (todo): write your description
+          """
         request = self.request
 
         storage: Storage = request.config_dict[APP_STORAGE_KEY]
@@ -68,11 +92,23 @@ class TodoView(web.View):
         return web.json_response("")
 
     async def get(self) -> web.Response:
+          """
+          Retrieves the response.
+
+          Args:
+              self: (todo): write your description
+          """
         request = self.request
         todo = await get_todo_or_404(request)
         return web.json_response(todo.to_api_dict(request=request))
 
     async def patch(self) -> web.Response:
+          """
+          Updates the current task.
+
+          Args:
+              self: (todo): write your description
+          """
         request = self.request
         todo = await get_todo_or_404(request)
 

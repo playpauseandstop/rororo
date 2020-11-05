@@ -7,14 +7,32 @@ from rororo.aio import add_resource_context, is_xhr_request, parse_aioredis_url
 
 
 async def dummy_handler(request):
+      """
+      Handle a dummy handler.
+
+      Args:
+          request: (todo): write your description
+      """
     return web.Response(text="Hello, world!")
 
 
 def check_length(iterable, expected):
+    """
+    Check that iterable has length of iterable.
+
+    Args:
+        iterable: (todo): write your description
+        expected: (list): write your description
+    """
     assert len(list(iterable)) == expected
 
 
 def test_add_resource():
+    """
+    Add a new routes.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     check_length(router.resources(), 0)
@@ -28,6 +46,11 @@ def test_add_resource():
 
 
 def test_add_resource_missed_handler():
+    """
+    Add a resource handler.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     with add_resource_context(router) as add_resource:
@@ -38,6 +61,11 @@ def test_add_resource_missed_handler():
 
 
 def test_add_resource_name_prefix():
+    """
+    Test if the given a resource.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     ctx = add_resource_context(router, name_prefix="prefix")
@@ -48,6 +76,11 @@ def test_add_resource_name_prefix():
 
 
 def test_add_resource_name_prefix_with_dot():
+    """
+    Add a resource prefix to resource.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     ctx = add_resource_context(router, name_prefix="with_dot.")
@@ -58,6 +91,11 @@ def test_add_resource_name_prefix_with_dot():
 
 
 def test_add_resource_real_world():
+    """
+    Add a real test.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     with add_resource_context(router, "/api/", "api") as add_resource:
@@ -83,6 +121,11 @@ def test_add_resource_real_world():
 
 
 def test_add_resource_url_prefix():
+    """
+    Add a new router prefix.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     ctx = add_resource_context(router, url_prefix="/api")
@@ -100,6 +143,11 @@ def test_add_resource_url_prefix():
 
 
 def test_add_resource_url_prefix_with_slash():
+    """
+    Add resource resource resource resource resource.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     ctx = add_resource_context(router, url_prefix="/api/")
@@ -110,6 +158,11 @@ def test_add_resource_url_prefix_with_slash():
 
 
 def test_add_resource_wildcard():
+    """
+    Add a resource routes exist.
+
+    Args:
+    """
     router = web.UrlDispatcher()
 
     with add_resource_context(router) as add_resource:
@@ -120,11 +173,21 @@ def test_add_resource_wildcard():
 
 
 def test_is_not_xhr_request():
+    """
+    Check if xhr is xhr.
+
+    Args:
+    """
     non_xhr_request = make_mocked_request("GET", "/")
     assert is_xhr_request(non_xhr_request) is False
 
 
 def test_is_xhr_request():
+    """
+    Test if xhr is xhr xhr_request.
+
+    Args:
+    """
     xhr_request = make_mocked_request(
         "GET",
         "/api/",
@@ -151,4 +214,11 @@ def test_is_xhr_request():
     ),
 )
 def test_parse_aioredis_url(url, expected):
+    """
+    Parse url.
+
+    Args:
+        url: (str): write your description
+        expected: (list): write your description
+    """
     assert parse_aioredis_url(url) == expected

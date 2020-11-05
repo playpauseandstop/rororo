@@ -14,6 +14,14 @@ operations = OperationTableDef()
 @operations.register
 @login_required
 async def create_repository(request: web.Request) -> web.Response:
+      """
+      Create a repository.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         return web.json_response(
             {
@@ -28,12 +36,28 @@ async def create_repository(request: web.Request) -> web.Response:
 
 @operations.register
 async def list_all_references(request: web.Request) -> web.Response:
+      """
+      List all references.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.json_response({"default_env": {"CI": "1", "HOBOTNICA": "1"}})
 
 
 @operations.register
 @login_required
 async def list_favorites_repositories(request: web.Request) -> web.Response:
+      """
+      List all repositories.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         return web.json_response(
             status=204, headers={"X-Order": context.parameters.query["order"]}
@@ -43,6 +67,14 @@ async def list_favorites_repositories(request: web.Request) -> web.Response:
 @operations.register
 @login_required
 async def list_owner_repositories(request: web.Request) -> web.Response:
+      """
+      List all repositories in the owner.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         username = context.security["basic"].login
         return web.json_response(
@@ -53,6 +85,14 @@ async def list_owner_repositories(request: web.Request) -> web.Response:
 @operations.register
 @login_required
 async def list_repositories(request: web.Request) -> web.Response:
+      """
+      List repositories in the repo.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         username = context.parameters.header["X-GitHub-Username"]
         return web.json_response(
@@ -63,6 +103,14 @@ async def list_repositories(request: web.Request) -> web.Response:
 @operations.register
 @login_required
 async def retrieve_owner_env(request: web.Request) -> web.Response:
+      """
+      Retrieves the value of the given request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         owner = context.parameters.path["owner"]
         return web.json_response(ENVIRONMENT_VARS.get(owner) or {})
@@ -71,6 +119,14 @@ async def retrieve_owner_env(request: web.Request) -> web.Response:
 @operations.register
 @login_required
 async def retrieve_repository(request: web.Request) -> web.Response:
+      """
+      Retrieve a repository.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         owner = context.parameters.path["owner"]
         repository = (GITHUB_REPOSITORIES.get(owner) or {}).get(
@@ -86,6 +142,14 @@ async def retrieve_repository(request: web.Request) -> web.Response:
 @operations.register
 @login_required
 async def retrieve_repository_env(request: web.Request) -> web.Response:
+      """
+      Retrieve the environment variable.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with openapi_context(request) as context:
         owner = context.parameters.path["owner"]
         name = context.parameters.path["name"]

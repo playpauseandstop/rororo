@@ -15,11 +15,33 @@ from rororo.openapi.utils import add_prefix, get_openapi_context
     ),
 )
 def test_add_prefix(path, prefix, expected):
+    """
+    Add a prefix to the given path.
+
+    Args:
+        path: (str): write your description
+        prefix: (str): write your description
+        expected: (todo): write your description
+    """
     assert add_prefix(path, prefix) == expected
 
 
 async def test_get_openapi_context_error(aiohttp_client):
+      """
+      Return a json - rpc response.
+
+      Args:
+          aiohttp_client: (str): write your description
+      """
     async def handler(request: web.Request) -> web.Response:
+          """
+          Handle a request.
+
+          Args:
+              request: (todo): write your description
+              web: (todo): write your description
+              Request: (todo): write your description
+          """
         return web.json_response(get_openapi_context(request).operation.id)
 
     app = web.Application(middlewares=(error_middleware(),))

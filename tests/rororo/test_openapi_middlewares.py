@@ -18,15 +18,38 @@ operations = OperationTableDef()
 
 @operations.register
 async def hello_world(request: web.Request) -> web.Response:
+      """
+      This is a http request.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.json_response("Hello, world!")
 
 
 async def plain_error_handler(request: web.Request) -> web.Response:
+      """
+      Convert the error.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     with error_context(request) as context:
         return web.Response(text=context.message, status=context.status)
 
 
 def has_middleware(app, middleware):
+    """
+    Returns true if the middleware has already been registered.
+
+    Args:
+        app: (todo): write your description
+        middleware: (str): write your description
+    """
     for item in app.middlewares:
         if item.__module__ == middleware.__module__:
             return True
@@ -35,6 +58,13 @@ def has_middleware(app, middleware):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_custom_default_error_handler(aiohttp_client, schema_path):
+      """
+      Test the default error handler
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -52,6 +82,13 @@ async def test_custom_default_error_handler(aiohttp_client, schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 async def test_default_error_handler(aiohttp_client, schema_path):
+      """
+      Default handler for http error handler.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -75,6 +112,13 @@ async def test_default_error_handler(aiohttp_client, schema_path):
     ),
 )
 def test_use_cors_middleware(schema_path, is_enabled, kwargs):
+    """
+    Test for middleware middleware.
+
+    Args:
+        schema_path: (str): write your description
+        is_enabled: (bool): write your description
+    """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -98,6 +142,15 @@ def test_use_cors_middleware(schema_path, is_enabled, kwargs):
 async def test_use_error_middleware(
     aiohttp_client, schema_path, is_enabled, expected_content_type
 ):
+      """
+      Perform middleware middleware.
+
+      Args:
+          aiohttp_client: (todo): write your description
+          schema_path: (str): write your description
+          is_enabled: (bool): write your description
+          expected_content_type: (str): write your description
+      """
     app = setup_openapi(
         web.Application(),
         schema_path,
@@ -113,6 +166,12 @@ async def test_use_error_middleware(
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 def test_use_invalid_cors_middleware_kwargs(schema_path):
+    """
+    Validate middleware middleware that the middleware to the middleware.
+
+    Args:
+        schema_path: (str): write your description
+    """
     with pytest.raises(ConfigurationError):
         setup_openapi(
             web.Application(),
@@ -126,6 +185,12 @@ def test_use_invalid_cors_middleware_kwargs(schema_path):
 
 @pytest.mark.parametrize("schema_path", (OPENAPI_JSON_PATH, OPENAPI_YAML_PATH))
 def test_use_invalid_error_middleware_kwargs(schema_path):
+    """
+    Validate the middleware. middleware the middleware.
+
+    Args:
+        schema_path: (str): write your description
+    """
     with pytest.raises(ConfigurationError):
         setup_openapi(
             web.Application(),

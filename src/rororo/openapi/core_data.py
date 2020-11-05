@@ -20,6 +20,15 @@ from ..annotations import Handler
 def find_core_operation(
     request: web.Request, handler: Handler
 ) -> Optional[Operation]:
+    """
+    Find an operation for a given request.
+
+    Args:
+        request: (todo): write your description
+        web: (array): write your description
+        Request: (todo): write your description
+        handler: (todo): write your description
+    """
     mapping = getattr(handler, HANDLER_OPENAPI_MAPPING_KEY, None)
     if not mapping:
         return None
@@ -37,6 +46,13 @@ def find_core_operation(
 
 
 def get_core_operation(spec: Spec, operation_id: str) -> Operation:
+    """
+    Return an operation operation for a given operation id.
+
+    Args:
+        spec: (todo): write your description
+        operation_id: (str): write your description
+    """
     for path in spec.paths.values():
         for operation in path.operations.values():
             if operation.operation_id == operation_id:
@@ -101,6 +117,14 @@ def to_core_openapi_response(response: web.StreamResponse) -> OpenAPIResponse:
 def to_core_openapi_response_data(
     response: web.StreamResponse,
 ) -> Optional[bytes]:
+    """
+    Converts the given openapi response.
+
+    Args:
+        response: (todo): write your description
+        web: (todo): write your description
+        StreamResponse: (todo): write your description
+    """
     if isinstance(response, web.Response):
         body = response.body
         if not body:
@@ -118,6 +142,14 @@ def to_core_openapi_response_data(
 
 
 def to_core_request_parameters(request: web.Request) -> RequestParameters:
+    """
+    Convert the query parameters to - parameters.
+
+    Args:
+        request: (todo): write your description
+        web: (todo): write your description
+        Request: (todo): write your description
+    """
     header_attr = [
         item
         for item in RequestParameters.__attrs_attrs__

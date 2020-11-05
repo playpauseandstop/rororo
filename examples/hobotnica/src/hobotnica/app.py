@@ -15,6 +15,13 @@ from . import views
 def create_app(
     argv: List[str] = None, *, settings: BaseSettings = None
 ) -> web.Application:
+    """
+    Create a wsgi application.
+
+    Args:
+        argv: (list): write your description
+        settings: (dict): write your description
+    """
     if settings is None:
         settings = BaseSettings.from_environ()  # type: ignore
 

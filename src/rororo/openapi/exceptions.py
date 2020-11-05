@@ -63,6 +63,14 @@ class OpenAPIError(Exception):
     def __init__(
         self, message: str = None, *, headers: MappingStrStr = None
     ) -> None:
+        """
+        Initialize the message.
+
+        Args:
+            self: (todo): write your description
+            message: (str): write your description
+            headers: (list): write your description
+        """
         super().__init__(message or self.default_message)
         self.headers = headers or self.default_headers
 
@@ -133,6 +141,16 @@ class ObjectDoesNotExist(OpenAPIError):
         message: str = None,
         headers: MappingStrStr = None,
     ) -> None:
+        """
+        Initialize a label.
+
+        Args:
+            self: (todo): write your description
+            label: (str): write your description
+            OBJECT_LABEL: (todo): write your description
+            message: (str): write your description
+            headers: (list): write your description
+        """
         super().__init__(
             message or ERROR_NOT_FOUND_TEMPLATE.format(label=label),
             headers=headers,
@@ -184,6 +202,14 @@ class ValidationError(OpenAPIError):
         message: str = None,
         errors: List[ValidationErrorItem] = None,
     ) -> None:
+        """
+        Initialize error message.
+
+        Args:
+            self: (todo): write your description
+            message: (str): write your description
+            errors: (str): write your description
+        """
         super().__init__(message or self.default_message)
 
         self.errors = errors
@@ -193,6 +219,13 @@ class ValidationError(OpenAPIError):
     def from_dict(  # type: ignore
         cls, data: DictPathItemAny = None, **kwargs: Any
     ) -> "ValidationError":
+        """
+        Creates a dict from a dict.
+
+        Args:
+            cls: (todo): write your description
+            data: (dict): write your description
+        """
         if data and kwargs:
             raise ValueError(
                 "Please supply only data dict or kwargs, not both"
@@ -203,6 +236,14 @@ class ValidationError(OpenAPIError):
             data: Union[DictPathItemAny, DictStrAny],
             errors: List[ValidationErrorItem],
         ) -> None:
+            """
+            Convert dict to dict.
+
+            Args:
+                loc: (todo): write your description
+                data: (dict): write your description
+                errors: (todo): write your description
+            """
             for key, value in data.items():
                 if isinstance(value, dict):
                     dict_walker(loc + [key], value, errors)
@@ -220,6 +261,14 @@ class ValidationError(OpenAPIError):
         *,
         base_loc: List[PathItem] = None,
     ) -> "ValidationError":
+        """
+        Create a : class : requests.
+
+        Args:
+            cls: (todo): write your description
+            errors: (todo): write your description
+            base_loc: (str): write your description
+        """
         base_loc = ["body"] if base_loc is None else base_loc
         result = []
 
@@ -251,6 +300,13 @@ class ValidationError(OpenAPIError):
     def from_response_errors(  # type: ignore
         cls, errors: List[CoreOpenAPIError]
     ) -> "ValidationError":
+        """
+        Convert a httpresponse instance.
+
+        Args:
+            cls: (todo): write your description
+            errors: (todo): write your description
+        """
         result: List[ValidationErrorItem] = []
         loc: List[PathItem] = ["response"]
 
@@ -277,18 +333,38 @@ class ValidationError(OpenAPIError):
 
 
 def ensure_loc(loc: List[PathItem]) -> List[PathItem]:
+    """
+    Ensure locator tomodir.
+
+    Args:
+        loc: (todo): write your description
+    """
     return [item for item in loc if item != ""]
 
 
 def get_common_error_details(
     loc: List[PathItem], err: CoreOpenAPIError
 ) -> ValidationErrorItem:
+    """
+    Returns the error details for an error.
+
+    Args:
+        loc: (todo): write your description
+        err: (todo): write your description
+    """
     return {"loc": loc, "message": str(err)}
 
 
 def get_json_schema_validation_error_details(
     loc: List[PathItem], err: JsonSchemaValidationError
 ) -> ValidationErrorItem:
+    """
+    Validate the json schema against the schema schema
+
+    Args:
+        loc: (todo): write your description
+        err: (todo): write your description
+    """
     message = err.message
     path = list(err.absolute_path)
     matched = required_message_re.match(message)
@@ -310,6 +386,13 @@ def get_json_schema_validation_error_details(
 def get_media_type_error_details(
     loc: List[PathItem], err: OpenAPIMediaTypeError
 ) -> ValidationErrorItem:
+    """
+    Return the error details for an error type error.
+
+    Args:
+        loc: (todo): write your description
+        err: (todo): write your description
+    """
     if isinstance(err, InvalidContentType):
         return {
             "loc": loc,
@@ -325,6 +408,13 @@ def get_parameter_error_details(
     loc: List[PathItem],
     err: OpenAPIParameterError,
 ) -> ValidationErrorItem:
+    """
+    Returns the error details.
+
+    Args:
+        loc: (todo): write your description
+        err: (todo): write your description
+    """
     parameter_name: str = getattr(err, "name", None)
     if parameter_name is None:
         return get_common_error_details(loc, err)
@@ -342,6 +432,13 @@ def get_parameter_error_details(
 def get_unmarshal_error_details(
     loc: List[PathItem], err: UnmarshalError
 ) -> List[ValidationErrorItem]:
+    """
+    Return a list of error details for the given error.
+
+    Args:
+        loc: (todo): write your description
+        err: (todo): write your description
+    """
     if isinstance(err, InvalidSchemaValue):
         return [
             get_json_schema_validation_error_details(loc, item)
@@ -352,4 +449,10 @@ def get_unmarshal_error_details(
 
 
 def is_only_security_error(errors: List[CoreOpenAPIError]) -> bool:
+    """
+    Returns true if security is a security
+
+    Args:
+        errors: (todo): write your description
+    """
     return len(errors) == 1 and isinstance(errors[0], InvalidSecurity)

@@ -12,6 +12,11 @@ from rororo.openapi.exceptions import (
 
 
 def test_bad_request():
+    """
+    Test for bad bad bad bad test.
+
+    Args:
+    """
     assert str(BadRequest()) == "Bad request"
 
 
@@ -25,6 +30,14 @@ def test_bad_request():
     ),
 )
 def test_object_does_not_exist(label, message, expected):
+    """
+    Asserts that the test test test.
+
+    Args:
+        label: (str): write your description
+        message: (str): write your description
+        expected: (list): write your description
+    """
     err = ObjectDoesNotExist(label, message=message)
     assert str(err) == expected
 
@@ -33,6 +46,13 @@ def test_object_does_not_exist(label, message, expected):
     "headers, expected", ((None, {}), ({"key": "value"}, {"key": "value"}))
 )
 def test_openapi_error_headers(headers, expected):
+    """
+    Test if the openapi.
+
+    Args:
+        headers: (dict): write your description
+        expected: (todo): write your description
+    """
     err = OpenAPIError(headers=headers)
     assert err.headers == expected
 
@@ -74,6 +94,13 @@ def test_openapi_error_headers(headers, expected):
     ),
 )
 def test_validation_error_from_dict_data(data, expected):
+    """
+    Validate that the data.
+
+    Args:
+        data: (array): write your description
+        expected: (todo): write your description
+    """
     err = ValidationError.from_dict(data)
     assert err.errors == expected
 
@@ -86,11 +113,22 @@ def test_validation_error_from_dict_data(data, expected):
     ),
 )
 def test_validation_error_from_dict_kwargs(kwargs, expected):
+    """
+    Assert that the given dict has expected.
+
+    Args:
+        expected: (todo): write your description
+    """
     err = ValidationError.from_dict(**kwargs)
     assert err.errors == expected
 
 
 def test_validation_error_from_dict_value_error():
+    """
+    Validate the validation : parameter test results.
+
+    Args:
+    """
     with pytest.raises(ValueError):
         ValidationError.from_dict(
             {"body": "Missed"}, parameters={"name": "Parameter required"}
@@ -129,6 +167,14 @@ def test_validation_error_from_dict_value_error():
     ),
 )
 def test_validation_error_from_dummy_error(method, error, expected_loc):
+    """
+    Test if the expected error occurs.
+
+    Args:
+        method: (str): write your description
+        error: (todo): write your description
+        expected_loc: (todo): write your description
+    """
     err = method([error])
     assert err.errors == [{"loc": expected_loc, "message": ""}]
     assert err.data == {"detail": [{"loc": expected_loc, "message": ""}]}

@@ -16,6 +16,12 @@ operations = OperationTableDef()
 
 
 def create_app(argv: List[str] = None) -> web.Application:
+    """
+    Create a flask application.
+
+    Args:
+        argv: (list): write your description
+    """
     schema = yaml.load(
         (Path(__file__).parent / "openapi.yaml").read_bytes(),
         Loader=get_default_yaml_loader(),
@@ -34,6 +40,14 @@ def create_app(argv: List[str] = None) -> web.Application:
 
 @operations.register
 async def create_simulation(request: web.Request) -> web.Response:
+      """
+      Create a simulation.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     data = thaw(get_validated_data(request))
     request.app["storage"].append(data)
     return web.json_response(data, status=201)
@@ -41,4 +55,12 @@ async def create_simulation(request: web.Request) -> web.Response:
 
 @operations.register
 async def list_simulations(request: web.Request) -> web.Response:
+      """
+      List all the list of all webulations.
+
+      Args:
+          request: (todo): write your description
+          web: (todo): write your description
+          Request: (todo): write your description
+      """
     return web.json_response(request.app["storage"])

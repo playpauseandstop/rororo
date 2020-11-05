@@ -17,6 +17,12 @@ ROOT_PATH = Path(__file__).parent
     "path", (ROOT_PATH / "openapi.json", ROOT_PATH / "openapi.yaml")
 )
 def test_find_core_operation_missing_operation_id(path):
+    """
+    Finds the given operation for a given operation.
+
+    Args:
+        path: (str): write your description
+    """
     request = make_mocked_request(
         "GET",
         "/api/hello",
@@ -24,6 +30,14 @@ def test_find_core_operation_missing_operation_id(path):
     )
 
     async def broken_handler(request: web.Request) -> web.Response:
+          """
+          Handle a request.
+
+          Args:
+              request: (todo): write your description
+              web: (todo): write your description
+              Request: (todo): write your description
+          """
         return web.json_response(False)
 
     setattr(
@@ -39,6 +53,12 @@ def test_find_core_operation_missing_operation_id(path):
     "path", (ROOT_PATH / "openapi.json", ROOT_PATH / "openapi.yaml")
 )
 def test_find_core_operation_wrong_operation_id(path):
+    """
+    Finds the operation for a given operation.
+
+    Args:
+        path: (str): write your description
+    """
     request = make_mocked_request(
         "GET",
         "/api/hello",
@@ -46,6 +66,14 @@ def test_find_core_operation_wrong_operation_id(path):
     )
 
     async def broken_handler(request: web.Request) -> web.Response:
+          """
+          Handle a request.
+
+          Args:
+              request: (todo): write your description
+              web: (todo): write your description
+              Request: (todo): write your description
+          """
         return web.json_response(False)
 
     setattr(

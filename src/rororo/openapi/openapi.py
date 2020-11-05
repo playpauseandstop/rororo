@@ -55,6 +55,14 @@ class CreateSchemaAndSpec(Protocol):
     def __call__(
         self, path: Path, *, schema_loader: SchemaLoader = None
     ) -> Tuple[DictStrAny, Spec]:  # pragma: no cover
+        """
+        Call the given schema.
+
+        Args:
+            self: (todo): write your description
+            path: (str): write your description
+            schema_loader: (todo): write your description
+        """
         ...
 
 
@@ -149,28 +157,69 @@ class OperationTableDef:
     views: List[ViewType] = attr.Factory(list)
 
     def __add__(self, other: "OperationTableDef") -> "OperationTableDef":
+        """
+        Add a new : class :.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         return OperationTableDef(
             handlers=[*self.handlers, *other.handlers],
             views=[*self.views, *other.views],
         )
 
     def __iadd__(self, other: "OperationTableDef") -> "OperationTableDef":
+        """
+        Add an iadd () } object.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         self.handlers.extend(other.handlers)
         self.views.extend(other.views)
         return self
 
     @overload
     def register(self, handler: F) -> F:
+        """
+        Register a handler.
+
+        Args:
+            self: (todo): write your description
+            handler: (str): write your description
+        """
         ...  # pragma: no cover
 
     @overload
     def register(self, operation_id: str) -> Callable[[F], F]:
+        """
+        Register a new operation.
+
+        Args:
+            self: (todo): write your description
+            operation_id: (str): write your description
+        """
         ...  # pragma: no cover
 
     def register(self, mixed):  # type: ignore
+        """
+        Decorator to register a handler.
+
+        Args:
+            self: (todo): write your description
+            mixed: (todo): write your description
+        """
         operation_id = mixed if isinstance(mixed, str) else mixed.__qualname__
 
         def decorator(handler: F) -> F:
+            """
+            Decorator to register handler.
+
+            Args:
+                handler: (todo): write your description
+            """
             mapping: DictStrStr = {}
 
             if self._is_view(handler):
@@ -186,12 +235,27 @@ class OperationTableDef:
         return decorator(mixed) if callable(mixed) else decorator
 
     def _is_view(self, handler: F) -> bool:
+        """
+        Determine if the given handler is a view.
+
+        Args:
+            self: (todo): write your description
+            handler: (todo): write your description
+        """
         is_class = inspect.isclass(handler)
         return is_class and issubclass(handler, web.View)  # type: ignore
 
     def _register_handler(
         self, handler: Handler, operation_id: str
     ) -> DictStrStr:
+        """
+        Register a handler.
+
+        Args:
+            self: (todo): write your description
+            handler: (str): write your description
+            operation_id: (str): write your description
+        """
         # Hacky way to check whether handler is a view function or view method
         has_self_parameter = "self" in inspect.signature(handler).parameters
 
@@ -203,6 +267,14 @@ class OperationTableDef:
         return {hdrs.METH_ANY: operation_id}
 
     def _register_view(self, view: ViewType, prefix: str) -> DictStrStr:
+        """
+        Register a view.
+
+        Args:
+            self: (todo): write your description
+            view: (todo): write your description
+            prefix: (str): write your description
+        """
         mapping: DictStrStr = {}
 
         for value in vars(view).values():
@@ -233,6 +305,14 @@ def convert_operations_to_routes(
     """Convert operations table defintion to routes table definition."""
 
     async def noop(request: web.Request) -> web.Response:
+          """
+          Wrapper for the given request.
+
+          Args:
+              request: (todo): write your description
+              web: (todo): write your description
+              Request: (todo): write your description
+          """
         return web.json_response(status=204)  # pragma: no cover
 
     routes = web.RouteTableDef()
@@ -278,6 +358,13 @@ def convert_operations_to_routes(
 def create_schema_and_spec(
     path: Path, *, schema_loader: SchemaLoader = None
 ) -> Tuple[DictStrAny, Spec]:
+    """
+    Create a schema and return schemas.
+
+    Args:
+        path: (str): write your description
+        schema_loader: (todo): write your description
+    """
     schema = read_openapi_schema(path, loader=schema_loader)
     return (schema, create_spec(schema))
 
@@ -286,6 +373,13 @@ def create_schema_and_spec(
 def create_schema_and_spec_with_cache(  # type: ignore
     path: Path, *, schema_loader: SchemaLoader = None
 ) -> Tuple[DictStrAny, Spec]:
+    """
+    Creates a schema object create a schema.
+
+    Args:
+        path: (str): write your description
+        schema_loader: (todo): write your description
+    """
     return create_schema_and_spec(path, schema_loader=schema_loader)
 
 
@@ -295,6 +389,14 @@ def find_route_prefix(
     server_url: Union[str, URL] = None,
     settings: BaseSettings = None,
 ) -> str:
+    """
+    Find the route prefix.
+
+    Args:
+        oas: (todo): write your description
+        server_url: (str): write your description
+        settings: (dict): write your description
+    """
     if server_url is not None:
         return get_route_prefix(server_url)
 
@@ -355,14 +457,31 @@ def fix_spec_operations(spec: Spec, schema: DictStrAny) -> Spec:
 
 
 def get_default_yaml_loader() -> SchemaLoader:
+    """
+    Get the yaml schema.
+
+    Args:
+    """
     return cast(SchemaLoader, getattr(yaml, "CSafeLoader", yaml.SafeLoader))
 
 
 def get_route_name(operation_id: str) -> str:
+    """
+    Returns the route name for a given operation.
+
+    Args:
+        operation_id: (str): write your description
+    """
     return operation_id.replace(" ", "-")
 
 
 def get_route_prefix(mixed: Url) -> str:
+    """
+    Returns the route prefix for a given route.
+
+    Args:
+        mixed: (todo): write your description
+    """
     return (URL(mixed) if isinstance(mixed, str) else mixed).path
 
 
@@ -412,6 +531,25 @@ def setup_openapi(
     schema_loader: SchemaLoader = None,
     cache_create_schema_and_spec: bool = False,
 ) -> web.Application:  # pragma: no cover
+    """
+    Setup the web application.
+
+    Args:
+        app: (todo): write your description
+        web: (todo): write your description
+        Application: (todo): write your description
+        schema_path: (str): write your description
+        operations: (int): write your description
+        server_url: (str): write your description
+        is_validate_response: (bool): write your description
+        has_openapi_schema_handler: (todo): write your description
+        use_error_middleware: (bool): write your description
+        error_middleware_kwargs: (dict): write your description
+        use_cors_middleware: (bool): write your description
+        cors_middleware_kwargs: (dict): write your description
+        schema_loader: (todo): write your description
+        cache_create_schema_and_spec: (bool): write your description
+    """
     ...
 
 
@@ -429,6 +567,24 @@ def setup_openapi(
     use_cors_middleware: bool = True,
     cors_middleware_kwargs: DictStrAny = None,
 ) -> web.Application:  # pragma: no cover
+    """
+    Setup the webapi.
+
+    Args:
+        app: (todo): write your description
+        web: (todo): write your description
+        Application: (todo): write your description
+        operations: (int): write your description
+        schema: (todo): write your description
+        spec: (str): write your description
+        server_url: (str): write your description
+        is_validate_response: (bool): write your description
+        has_openapi_schema_handler: (todo): write your description
+        use_error_middleware: (bool): write your description
+        error_middleware_kwargs: (dict): write your description
+        use_cors_middleware: (bool): write your description
+        cors_middleware_kwargs: (dict): write your description
+    """
     ...
 
 

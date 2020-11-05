@@ -8,8 +8,22 @@ from .auth import authenticate
 
 
 def login_required(handler: Handler) -> Handler:
+    """
+    Decorator to require a user is authenticated
+
+    Args:
+        handler: (todo): write your description
+    """
     @wraps(handler)
     async def decorator(request: web.Request) -> web.StreamResponse:
+          """
+          Decorator to the user.
+
+          Args:
+              request: (todo): write your description
+              web: (array): write your description
+              Request: (todo): write your description
+          """
         with openapi_context(request) as context:
             basic_auth = context.security.get("basic")
             if basic_auth is not None:

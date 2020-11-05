@@ -11,6 +11,13 @@ class NewPet:
     tag: Optional[str]
 
     def to_pet(self, pet_id: int) -> "Pet":
+        """
+        Convert this variant as - variant.
+
+        Args:
+            self: (todo): write your description
+            pet_id: (str): write your description
+        """
         return Pet(id=pet_id, name=self.name, tag=self.tag)
 
 
@@ -19,6 +26,12 @@ class Pet(NewPet):
     id: int  # noqa: A003, VNE003
 
     def to_dict(self) -> DictStrAny:
+        """
+        Convert this tag as a dictionary.
+
+        Args:
+            self: (todo): write your description
+        """
         if self.tag:
             return {"id": self.id, "name": self.name, "tag": self.tag}
         return {"id": self.id, "name": self.name}
