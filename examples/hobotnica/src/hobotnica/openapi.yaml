@@ -93,14 +93,15 @@ paths:
           description: "Favorite repositories (not implemented yet)"
 
   "/repositories/{owner}":
+    parameters: &repository_owner_parameters
+      - $ref: "#/components/parameters/RepositoryOwner"
+
     get:
       operationId: "list_owner_repositories"
       summary: "List repositories owned by user"
       tags: ["repositories"]
       security:
         - basic: []
-      parameters:
-        - $ref: "#/components/parameters/RepositoryOwner"
       responses:
         <<: *default_responses
         "200":
@@ -113,14 +114,14 @@ paths:
                   $ref: "#/components/schemas/Repository"
 
   "/repositories/{owner}/env":
+    parameters: *repository_owner_parameters
+
     get:
       operationId: "retrieve_owner_env"
       summary: "Retrieve common environment vars for user"
       tags: ["environment"]
       security:
         - basic: []
-      parameters:
-        - $ref: "#/components/parameters/RepositoryOwner"
       responses:
         <<: *default_responses
         "200":
@@ -131,6 +132,10 @@ paths:
                 $ref: "#/components/schemas/AnyObject"
 
   "/repositories/{owner}/{name}":
+    parameters: &repository_owner_name_parameters
+      - $ref: "#/components/parameters/RepositoryOwner"
+      - $ref: "#/components/parameters/RepositoryName"
+
     get:
       operationId: "retrieve_repository"
       summary: "Retrieve details of user repository"
@@ -140,8 +145,6 @@ paths:
           personalToken: []
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
-        - $ref: "#/components/parameters/RepositoryOwner"
-        - $ref: "#/components/parameters/RepositoryName"
       responses:
         <<: *default_responses
         "200":
@@ -152,14 +155,14 @@ paths:
                 $ref: "#/components/schemas/Repository"
 
   "/repositories/{owner}/{name}/env":
+    parameters: *repository_owner_name_parameters
+
     get:
       operationId: "retrieve_repository_env"
       summary: "Retrieve common env vars for the repository"
       tags: ["environment"]
       parameters:
         - $ref: "#/components/parameters/GitHubUsername"
-        - $ref: "#/components/parameters/RepositoryOwner"
-        - $ref: "#/components/parameters/RepositoryName"
       responses:
         <<: *default_responses
         "200":
