@@ -339,10 +339,13 @@ def fix_spec_operations(spec: Spec, schema: DictStrAny) -> Spec:
     mapping: Dict[str, Optional[SecurityDict]] = {}
 
     for path_data in schema["paths"].values():
-        for operation_data in path_data.values():
-            mapping[operation_data["operationId"]] = operation_data.get(
-                "security"
-            )
+        for maybe_operation_data in path_data.values():
+            if not isinstance(maybe_operation_data, dict):
+                continue
+
+            mapping[
+                maybe_operation_data["operationId"]
+            ] = maybe_operation_data.get("security")
 
     for path in spec.paths.values():
         for operation in path.operations.values():
