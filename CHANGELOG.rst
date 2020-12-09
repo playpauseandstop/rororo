@@ -1,3 +1,17 @@
+2.1.3 (2020-12-09)
+==================
+
+**Fixes:**
+
+- (**openapi**) Allow to use parameters within path object (#128)
+
+**Other:**
+
+- Several updates to pre-commit hooks (#122)
+- (**deps**) bump aiohttp from 3.7.2 to 3.7.3 (#125)
+- (**deps**) bump attrs from 20.2.0 to 20.3.0 (#126)
+- (**deps**) bump email-validator from 1.1.1 to 1.1.2 (#124)
+
 2.1.2 (2020-11-01)
 ==================
 
