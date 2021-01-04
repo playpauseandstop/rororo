@@ -20,16 +20,23 @@ import attr
 import yaml
 from aiohttp import hdrs, web
 from aiohttp_middlewares import cors_middleware
+from aiohttp_middlewares.annotations import (
+    ExceptionType,
+    StrCollection,
+    UrlCollection,
+)
+from aiohttp_middlewares.error import Config as ErrorMiddlewareConfig
 from openapi_core.schema.specs.models import Spec
 from openapi_core.shortcuts import create_spec
 from pyrsistent import pmap
 from yarl import URL
 
 from . import views
-from .annotations import SecurityDict
+from .annotations import SecurityDict, ValidateEmailKwargsDict
 from .constants import (
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
+    APP_VALIDATE_EMAIL_KWARGS_KEY,
     HANDLER_OPENAPI_MAPPING_KEY,
 )
 from .core_data import get_core_operation
@@ -42,6 +49,7 @@ from ..annotations import (
     F,
     Handler,
     Protocol,
+    TypedDict,
     ViewType,
 )
 from ..settings import APP_SETTINGS_KEY, BaseSettings
@@ -51,11 +59,30 @@ SchemaLoader = Callable[[bytes], DictStrAny]
 Url = Union[str, URL]
 
 
+class CorsMiddlewareKwargsDict(TypedDict, total=False):
+    allow_all: bool
+    origins: Optional[UrlCollection]
+    urls: Optional[UrlCollection]
+    expose_headers: Optional[UrlCollection]
+    allow_headers: StrCollection
+    allow_methods: StrCollection
+    allow_credentials: bool
+    max_age: Optional[int]
+
+
 class CreateSchemaAndSpec(Protocol):
     def __call__(
         self, path: Path, *, schema_loader: SchemaLoader = None
     ) -> Tuple[DictStrAny, Spec]:  # pragma: no cover
         ...
+
+
+class ErrorMiddlewareKwargsDict(TypedDict, total=False):
+    default_handler: Handler
+    config: Optional[ErrorMiddlewareConfig]
+    ignore_exceptions: Optional[
+        Union[ExceptionType, Tuple[ExceptionType, ...]]
+    ]
 
 
 @attr.dataclass(slots=True)
@@ -409,11 +436,12 @@ def setup_openapi(
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: DictStrAny = None,
+    error_middleware_kwargs: ErrorMiddlewareKwargsDict = None,
     use_cors_middleware: bool = True,
-    cors_middleware_kwargs: DictStrAny = None,
+    cors_middleware_kwargs: CorsMiddlewareKwargsDict = None,
     schema_loader: SchemaLoader = None,
     cache_create_schema_and_spec: bool = False,
+    validate_email_kwargs: ValidateEmailKwargsDict = None,
 ) -> web.Application:  # pragma: no cover
     ...
 
@@ -428,9 +456,10 @@ def setup_openapi(
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: DictStrAny = None,
+    error_middleware_kwargs: ErrorMiddlewareKwargsDict = None,
     use_cors_middleware: bool = True,
-    cors_middleware_kwargs: DictStrAny = None,
+    cors_middleware_kwargs: CorsMiddlewareKwargsDict = None,
+    validate_email_kwargs: ValidateEmailKwargsDict = None,
 ) -> web.Application:  # pragma: no cover
     ...
 
@@ -450,6 +479,7 @@ def setup_openapi(  # type: ignore
     cors_middleware_kwargs: DictStrAny = None,
     schema_loader: SchemaLoader = None,
     cache_create_schema_and_spec: bool = False,
+    validate_email_kwargs: ValidateEmailKwargsDict = None,
 ) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
 
@@ -626,6 +656,33 @@ def setup_openapi(  # type: ignore
         cached once and on next call it will result cached data instead to
         attempt read fresh schema from the disk and instantiate OpenAPI Spec
         instance.
+
+    By default, *rororo* using ``validate_email`` function from
+    `email-validator <https://github.com/JoshData/python-email-validator>`_
+    library to validate email strings, which has been declared in OpenAPI
+    schema as,
+
+    .. code-block:: yaml
+
+        components:
+          schemas:
+            Email:
+              type: "string"
+              format: "email"
+
+    In most cases ``validate_email(email)`` call should be enough, but in case
+    if you need to pass extra ``**kwargs`` for validating email strings, setup
+    ``validate_email_kwargs`` such as,
+
+    .. code-block:: python
+
+        app = setup_openapi(
+            web.Application(),
+            Path(__file__).parent / "openapi.json",
+            operations,
+            validate_email_kwargs={"check_deliverability": False},
+        )
+
     """
 
     if isinstance(schema_path, OperationTableDef):
@@ -677,9 +734,10 @@ def setup_openapi(  # type: ignore
     # Fix all operation securities within OpenAPI spec
     spec = fix_spec_operations(spec, cast(DictStrAny, schema))
 
-    # Store schema and spec in application dict
+    # Store schema, spec, and validate email kwargs in application dict
     app[APP_OPENAPI_SCHEMA_KEY] = schema
     app[APP_OPENAPI_SPEC_KEY] = spec
+    app[APP_VALIDATE_EMAIL_KWARGS_KEY] = validate_email_kwargs
 
     # Register the route to dump openapi schema used for the application if
     # required

@@ -17,3 +17,12 @@ def test_invalid_value(invalid_value):
 @pytest.mark.parametrize("value", ("email@domain.com", "EmAiL@domain.com"))
 def test_valid_email(value):
     assert EmailFormatter().validate(value) is True
+
+
+def test_valid_email_without_check_deliverability():
+    assert (
+        EmailFormatter(kwargs={"check_deliverability": False}).validate(
+            "email@sub.domain.com"
+        )
+        is True
+    )

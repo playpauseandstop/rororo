@@ -6,9 +6,11 @@ from openapi_core.schema.specs.models import Spec
 from openapi_core.validation.request.datatypes import OpenAPIRequest
 from yarl import URL
 
+from .annotations import ValidateEmailKwargsDict
 from .constants import (
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
+    APP_VALIDATE_EMAIL_KWARGS_KEY,
     REQUEST_OPENAPI_CONTEXT_KEY,
 )
 from .data import OpenAPIContext, OpenAPIParameters
@@ -78,6 +80,20 @@ def get_openapi_spec(mixed: Union[web.Application, ChainMapProxy]) -> Spec:
             "Seems like OpenAPI spec not registered to the application. Use "
             '"from rororo import setup_openapi" function to register OpenAPI '
             "schema to your web.Application."
+        )
+
+
+def get_validate_email_kwargs(
+    mixed: Union[web.Application, ChainMapProxy]
+) -> ValidateEmailKwargsDict:
+    try:
+        return cast(
+            ValidateEmailKwargsDict, mixed[APP_VALIDATE_EMAIL_KWARGS_KEY] or {}
+        )
+    except KeyError:
+        raise ConfigurationError(
+            "Seems like kwargs to pass to validate_email function is not "
+            "registered for the given application"
         )
 
 

@@ -4,6 +4,9 @@ APP_OPENAPI_SCHEMA_KEY = "rororo_openapi_schema"
 #: Key to store OpenAPI spec within the ``web.Application`` instance
 APP_OPENAPI_SPEC_KEY = "rororo_openapi_spec"
 
+#: Key to store kwargs to pass to ``validate_email`` function
+APP_VALIDATE_EMAIL_KWARGS_KEY = "rororo_validate_email_kwargs"
+
 #: Key to store request method -> operation ID mapping in handler
 HANDLER_OPENAPI_MAPPING_KEY = "__rororo_openapi_mapping__"
 
