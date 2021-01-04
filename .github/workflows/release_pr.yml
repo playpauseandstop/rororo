@@ -11,8 +11,8 @@ on:
         default: ""
 
 env:
-  BADABUMP_VERSION: "20.1.0b0"
-  PYTHON_VERSION: "3.9.0"
+  BADABUMP_VERSION: "20.1.0"
+  PYTHON_VERSION: "3.9.1"
   PYTHONUNBUFFERED: "1"
 
 jobs:
