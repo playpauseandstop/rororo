@@ -49,6 +49,7 @@ from openapi_core.validation.validators import (
 )
 from openapi_schema_validator._format import oas30_format_checker
 
+from .annotations import ValidateEmailKwargsDict
 from .data import OpenAPIParameters, to_openapi_parameters
 from .exceptions import CastError, ValidationError
 from .security import validate_security
@@ -83,9 +84,14 @@ class EmailFormatter(Formatter):
     to ensure that given string is a valid email.
     """
 
+    kwargs: ValidateEmailKwargsDict
+
+    def __init__(self, kwargs: ValidateEmailKwargsDict = None) -> None:
+        self.kwargs: ValidateEmailKwargsDict = kwargs or {}
+
     def validate(self, value: str) -> bool:
         try:
-            validate_email(value)
+            validate_email(value, **self.kwargs)
         except EmailNotValidError as err:
             raise FormatError(f"{value!r} is not an 'email'", cause=err)
         return True
@@ -165,9 +171,6 @@ class SchemaUnmarshallersFactory(CoreSchemaUnmarshallersFactory):
         if type_format == SchemaFormat.DATETIME.value:
             return DATE_TIME_FORMATTER
         return super().get_formatter(default_formatters, type_format)
-
-
-CUSTOM_FORMATTERS = {"email": EmailFormatter()}
 
 
 class BaseValidator(CoreBaseValidator):
@@ -261,16 +264,29 @@ class ResponseValidator(BaseValidator, CoreResponseValidator):
         )
 
 
+def get_custom_formatters(
+    *, validate_email_kwargs: ValidateEmailKwargsDict = None
+) -> Dict[str, Formatter]:
+    return {"email": EmailFormatter(validate_email_kwargs)}
+
+
 def validate_core_request(
-    spec: Spec, core_request: OpenAPIRequest
+    spec: Spec,
+    core_request: OpenAPIRequest,
+    *,
+    validate_email_kwargs: ValidateEmailKwargsDict = None,
 ) -> Tuple[MappingStrAny, OpenAPIParameters, Any]:
     """
     Instead of validating request parameters & body in two calls, validate them
     at once with passing custom formatters.
     """
+    custom_formatters = get_custom_formatters(
+        validate_email_kwargs=validate_email_kwargs
+    )
+
     validator = RequestValidator(
         spec,
-        custom_formatters=CUSTOM_FORMATTERS,
+        custom_formatters=custom_formatters,
         base_url=get_base_url(core_request),
     )
     result = validator.validate(core_request)
@@ -289,11 +305,17 @@ def validate_core_response(
     spec: Spec,
     core_request: OpenAPIRequest,
     core_response: OpenAPIResponse,
+    *,
+    validate_email_kwargs: ValidateEmailKwargsDict = None,
 ) -> Any:
     """Pass custom formatters for validating response data."""
+    custom_formatters = get_custom_formatters(
+        validate_email_kwargs=validate_email_kwargs
+    )
+
     validator = ResponseValidator(
         spec,
-        custom_formatters=CUSTOM_FORMATTERS,
+        custom_formatters=custom_formatters,
         base_url=get_base_url(core_request),
     )
     result = validator.validate(core_request, core_response)
