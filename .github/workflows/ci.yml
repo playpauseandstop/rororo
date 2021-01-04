@@ -82,7 +82,7 @@ jobs:
         run: "python3 -m pip install poetry==${{ env.POETRY_VERSION }}"
 
       - name: "Install depencencies"
-        run: "sudo 'apt update -y && apt install -y locales-all'"
+        run: "sudo apt update -y && sudo apt install -y locales-all"
 
       - name: "Cache venv"
         uses: "actions/cache@v2.1.2"
