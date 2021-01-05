@@ -55,6 +55,7 @@ python = "^3.6"
 aiohttp = "^3.5"
 aiohttp-middlewares = "^1.1.0"
 attrs = ">=19.1,<21"
+contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
 environ-config = "^20.1.0"
 isodate = "^0.6.0"

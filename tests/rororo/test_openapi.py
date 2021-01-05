@@ -26,6 +26,7 @@ from rororo.openapi import get_validated_data
 from rororo.openapi.exceptions import (
     ConfigurationError,
     OperationError,
+    validation_error_context,
     ValidationError,
 )
 
@@ -72,8 +73,9 @@ async def create_post(request: web.Request) -> web.Response:
     data = get_validated_data(request)
 
     published_at: datetime.datetime = data["published_at"]
-    if published_at.tzinfo is None:
-        raise ValidationError.from_dict(body={"published_at": "Invalid value"})
+    with validation_error_context("body", "published_at"):
+        if published_at.tzinfo is None:
+            raise ValidationError(message="Invalid value")
 
     return web.json_response(
         {**data, "id": 1, "published_at": data["published_at"].isoformat()},
