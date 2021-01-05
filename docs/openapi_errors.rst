@@ -1,6 +1,6 @@
-=======================
-Handling OpenAPI Errors
-=======================
+==============
+OpenAPI Errors
+==============
 
 By default, :func:`rororo.openapi.setup_openapi` enables usage of
 :func:`aiohttp_middlewares.error.error_middleware`, which in same time provides
@@ -143,8 +143,8 @@ response will be supplied,
         ]
     }
 
-OpenAPI Schemas
-===============
+OpenAPI Error Schemas
+=====================
 
 You might need to update your OpenAPI 3 Schemas by using next responses
 components.
@@ -223,3 +223,179 @@ needs to disable error middleware usage entirely by passing
 
 In that case ``aiohttp.web`` application need to implement its own way of
 handling OpenAPI (and other) errors.
+
+Extra. Raising OpenAPI Errors from aiohttp.web Applications
+===========================================================
+
+*rororo* provides bunch of custom exceptions for providing errors in
+``aiohttp.web`` handlers and related code:
+
+- :class:`rororo.openapi.BadRequest`
+- :class:`rororo.openapi.SecurityError` (and
+  :class:`rororo.openapi.BasicSecurityError`)
+- :class:`rororo.openapi.InvalidCredentials` (and
+  :class:`rororo.openapi.BasicInvalidCredentials`)
+- :class:`rororo.openapi.ObjectDoesNotExist`
+- :class:`rororo.openapi.ValidationError`
+- :class:`rororo.openapi.ServerError`
+
+While you might still use `aiohttp.web HTTP Exceptions
+<https://docs.aiohttp.org/en/stable/web_reference.html#http-exceptions>`_, the
+purpose of *rororo* HTTP Exceptions to simplify process of generating and
+raising custom errors from your OpenAPI server handlers.
+
+For example, to raise a `Bad Request <https://httpstatuses.com/400>`_ error
+with `"Check your request"` message use next code,
+
+.. code-block:: python
+
+    from aiohttp import web
+    from rororo.openapi import (
+        BadRequest,
+        get_validated_data,
+        OperationTableDef,
+    )
+
+
+    operations = OperationTableDef()
+
+
+    @operations.register
+    async def create_item(request: web.Request) -> web.Response:
+        data = get_validated_data(request)
+
+        if data["field"] != 42:
+            raise BadRequest("Check your request")
+
+        ...
+
+Similarly you can use `SecurityError`, `InvalidCredentials`, and `ServerError`
+to generate 403 or 500 errors.
+
+On top of that *rororo* provides custom way to generate validation errors &
+not found errors.
+
+Validation Error
+----------------
+
+Use :class:`rororo.openapi.ValidationError` to generate and raise
+`Unprocessable Entity <https://httpstatuses.com/422>`_ errors.
+
+For example, when you need to generate the error response as follows,
+
+.. code-block:: json
+
+    {
+      "detail": [
+        {
+          "loc": ["body", "field"],
+          "message": "Invalid value"
+        }
+      ]
+    }
+
+Use the code below,
+
+.. code-block:: python
+
+    from aiohttp import web
+    from rororo.openapi import (
+        get_validated_data,
+        OperationTableDef,
+        ValidationError,
+    )
+
+
+    operations = OperationTableDef()
+
+
+    @operations.register
+    async def create_item(request: web.Request) -> web.Response:
+        data = get_validated_data(request)
+
+        if data["field"] != 42:
+            raise ValidationError.from_dict(
+                body={"field": "Invalid value"}
+            )
+
+        ...
+
+There is alos a possibility to use :func:`rororo.openapi.validation_error_context`
+to nest error messages.
+
+For example, when you need to validate some subitem in received data via some
+external validation, you can organize this process as follows,
+
+1. Implement external validator function in ``validators`` module
+2. Wrap validation call into ``validation_error_context`` context manager
+
+``validators.py``
+
+.. code-block:: python
+
+    from rororo.annotations import DictStrAny
+    from rororo.openapi import (
+        ValidationError,
+        validation_error_context,
+    )
+
+
+    def validate_field(value: int) -> int:
+        if value != 42:
+            raise ValidationError(message="Invalid value")
+        return value
+
+
+    def validate_item(data: DictStrAny) -> DictStrAny:
+        with validation_error_context("subitem"):
+            subitem = validate_subitem(data["subitem"])
+        return {**data, "subitem": subitem}
+
+
+    def validate_subitem(data: DictStrAny) -> DictStrAny:
+        with validation_error_context("field"):
+            value = validate_field(data["field"])
+        return {**data, "field": value}
+
+
+``views.py``
+
+.. code-block:: python
+
+    @operations.register
+    async def create_item(request: web.Request) -> web.Response:
+        with validation_error_context("body"):
+            data = validate_data(get_validated_data(request))
+
+        ...
+
+Object Does Not Exist
+---------------------
+
+Another common case is to generate errors, when request object does not exist
+in database for some reason.
+
+:class:`rororo.exceptions.ObjectDoesNotExist` aims to simplify that process
+as follows,
+
+.. code-block:: python
+
+    from aiohttp import web
+    from rororo.openapi import (
+        get_openapi_context,
+        ObjectDoesNotExist,
+        OperationTableDef,
+    )
+
+
+    operations = OperationTableDef()
+
+
+    @operations.register
+    async def retrieve_item(request: web.Request) -> web.Response:
+        ctx = get_openapi_context(request)
+
+        if ctx.parameters.path["item_id"] != 42:
+            raise ObjectDoesNotExist("Item")
+
+        ...
