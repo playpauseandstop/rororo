@@ -1,3 +1,22 @@
+2.2.0 (2021-01-05)
+==================
+
+**Features:**
+
+- [#133] (**openapi**) Allow to pass kwargs to validate email func (#135)
+- [#100, #132] (**openapi**) Improve validation errors (#142)
+
+**Other:**
+
+- Update dev Python version to 3.9.1 (#136)
+- (**deps-dev**) bump pytest from 6.1.2 to 6.2.1 (#131)
+- (**deps-dev**) bump coverage from 5.3 to 5.3.1 (#130)
+- (**deps**) bump actions/checkout from v2.3.3 to v2.3.4 (#141)
+- (**deps**) bump actions/cache from v2.1.2 to v2.1.3 (#138)
+- (**deps**) bump actions/setup-python from v2.1.4 to v2.2.1 (#139)
+- (**deps**) bump peter-evans/create-pull-request from v3.4.1 to v3.6.0 (#140)
+- (**deps**) bump tibdex/github-app-token from v1.1.0 to v1.3 (#137)
+
 2.1.3 (2020-12-09)
 ==================
 
