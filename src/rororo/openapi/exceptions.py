@@ -1,6 +1,8 @@
 import logging
 import re
-from typing import Any, Dict, List, Union
+from contextlib import contextmanager
+from contextvars import ContextVar
+from typing import Any, Dict, Iterator, List, Tuple, Union
 
 import attr
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
@@ -38,7 +40,12 @@ ERROR_PARAMETER_REQUIRED = "Parameter required"
 OBJECT_LABEL = "Object"
 
 PathItem = Union[int, str]
+Loc = Tuple[PathItem, ...]
 DictPathItemAny = Dict[PathItem, Any]
+
+VALIDATION_ERROR_LOC: ContextVar[Loc] = ContextVar(
+    "rororo_validation_error_loc", default=()
+)
 
 logger = logging.getLogger(__name__)
 required_message_re = re.compile(
@@ -186,8 +193,42 @@ class ValidationError(OpenAPIError):
     ) -> None:
         super().__init__(message or self.default_message)
 
+        loc = get_current_validation_error_loc()
+        if loc:
+            if message is not None and errors is not None:
+                raise ValueError(
+                    "Please supply only error message or list of error items, "
+                    "not both in same time"
+                )
+
+            if message is not None:
+                errors = [{"loc": list(loc), "message": message}]
+            elif errors is not None:
+                errors = [
+                    {
+                        "loc": [*loc, *item["loc"]],
+                        "message": item["message"],
+                    }
+                    for item in errors
+                ]
+
         self.errors = errors
         self.data = {"detail": errors} if errors else None
+
+    def __add__(self, another: "ValidationError") -> "ValidationError":
+        if not self.errors:
+            raise ValueError(
+                "ValidationError does not have list of error items. Cannot to "
+                "merge another ValidationError"
+            )
+        if not another.errors:
+            raise ValueError(
+                "Another ValidationError does not have list of error items. "
+                "Cannot to merge into ValidationError"
+            )
+
+        self.errors += another.errors
+        return self
 
     @classmethod
     def from_dict(  # type: ignore
@@ -276,6 +317,13 @@ class ValidationError(OpenAPIError):
         return cls(message="Response data validation error", errors=result)
 
 
+class ServerError(OpenAPIError):
+    """Server error."""
+
+    default_message = "Server error"
+    status = 500
+
+
 def ensure_loc(loc: List[PathItem]) -> List[PathItem]:
     return [item for item in loc if item != ""]
 
@@ -284,6 +332,15 @@ def get_common_error_details(
     loc: List[PathItem], err: CoreOpenAPIError
 ) -> ValidationErrorItem:
     return {"loc": loc, "message": str(err)}
+
+
+def get_current_validation_error_loc() -> Loc:
+    """Return current validation error location (path).
+
+    In most cases you don't need to call this function directly, but it might
+    be useful for logging purposes.
+    """
+    return VALIDATION_ERROR_LOC.get()
 
 
 def get_json_schema_validation_error_details(
@@ -353,3 +410,60 @@ def get_unmarshal_error_details(
 
 def is_only_security_error(errors: List[CoreOpenAPIError]) -> bool:
     return len(errors) == 1 and isinstance(errors[0], InvalidSecurity)
+
+
+@contextmanager
+def validation_error_context(*path: PathItem) -> Iterator[Loc]:
+    """Context manager to specify the proper path for validation error item.
+
+    Main purpose to setup validation error path for external validators.
+
+    For example, when you need to have reusable validator for phone number, you
+    can organize your code as follows,
+
+    1. Create ``validate_phone`` function, which will check whether string is
+       a valid phone number. If not raise a
+       :class:`rororo.openapi.ValidationError` with specific message.
+    2. Reuse ``validate_phone`` function anywhere in your code by wrapping call
+       into ``validation_error_context`` context manager
+
+    First level errors,
+
+    .. code-block:: python
+
+        @operations.register
+        async def create_user(request: web.Request) -> web.Response:
+            data = get_validated_data(request)
+
+            with validation_error_context("body", "phone"):
+                phone = validate_phone(data["phone"])
+
+            ...
+
+    Secon level errors,
+
+    .. code-block:: python
+
+        @operations.register
+        async def create_order(request: web.Request) -> web.Response:
+            with validation_error_context("body"):
+                order = validate_order(get_validated_data(request))
+
+            ...
+
+
+        def validate_order(data: MappingStrAny) -> Order:
+            with validation_error_context("user", "phone"):
+                user_phone = validate_phone(data["user"]["phone"])
+            ...
+
+    """
+    current_loc = get_current_validation_error_loc()
+    next_loc = (*current_loc, *path)
+
+    token = VALIDATION_ERROR_LOC.set(next_loc)
+
+    try:
+        yield next_loc
+    finally:
+        VALIDATION_ERROR_LOC.reset(token)

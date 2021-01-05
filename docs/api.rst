@@ -8,6 +8,7 @@ OpenAPI
 .. automodule:: rororo.openapi
 .. autofunction:: rororo.openapi.setup_openapi
 .. autoclass:: rororo.openapi.OperationTableDef
+.. autofunction:: rororo.openapi.read_openapi_schema
 .. autofunction:: rororo.openapi.openapi_context
 .. autofunction:: rororo.openapi.get_openapi_context
 .. autofunction:: rororo.openapi.get_openapi_schema
@@ -18,12 +19,20 @@ OpenAPI
 .. automodule:: rororo.openapi.data
 .. autoclass:: rororo.openapi.data.OpenAPIContext
 
-.. autofunction:: rororo.openapi.openapi.read_openapi_schema
-
 rororo.openapi.exceptions
 -------------------------
 
-.. autoclass:: rororo.openapi.exceptions.ValidationError
+.. autoclass:: rororo.openapi.BadRequest
+.. autoclass:: rororo.openapi.SecurityError
+.. autoclass:: rororo.openapi.BasicSecurityError
+.. autoclass:: rororo.openapi.InvalidCredentials
+.. autoclass:: rororo.openapi.BasicInvalidCredentials
+.. autoclass:: rororo.openapi.ObjectDoesNotExist
+.. autoclass:: rororo.openapi.ValidationError
+.. autoclass:: rororo.openapi.ServerError
+
+.. autofunction:: rororo.openapi.validation_error_context
+.. autofunction:: rororo.openapi.get_current_validation_error_loc
 
 Settings
 ========
