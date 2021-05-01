@@ -147,7 +147,7 @@ idna = ">=2.0.0"
 
 [[package]]
 name = "environ-config"
-version = "20.1.0"
+version = "21.1.0"
 description = "Boilerplate-free configuration with env variables."
 category = "main"
 optional = false
@@ -157,8 +157,8 @@ python-versions = "*"
 attrs = ">=17.4.0"
 
 [package.extras]
-dev = ["pytest", "coverage", "sphinx", "sphinx-rtd-theme", "pre-commit"]
-docs = ["sphinx", "sphinx-rtd-theme"]
+dev = ["pytest", "coverage", "sphinx", "furo", "pre-commit"]
+docs = ["sphinx", "furo"]
 tests = ["pytest", "coverage"]
 
 [[package]]
@@ -210,7 +210,7 @@ zipp = ">=0.5"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
 name = "iniconfig"
@@ -431,7 +431,7 @@ coverage = ">=5.2.1"
 pytest = ">=4.6"
 
 [package.extras]
-testing = ["fields", "hunter", "process-tests (2.0.2)", "six", "pytest-xdist", "virtualenv"]
+testing = ["fields", "hunter", "process-tests (==2.0.2)", "six", "pytest-xdist", "virtualenv"]
 
 [[package]]
 name = "pytest-env"
@@ -519,12 +519,12 @@ python-versions = ">=3.6"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "5374214a43aca2ad36e21e9ce9eb35aba510d4db45e3721383845a660e6eda42"
+content-hash = "bbbccb259c4da81d00e4eb448b5834ebea510e5a71ed43ce2789a3a6eaee42ac"
 
 [metadata.files]
 aiohttp = [
@@ -596,6 +596,7 @@ chardet = [
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
+    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 contextvars = [
     {file = "contextvars-2.4.tar.gz", hash = "sha256:f38c908aaa59c14335eeea12abea5f443646216c4e29380d7bf34d2018e2c39e"},
@@ -663,8 +664,8 @@ email-validator = [
     {file = "email_validator-1.1.2-py2.py3-none-any.whl", hash = "sha256:094b1d1c60d790649989d38d34f69e1ef07792366277a2cf88684d03495d018f"},
 ]
 environ-config = [
-    {file = "environ-config-20.1.0.tar.gz", hash = "sha256:3167feda073bd3cd3457a3e5fa7c2836b6574c046cd0dcd79385ce3284e837bd"},
-    {file = "environ_config-20.1.0-py2.py3-none-any.whl", hash = "sha256:0e300307520c1e6a5424018b7f70246a2c7f4cb5cc5cbbebccc6a982eb1767cb"},
+    {file = "environ-config-21.1.0.tar.gz", hash = "sha256:d82fa2f760ac031fb9f434be56a0a83e98dbeba8151cdd96feaf86cd17417dd9"},
+    {file = "environ_config-21.1.0-py2.py3-none-any.whl", hash = "sha256:0d90ebafbc46b00d60d11694e3157d866833be250e7163bff27fed946192f1ed"},
 ]
 hiredis = [
     {file = "hiredis-1.1.0-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:289b31885b4996ce04cadfd5fc03d034dce8e2a8234479f7c9e23b9e245db06b"},
@@ -740,6 +741,7 @@ importlib-metadata = [
     {file = "importlib_metadata-3.3.0.tar.gz", hash = "sha256:5c5a2720817414a6c41f0a49993908068243ae02c1635a228126519b509c8aed"},
 ]
 iniconfig = [
+    {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 isodate = [
