@@ -98,7 +98,7 @@ jobs:
 
       - name: "Run pre-commit"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
-        uses: "pre-commit/action@v2.0.0"
+        uses: "pre-commit/action@v2.0.3"
 
       - name: "Validate OpenAPI schemas"
         if: "matrix.python-version == env.DEV_PYTHON_VERSION"
