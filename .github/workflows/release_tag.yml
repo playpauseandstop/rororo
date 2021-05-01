@@ -31,7 +31,7 @@ jobs:
           token: "${{ steps.token.outputs.token }}"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.2.1"
+        uses: "actions/setup-python@v2.2.2"
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
 
