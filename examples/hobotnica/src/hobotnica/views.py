@@ -4,6 +4,7 @@ from aiohttp import web
 
 from rororo import openapi_context, OperationTableDef
 from rororo.openapi.exceptions import ObjectDoesNotExist
+
 from .data import ENVIRONMENT_VARS, GITHUB_REPOSITORIES
 from .decorators import login_required
 

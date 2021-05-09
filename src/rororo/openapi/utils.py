@@ -6,6 +6,7 @@ from openapi_core.schema.specs.models import Spec
 from openapi_core.validation.request.datatypes import OpenAPIRequest
 from yarl import URL
 
+from ..annotations import DictStrAny
 from .annotations import ValidateEmailKwargsDict
 from .constants import (
     APP_OPENAPI_SCHEMA_KEY,
@@ -15,7 +16,6 @@ from .constants import (
 )
 from .data import OpenAPIContext, OpenAPIParameters
 from .exceptions import ConfigurationError, ContextError
-from ..annotations import DictStrAny
 
 
 def add_prefix(path: str, prefix: Optional[str]) -> str:

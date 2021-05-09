@@ -11,10 +11,10 @@ from openapi_core.validation.request.datatypes import (
 from openapi_core.validation.response.datatypes import OpenAPIResponse
 from yarl import URL
 
+from ..annotations import Handler
 from .constants import HANDLER_OPENAPI_MAPPING_KEY
 from .exceptions import OperationError
 from .utils import get_openapi_spec
-from ..annotations import Handler
 
 
 def find_core_operation(

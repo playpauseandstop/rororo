@@ -11,6 +11,7 @@ place.
 import types
 from typing import Any, Callable, Dict, Mapping, Type, TypeVar, Union
 
+
 try:
     from typing_extensions import Literal, Protocol, TypedDict
 except ImportError:

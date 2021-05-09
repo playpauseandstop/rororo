@@ -7,6 +7,7 @@ from aioredis import create_redis
 
 from rororo import setup_openapi, setup_settings
 from rororo.settings import APP_SETTINGS_KEY
+
 from . import views
 from .constants import APP_REDIS_KEY, APP_STORAGE_KEY
 from .settings import Settings

@@ -4,6 +4,7 @@ from typing import List
 from aiohttp import web
 
 from rororo import setup_openapi, setup_settings
+
 from . import views
 from .settings import Settings
 

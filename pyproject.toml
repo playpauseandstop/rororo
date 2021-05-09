@@ -22,6 +22,13 @@ fail_under = 95
 skip_covered = true
 show_missing = true
 
+[tool.isort]
+profile = "attrs"
+combine_as_imports = true
+force_alphabetical_sort_within_sections = true
+lines_between_types = 0
+virtual_env = "./.venv/"
+
 [tool.poetry]
 name = "rororo"
 version = "2.2.0"
@@ -54,7 +61,7 @@ classifiers = [
 python = "^3.6"
 aiohttp = "^3.5"
 aiohttp-middlewares = "^1.1.0"
-attrs = ">=19.1,<21"
+attrs = ">=19.2.0,<21"
 contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
 environ-config = ">=20.1,<22.0"
@@ -77,7 +84,7 @@ pytest-env = "^0.6.2"
 "Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
 
 [tool.pytest.ini_options]
-minversion = "6.1.2"
+minversion = "6.2.3"
 testpaths = ["tests/"]
 addopts = "--cov --no-cov-on-fail"
 env = """
@@ -115,7 +122,7 @@ commands =
 [testenv:py39-prev]
 commands_pre =
   poetry install
-  poetry run python -m pip install attrs==19.3.0 openapi-core==0.13.3
+  poetry run python -m pip install attrs==19.2.0 environ-config==20.1.0 openapi-core==0.13.3 pyrsistent==0.16
 """
 
 [build-system]

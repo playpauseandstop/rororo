@@ -9,6 +9,7 @@ from aiohttp_middlewares import (
 )
 
 from rororo import BaseSettings, setup_openapi, setup_settings
+
 from . import views
 
 
