@@ -370,13 +370,18 @@ def fix_spec_operations(spec: Spec, schema: DictStrAny) -> Spec:
             if not isinstance(maybe_operation_data, dict):
                 continue
 
-            mapping[
-                maybe_operation_data["operationId"]
-            ] = maybe_operation_data.get("security")
+            operation_id = maybe_operation_data.get("operationId")
+            if operation_id is None:
+                continue
+
+            mapping[operation_id] = maybe_operation_data.get("security")
 
     for path in spec.paths.values():
         for operation in path.operations.values():
             if operation.security != []:
+                continue
+
+            if operation.operation_id is None:
                 continue
 
             operation.security = mapping[operation.operation_id]

@@ -15,7 +15,7 @@ repos:
     rev: "5.8.0"
     hooks:
       - id: "isort"
-        name: "Format backend code (isort)"
+        name: "Format code (isort)"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/psf/black"
