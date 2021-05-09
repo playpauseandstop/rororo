@@ -172,6 +172,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/AnyObject"
 
+  "/webhooks/{webhook_uid}":
+    parameters:
+      - $ref: "#/components/parameters/WebhookUID"
+
+    post:
+      tags: ["webhook"]
+      summary: "React on GitHub webhook payload by running registered job (not yet implemented)"
+      responses:
+        <<: *default_responses
+        "200":
+          description: "Build details"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnyObject"
+
 components:
   parameters:
     GitHubUsername:
@@ -201,6 +217,14 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/RepositoryName"
+
+    WebhookUID:
+      name: "webhook_uid"
+      in: "path"
+      required: true
+      schema:
+        type: "string"
+        format: "uuid"
 
   responses:
     DefaultResponse:
