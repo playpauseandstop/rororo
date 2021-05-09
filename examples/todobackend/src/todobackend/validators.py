@@ -2,6 +2,7 @@ from aiohttp import web
 
 from rororo import openapi_context
 from rororo.openapi.exceptions import ObjectDoesNotExist
+
 from .constants import APP_STORAGE_KEY
 from .data import Todo
 from .storage import Storage

@@ -2,6 +2,7 @@ import attr
 from aiohttp import web
 
 from rororo import openapi_context, OperationTableDef
+
 from .constants import APP_STORAGE_KEY
 from .data import Todo
 from .storage import Storage

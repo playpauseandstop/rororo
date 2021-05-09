@@ -14,7 +14,7 @@ from typing import Any, Optional, Union
 from .annotations import DictStrAny
 
 
-class IgnoreErrorsFilter(object):
+class IgnoreErrorsFilter:
     """Ignore all warnings and errors from stdout handler."""
 
     def filter(self, record: logging.LogRecord) -> bool:  # noqa: A003

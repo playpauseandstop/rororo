@@ -4,6 +4,7 @@ from aiohttp import web
 
 from rororo import openapi_context, OperationTableDef
 from rororo.openapi import get_validated_data, get_validated_parameters
+
 from .data import NewPet
 from .shortcuts import get_pet_or_404
 

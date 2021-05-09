@@ -4,9 +4,9 @@ import yaml
 from aiohttp import web
 from aiohttp_middlewares import error_context
 
+from ..annotations import MappingStrStr
 from .exceptions import ConfigurationError, OpenAPIError
 from .utils import get_openapi_schema
-from ..annotations import MappingStrStr
 
 
 logger = logging.getLogger(__name__)

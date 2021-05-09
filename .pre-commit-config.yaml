@@ -3,7 +3,7 @@ default_language_version:
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.16.0"
+    rev: "v2.17.6"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -11,8 +11,15 @@ repos:
         language_version: "python3.9"
         stages: ["commit-msg"]
 
+  - repo: "https://github.com/PyCQA/isort"
+    rev: "5.8.0"
+    hooks:
+      - id: "isort"
+        name: "Format backend code (isort)"
+        exclude: ^docs/.*$
+
   - repo: "https://github.com/psf/black"
-    rev: "20.8b1"
+    rev: "21.5b0"
     hooks:
       - id: "black"
         # By default black using `python3` instead `python` language, so
@@ -28,7 +35,7 @@ repos:
         name: "Format docs (blacken-docs)"
         args: ["-l", "64"]
         additional_dependencies:
-          - "black==20.8b1"
+          - "black==21.5b0"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v3.4.0"
@@ -39,21 +46,21 @@ repos:
       - id: "check-toml"
       - id: "check-yaml"
 
-  - repo: "https://gitlab.com/PyCQA/flake8"
-    rev: "3.8.4"
+  - repo: "https://github.com/PyCQA/flake8"
+    rev: "3.9.2"
     hooks:
       - id: "flake8"
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
-          - "flake8==3.8.4"
+          - "flake8==3.9.2"
           - "flake8-broken-line==0.3.0"
-          - "flake8-bugbear==21.3.2"
+          - "flake8-bugbear==21.4.3"
           - "flake8-builtins==1.5.3"
-          - "flake8-comprehensions==3.3.1"
+          - "flake8-comprehensions==3.4.0"
           - "flake8-eradicate==1.0.0"
-          - "flake8-import-order==0.18.1"
+          - "flake8-isort==4.0.0"
           - "flake8-mutable==1.2.0"
-          - "flake8-pie==0.6.1"
+          - "flake8-pie==0.11.0"
           - "flake8-quotes==3.2.0"
           - "flake8-string-format==0.3.0"
           - "flake8-tidy-imports==4.2.1"
@@ -62,7 +69,7 @@ repos:
         exclude: ^docs/.*$
 
   - repo: "https://github.com/asottile/yesqa"
-    rev: "v1.2.2"
+    rev: "v1.2.3"
     hooks:
       - id: yesqa
         name: "Lint code (yesqa)"

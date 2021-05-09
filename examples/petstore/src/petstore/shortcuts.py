@@ -1,6 +1,7 @@
 from typing import List
 
 from rororo.openapi.exceptions import ObjectDoesNotExist
+
 from .data import Pet
 
 

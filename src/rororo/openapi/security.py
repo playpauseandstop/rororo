@@ -12,9 +12,9 @@ from openapi_core.validation.request.datatypes import OpenAPIRequest
 from openapi_core.validation.request.validators import RequestValidator
 from pyrsistent import pmap
 
+from ..annotations import MappingStrAny
 from .annotations import SecurityDict
 from .exceptions import BasicSecurityError, SecurityError
-from ..annotations import MappingStrAny
 
 
 AUTHORIZATION_HEADER = hdrs.AUTHORIZATION

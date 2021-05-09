@@ -4,10 +4,10 @@ from aiohttp import web
 from aiohttp_middlewares import error_middleware, get_error_response
 from aiohttp_middlewares.annotations import Middleware
 
+from ..annotations import DictStrAny, Handler
 from .constants import REQUEST_CORE_OPERATION_KEY
 from .core_data import find_core_operation
 from .validators import validate_request, validate_response
-from ..annotations import DictStrAny, Handler
 
 
 def get_actual_handler(handler: Handler) -> Handler:

@@ -13,13 +13,13 @@ on:
 
 env:
   BADABUMP_VERSION: "21.1.0"
-  COMMITIZEN_VERSION: "2.16.0"
+  COMMITIZEN_VERSION: "2.17.6"
   COVERALLS_VERSION: "3.0.1"
-  DEV_PYTHON_VERSION: "3.9.2"
-  POETRY_VERSION: "1.1.5"
-  TOX_GH_ACTIONS_VERSION: "2.4.0"
-  TOX_VERSION: "3.23.0"
-  TWINE_VERSION: "3.3.0"
+  DEV_PYTHON_VERSION: "3.9.5"
+  POETRY_VERSION: "1.1.6"
+  TOX_GH_ACTIONS_VERSION: "2.5.0"
+  TOX_VERSION: "3.23.1"
+  TWINE_VERSION: "3.4.1"
 
 jobs:
   dev:
@@ -97,11 +97,11 @@ jobs:
           python3 -m pip install tox==${{ env.TOX_VERSION }} tox-gh-actions==${{ env.TOX_GH_ACTIONS_VERSION }}
 
       - name: "Run pre-commit"
-        if: "matrix.python-version == env.DEV_PYTHON_VERSION"
+        if: "startsWith(env.DEV_PYTHON_VERSION, matrix.python-version)"
         uses: "pre-commit/action@v2.0.3"
 
       - name: "Validate OpenAPI schemas"
-        if: "matrix.python-version == env.DEV_PYTHON_VERSION"
+        if: "startsWith(env.DEV_PYTHON_VERSION, matrix.python-version)"
         run: |
           set -e
           poetry run python3 -m openapi_spec_validator ./examples/hobotnica/src/hobotnica/openapi.yaml
@@ -117,22 +117,13 @@ jobs:
           REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         run: "python3 -m tox"
 
-      - name: "Run tests with attrs 19.3.0 & openapi-core 0.13.3"
-        if: "matrix.python-version == env.DEV_PYTHON_VERSION"
-        env:
-          TOXENV: "py39-prev"
-          PYTEST_ADDOPTS: "--no-cov"
-          PYTHONPATH: "./examples/hobotnica/src:./examples/petstore/src:./examples/simulations/src:./examples/todobackend/src"
-          REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
-        run: "python3 -m tox"
-
       - name: "Send report to coveralls"
-        if: "matrix.python-version == env.DEV_PYTHON_VERSION"
+        if: "startsWith(env.DEV_PYTHON_VERSION, matrix.python-version)"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
           python3 -m pip install coveralls==${{ env.COVERALLS_VERSION }}
-          python3 -m coveralls
+          python3 -m coveralls --service=github
 
   package:
     needs: ["test"]
