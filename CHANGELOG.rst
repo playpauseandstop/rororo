@@ -3,12 +3,12 @@
 
 This release allows to install latest versions of,
 
-- `attrs`
-- `environ-config`
+- ``attrs``
+- ``environ-config``
 
-As well as depend on only supported version of `openapi-core` library,
-which ensures that `poetry update` do not install unsupported version
-of `openapi-core`.
+As well as depend on only supported version of ``openapi-core`` library,
+which ensures that ``poetry update`` do not install unsupported version
+of ``openapi-core``.
 
 **Other:**
 
