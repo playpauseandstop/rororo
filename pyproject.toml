@@ -31,7 +31,7 @@ virtual_env = "./.venv/"
 
 [tool.poetry]
 name = "rororo"
-version = "2.2.0"
+version = "2.2.1"
 description = "aiohttp.web OpenAPI 3 schema first server applications."
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"

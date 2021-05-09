@@ -1,3 +1,37 @@
+2.2.1 (2021-05-09)
+==================
+
+This release allows to install latest versions of,
+
+- ``attrs``
+- ``environ-config``
+
+As well as depend on only supported version of ``openapi-core`` library,
+which ensures that ``poetry update`` do not install unsupported version
+of ``openapi-core``.
+
+**Other:**
+
+- (**deps**) bump pyyaml from 5.3.1 to 5.4.1 (#147)
+- (**deps-dev**) bump coverage from 5.3.1 to 5.4 (#145)
+- (**deps-dev**) bump pytest from 6.2.1 to 6.2.2 (#146)
+- (**deps-dev**) bump pytest-cov from 2.10.1 to 2.11.1 (#144)
+- (**deps**) bump peter-evans/create-pull-request from v3.6.0 to v3.8.0 (#148)
+- Bump Python dev version to 3.9.2 (#160)
+- (**deps**) bump actions/cache from v2.1.3 to v2.1.4 (#158)
+- (**deps**) bump pypa/gh-action-pypi-publish from v1.4.1 to v1.4.2 (#157)
+- (**deps**) bump peter-evans/create-pull-request from v3.8.0 to v3.8.2 (#156)
+- (**deps**) bump actions/setup-python from v2.2.1 to v2.2.2 (#165)
+- (**deps**) bump actions/cache from v2.1.4 to v2.1.5 (#166)
+- (**deps**) bump pre-commit/action from v2.0.0 to v2.0.3 (#167)
+- (**deps**) bump environ-config from 20.1.0 to 21.1.0 (#164)
+- (**deps-dev**) bump pytest from 6.2.2 to 6.2.3 (#163)
+- [#149] Pin supported openapi-core version (#170)
+- Apply isort pre-commit hook (#174)
+- (**deps**) bump attrs from 20.3.0 to 21.2.0 (#171)
+- (**deps-dev**) bump pytest from 6.2.3 to 6.2.4 (#173)
+- Update docs requirements (#175)
+
 2.2.0 (2021-01-05)
 ==================
 
