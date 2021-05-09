@@ -1,6 +1,15 @@
 2.2.1 (2021-05-09)
 ==================
 
+This release allows to install latest versions of,
+
+- `attrs`
+- `environ-config`
+
+As well as depend on only supported version of `openapi-core` library,
+which ensures that `poetry update` do not install unsupported version
+of `openapi-core`.
+
 **Other:**
 
 - (**deps**) bump pyyaml from 5.3.1 to 5.4.1 (#147)
@@ -21,7 +30,7 @@
 - Apply isort pre-commit hook (#174)
 - (**deps**) bump attrs from 20.3.0 to 21.2.0 (#171)
 - (**deps-dev**) bump pytest from 6.2.3 to 6.2.4 (#173)
-- Update requirements (#175)
+- Update docs requirements (#175)
 
 2.2.0 (2021-01-05)
 ==================
