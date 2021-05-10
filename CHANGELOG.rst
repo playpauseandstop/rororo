@@ -1,3 +1,14 @@
+2.2.2 (2021-05-10)
+==================
+
+**Fixes:**
+
+- Ensure that Operation ID is an optional value (#178)
+
+**Other:**
+
+- Depend on typing-extensions (#179)
+
 2.2.1 (2021-05-09)
 ==================
 
