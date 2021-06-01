@@ -77,7 +77,7 @@ async_generator = {python = "~3.6", version = "^1.10"}
 coverage = "^5.5"
 pytest = "^6.2.4"
 pytest-aiohttp = "^0.3.0"
-pytest-cov = "^2.11.1"
+pytest-cov = "^2.12.1"
 pytest-env = "^0.6.2"
 
 [tool.poetry.urls]
