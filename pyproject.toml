@@ -67,7 +67,7 @@ email-validator = "^1.0.5"
 environ-config = ">=20.1,<22.0"
 isodate = "^0.6.0"
 openapi-core = ">=0.13.3,<0.13.7"
-pyrsistent = ">=0.16,<0.18"
+pyrsistent = ">=0.16,<0.19"
 PyYAML = "^5.1"
 typing-extensions = "^3.7"
 
