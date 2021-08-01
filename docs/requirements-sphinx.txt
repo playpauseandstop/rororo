@@ -125,21 +125,21 @@ snowballstemmer==2.1.0 \
     --hash=sha256:b51b447bea85f9968c13b650126a888aabd4cb4463fca868ec596826325dedc2 \
     --hash=sha256:e997baa4f2e9139951b6f4c631bad912dfd3c792467e2f03d7239464af90e914
     # via sphinx
-sphinx-autobuild==2021.3.14 \
-    --hash=sha256:8fe8cbfdb75db04475232f05187c776f46f6e9e04cacf1e49ce81bdac649ccac \
-    --hash=sha256:de1ca3b66e271d2b5b5140c35034c89e47f263f2cd5db302c9217065f7443f05
-    # via -r ./docs/requirements-sphinx.in
-sphinx-autodoc-typehints==1.12.0 \
-    --hash=sha256:193617d9dbe0847281b1399d369e74e34cd959c82e02c7efde077fca908a9f52 \
-    --hash=sha256:5e81776ec422dd168d688ab60f034fccfafbcd94329e9537712c93003bddc04a
-    # via -r ./docs/requirements-sphinx.in
 sphinx==3.5.4 \
     --hash=sha256:19010b7b9fa0dc7756a6e105b2aacd3a80f798af3c25c273be64d7beeb482cb1 \
     --hash=sha256:2320d4e994a191f4b4be27da514e46b3d6b420f2ff895d064f52415d342461e8
     # via
-    #   -r ./docs/requirements-sphinx.in
+    #   -r requirements-sphinx.in
     #   sphinx-autobuild
     #   sphinx-autodoc-typehints
+sphinx-autobuild==2021.3.14 \
+    --hash=sha256:8fe8cbfdb75db04475232f05187c776f46f6e9e04cacf1e49ce81bdac649ccac \
+    --hash=sha256:de1ca3b66e271d2b5b5140c35034c89e47f263f2cd5db302c9217065f7443f05
+    # via -r requirements-sphinx.in
+sphinx-autodoc-typehints==1.12.0 \
+    --hash=sha256:193617d9dbe0847281b1399d369e74e34cd959c82e02c7efde077fca908a9f52 \
+    --hash=sha256:5e81776ec422dd168d688ab60f034fccfafbcd94329e9537712c93003bddc04a
+    # via -r requirements-sphinx.in
 sphinxcontrib-applehelp==1.0.2 \
     --hash=sha256:806111e5e962be97c29ec4c1e7fe277bfd19e9652fb1a4392105b43e01af885a \
     --hash=sha256:a072735ec80e7675e3f432fcae8610ecf509c5f1869d17e2eecff44389cdbc58
@@ -207,9 +207,9 @@ tornado==6.1 \
     --hash=sha256:fa2ba70284fa42c2a5ecb35e322e68823288a4251f9ba9cc77be04ae15eada68 \
     --hash=sha256:fba85b6cd9c39be262fcd23865652920832b61583de2a2ca907dbd8e8a8c81e5
     # via livereload
-urllib3==1.26.4 \
-    --hash=sha256:2f4da4594db7e1e110a944bb1b551fdf4e6c136ad42e4234131391e21eb5b0df \
-    --hash=sha256:e7b021f7241115872f92f43c6508082facffbd1c048e3c6e2bb9c2a157e28937
+urllib3==1.26.5 \
+    --hash=sha256:753a0374df26658f99d826cfe40394a686d05985786d946fbe4165b5148f5a7c \
+    --hash=sha256:a7acd0977125325f516bda9735fa7142b909a8d01e8b2e4c8108d0984e6e0098
     # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
