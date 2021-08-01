@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import AsyncIterator, List
 
-import aioredis
 from aiohttp import web
 from aiohttp_middlewares import https_middleware
+from aioredis.client import Redis
 
 from rororo import setup_openapi, setup_settings
 from rororo.settings import APP_SETTINGS_KEY
@@ -54,7 +54,7 @@ def create_app(
 async def storage_context(app: web.Application) -> AsyncIterator[None]:
     settings: Settings = app[APP_SETTINGS_KEY]
 
-    redis = app[APP_REDIS_KEY] = await aioredis.from_url(  # type: ignore[no-untyped-call]
+    redis = app[APP_REDIS_KEY] = await Redis.from_url(
         settings.redis_url, decode_responses=True
     )
     app[APP_STORAGE_KEY] = Storage(
