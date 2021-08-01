@@ -2,14 +2,14 @@ import uuid
 from typing import Optional, Union
 
 import pyrsistent
-from aioredis.connection import RedisConnection
+from aioredis.client import Redis
 from pyrsistent.typing import PVector
 
 from .data import Todo
 
 
 class Storage:
-    def __init__(self, *, redis: RedisConnection, data_key: str) -> None:
+    def __init__(self, *, redis: Redis, data_key: str) -> None:
         self.redis = redis
         self.data_key = data_key
 
@@ -58,6 +58,6 @@ class Storage:
         return pyrsistent.v(*data)
 
     async def save_todo(self, todo: Todo) -> None:
-        await self.redis.hmset_dict(
-            self.build_item_key(todo), todo.to_storage()
+        await self.redis.hset(
+            self.build_item_key(todo), mapping=todo.to_storage()
         )

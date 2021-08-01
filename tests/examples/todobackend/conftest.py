@@ -3,9 +3,9 @@ try:
 except ImportError:
     from async_generator import asynccontextmanager
 
+import aioredis
 import attr
 import pytest
-from aioredis import create_redis
 from todobackend.settings import Settings
 
 
@@ -18,7 +18,9 @@ def todobackend_data():
 def todobackend_redis():
     @asynccontextmanager
     async def factory(*, settings: Settings):
-        redis = await create_redis(settings.redis_url, encoding="utf-8")
+        redis = await aioredis.from_url(
+            settings.redis_url, decode_responses=True
+        )
 
         try:
             yield redis
@@ -27,8 +29,7 @@ def todobackend_redis():
             for key in keys:
                 await redis.delete(key)
 
-            redis.close()
-            await redis.wait_closed()
+            await redis.close()
 
     return factory
 
