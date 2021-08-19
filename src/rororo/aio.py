@@ -31,7 +31,7 @@ class AddResourceFunc(Protocol):
         get: Handler = None,
         *,
         name: str = None,
-        **kwargs: Handler
+        **kwargs: Handler,
     ) -> web.Resource:
         ...
 

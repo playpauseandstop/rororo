@@ -37,7 +37,7 @@ def openapi_middleware(
     *,
     is_validate_response: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: DictStrAny = None
+    error_middleware_kwargs: DictStrAny = None,
 ) -> Middleware:
     """Middleware to handle requests to handlers covered by OpenAPI schema.
 

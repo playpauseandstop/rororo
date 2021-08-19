@@ -10,13 +10,14 @@
 	lint-python \
 	lint-python-only \
 	list-outdated-python \
+	python-version \
 	test-python \
 	test-python-only \
 	test-python-setup \
 	test-python-teardown
 
 PYTHON_DIST_DIR = ./dist
-PYTHON_VERISON = $(shell cat .python-version)
+PYTHON_VERSION = $(shell cat .python-version)
 VENV_DIR = ./.venv
 PYTHON_BIN = $(VENV_DIR)/bin/python3
 
@@ -35,10 +36,11 @@ clean-python:
 	find . \( -name __pycache__ -o -type d -empty \) -exec rm -rf {} + 2> /dev/null
 
 distclean-python: clean-egg-info
-	-rm -rf .coverage .install-python $(VENV_DIR)/ $(PYTHON_DIST_DIR)/
+	-rm -rf ./.coverage ./.install-python $(VENV_DIR)/ $(PYTHON_DIST_DIR)/
 
 ensure-venv: .python-version
-	if [ -f "$(PYTHON_BIN)" ]; then if [ "$$("$(PYTHON_BIN)" -V)" != "Python $(PYTHON_VERISON)" ]; then rm -rf $(VENV_DIR)/; fi; fi
+	if [ ! -f "$(PYTHON_BIN)" ]; then $(POETRY) env use $(PYTHON_VERSION); fi
+	if [ -f "$(PYTHON_BIN)" ]; then if [ "$$("$(PYTHON_BIN)" -V)" != "Python $(PYTHON_VERSION)" ]; then $(POETRY) env use $(PYTHON_VERSION); fi; fi
 
 install-python: .install-python
 .install-python: poetry.toml $(PYTHON_BIN) poetry.lock
@@ -61,6 +63,10 @@ poetry.lock: pyproject.toml
 poetry.toml:
 	$(POETRY) config --local virtualenvs.create true
 	$(POETRY) config --local virtualenvs.in-project true
+
+python-version:
+	@echo "Expected: Python $(PYTHON_VERSION)"
+	@if [ -f "$(PYTHON_BIN)" ]; then echo "Virtual env: $$("$(PYTHON_BIN)" -V)"; else echo "Virtual env: -"; fi
 
 test-python: install-python lint-python clean-python test-python-only
 

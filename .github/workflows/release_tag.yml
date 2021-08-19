@@ -2,13 +2,15 @@ defaults:
   run:
     shell: "bash"
 
+name: "Auto Create Release Tag"
+
 on:
   pull_request:
     types: ["closed"]
 
 env:
-  BADABUMP_VERSION: "21.1.0"
-  PYTHON_VERSION: "3.9.2"
+  BADABUMP_VERSION: "21.2.3"
+  PYTHON_VERSION: "3.10.0-rc.1"
   PYTHONUNBUFFERED: "1"
 
 jobs:
@@ -44,7 +46,7 @@ jobs:
 
       - name: "Create release tag from latest commit"
         run: |
-          set -e
+          set -euo pipefail
 
           git config user.name badabump-release-bot[bot]
           git config user.email badabump-release-bot[bot]@users.noreply.github.com

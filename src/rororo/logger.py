@@ -55,7 +55,7 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
             "default": {
                 "format": "%(asctime)s [%(levelname)s:%(name)s] %(message)s"
             },
-            "naked": {"format": u"%(message)s"},
+            "naked": {"format": "%(message)s"},
         },
         "handlers": {
             "stdout": {
@@ -84,7 +84,7 @@ def update_sentry_logging(
     sentry_dsn: Optional[str],
     *loggers: str,
     level: Union[str, int] = None,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> None:
     r"""Enable Sentry logging if Sentry DSN passed.
 
