@@ -14,12 +14,12 @@ on:
 
 env:
   BADABUMP_VERSION: "21.2.3"
-  PYTHON_VERSION: "3.10.0-rc.1"
+  PYTHON_VERSION: "3.10.0-rc.2"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   create_release_pr:
-    if: "github.actor == 'playpauseandstop'"
+    if: "${{ github.actor == 'playpauseandstop' }}"
     name: "Create release PR"
 
     runs-on: "ubuntu-latest"

@@ -10,12 +10,12 @@ on:
 
 env:
   BADABUMP_VERSION: "21.2.3"
-  PYTHON_VERSION: "3.10.0-rc.1"
+  PYTHON_VERSION: "3.10.0-rc.2"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   create_release_tag:
-    if: "startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true"
+    if: "${{ startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true }}"
     name: "Create release tag"
 
     runs-on: "ubuntu-latest"

@@ -5,6 +5,7 @@
 	example \
 	install \
 	lint \
+	lint-and-test \
 	lint-only \
 	list-outdated \
 	test \
@@ -58,6 +59,8 @@ endif
 install: install-python
 
 lint: lint-python
+
+lint-and-test: lint test
 
 lint-only: lint-python-only
 

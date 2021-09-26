@@ -127,17 +127,18 @@ typing-extensions = "^3.7"
 aioredis = {extras = ["hiredis"], version = "^2.0.0"}
 async_generator = {python = "~3.6", version = "^1.10"}
 coverage = "^5.5"
-pytest = "^6.2.4"
+mypy = "^0.910"
+pytest = "^6.2.5"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.12.1"
 pytest-env = "^0.6.2"
-types-PyYAML = "^5.4.6"
+types-PyYAML = "^5.4.10"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
 
 [tool.pytest.ini_options]
-minversion = "6.2.4"
+minversion = "6.2.5"
 testpaths = ["./tests/"]
 addopts = "--cov --no-cov-on-fail"
 env = """
@@ -148,7 +149,7 @@ log_level = "info"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py36,py37,py38,py39,py310,py310-minimal-requirements
+envlist = py36,py37,py38,py39,py310,py310-minimum-requirements
 skipsdist = True
 
 [gh-actions]
@@ -173,7 +174,7 @@ commands_pre =
 commands =
   poetry run python -m pytest
 
-[testenv:py310-minimal-requirements]
+[testenv:py310-minimum-requirements]
 commands_pre =
   poetry install
   poetry run python -m pip install attrs==19.2.0 environ-config==20.1.0 openapi-core==0.13.3 pyrsistent==0.16
