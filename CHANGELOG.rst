@@ -1,3 +1,20 @@
+2.2.3 (2021-10-31)
+==================
+
+**Other:**
+
+- (**deps**) bump actions/cache from 2.1.5 to 2.1.6 (#185)
+- (**deps**) bump peter-evans/create-pull-request from 3.8.2 to 3.10.0 (#186)
+- (**deps**) bump environ-config from 21.1.0 to 21.2.0 (#183)
+- (**deps-dev**) bump pytest-cov from 2.11.1 to 2.12.1 (#187)
+- (**deps**) bump email-validator from 1.1.2 to 1.1.3 (#190)
+- (**deps**) bump pyrsistent from 0.17.3 to 0.18.0 (#189)
+- (**deps**) bump urllib3 from 1.26.4 to 1.26.5 in /docs (#188)
+- (**deps-dev**) bump aioredis from 1.3.1 to 2.0.0 (#192)
+- (**deps**) bump tibdex/github-app-token from 1.3 to 1.4 (#197)
+- Use Python 3.10 as dev version (#194)
+- (**deps**) bump peter-evans/create-pull-request from 3.10.0 to 3.10.1 (#198)
+
 2.2.2 (2021-05-10)
 ==================
 
