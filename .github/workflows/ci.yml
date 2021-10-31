@@ -2,7 +2,7 @@ defaults:
   run:
     shell: "bash"
 
-name: "ci"
+name: "CI"
 
 on:
   push:
@@ -12,14 +12,20 @@ on:
     branches: ["master"]
 
 env:
-  BADABUMP_VERSION: "21.1.0"
-  COMMITIZEN_VERSION: "2.17.6"
-  COVERALLS_VERSION: "3.0.1"
-  DEV_PYTHON_VERSION: "3.9.5"
-  POETRY_VERSION: "1.1.6"
-  TOX_GH_ACTIONS_VERSION: "2.5.0"
-  TOX_VERSION: "3.23.1"
-  TWINE_VERSION: "3.4.1"
+  # Dev Python version
+  DEV_PYTHON_VERSION: "3.10.0"
+  # Get latest versions by running,
+  #
+  # ```bash
+  # pip-latest-release badabump coveralls poetry tox tox-gh-actions twine
+  # ```
+  #
+  BADABUMP_VERSION: "21.3.1"
+  COVERALLS_VERSION: "3.2.0"
+  POETRY_VERSION: "1.1.11"
+  TOX_VERSION: "3.24.4"
+  TOX_GH_ACTIONS_VERSION: "2.8.1"
+  TWINE_VERSION: "3.4.2"
 
 jobs:
   dev:
@@ -45,10 +51,15 @@ jobs:
       - name: "Cache venv"
         uses: "actions/cache@v2.1.6"
         with:
-          path: ".venv"
-          key: "venv-${{ hashFiles('poetry.lock') }}"
+          path: "./.venv/"
+          key: "venv-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}"
 
-      - name: "Install package"
+      - name: "Install package with dev dependencies"
+        if: "${{ startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
+        run: "poetry install"
+
+      - name: "Install package without dev dependencies"
+        if: "${{ !startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
         run: "poetry install --no-dev"
 
       - name: "Import package"
@@ -59,7 +70,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
 
     runs-on: "ubuntu-latest"
 
@@ -73,37 +84,40 @@ jobs:
     steps:
       - uses: "actions/checkout@v2.3.4"
 
+      - name: "Install system packages"
+        run: "sudo apt-get update -y && sudo apt-get install -y locales-all"
+
       - name: "Install Python"
         uses: "actions/setup-python@v2.2.2"
         with:
           python-version: "${{ matrix.python-version }}"
 
-      - name: "Install poetry"
-        run: "python3 -m pip install poetry==${{ env.POETRY_VERSION }}"
-
-      - name: "Install depencencies"
-        run: "sudo apt update -y && sudo apt install -y locales-all"
+      - name: "Install poetry & tox"
+        run: "python3 -m pip install poetry==${{ env.POETRY_VERSION }} tox==${{ env.TOX_VERSION }} tox-gh-actions==${{ env.TOX_GH_ACTIONS_VERSION }}"
 
       - name: "Cache venv"
         uses: "actions/cache@v2.1.6"
         with:
-          path: ".venv"
-          key: "venv-${{ hashFiles('poetry.lock') }}"
+          path: "./.venv/"
+          key: "venv-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}"
 
-      - name: "Install package"
-        run: |
-          set -e
-          poetry install --no-dev
-          python3 -m pip install tox==${{ env.TOX_VERSION }} tox-gh-actions==${{ env.TOX_GH_ACTIONS_VERSION }}
+      - name: "Install package with dev dependencies"
+        if: "${{ startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
+        run: "poetry install"
+
+      - name: "Install package without dev dependencies"
+        if: "${{ !startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
+        run: "poetry install --no-dev"
 
       - name: "Run pre-commit"
-        if: "startsWith(env.DEV_PYTHON_VERSION, matrix.python-version)"
+        if: "${{ startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
         uses: "pre-commit/action@v2.0.3"
 
       - name: "Validate OpenAPI schemas"
-        if: "startsWith(env.DEV_PYTHON_VERSION, matrix.python-version)"
+        if: "${{ startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
         run: |
-          set -e
+          set -euo pipefail
+
           poetry run python3 -m openapi_spec_validator ./examples/hobotnica/src/hobotnica/openapi.yaml
           poetry run python3 -m openapi_spec_validator ./examples/petstore/src/petstore/petstore-expanded.yaml
           poetry run python3 -m openapi_spec_validator ./examples/simulations/src/simulations/openapi.yaml
@@ -118,12 +132,14 @@ jobs:
         run: "python3 -m tox"
 
       - name: "Send report to coveralls"
-        if: "startsWith(env.DEV_PYTHON_VERSION, matrix.python-version)"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        if: "${{ startsWith(env.DEV_PYTHON_VERSION, matrix.python-version) }}"
         run: |
+          set -euo pipefail
+
           python3 -m pip install coveralls==${{ env.COVERALLS_VERSION }}
           python3 -m coveralls --service=github
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   package:
     needs: ["test"]
@@ -147,11 +163,13 @@ jobs:
 
       - name: "Check package"
         run: |
+          set -euo pipefail
+
           python3 -m pip install twine==${{ env.TWINE_VERSION }}
           python3 -m twine check dist/*
 
       - name: "Publish package"
-        if: "github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')"
+        if: "${{ github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') }}"
         uses: "pypa/gh-action-pypi-publish@v1.4.2"
         with:
           user: "${{ secrets.PYPI_USERNAME }}"
@@ -159,7 +177,7 @@ jobs:
 
   release:
     needs: ["package"]
-    if: "startsWith(github.ref, 'refs/tags/')"
+    if: "${{ startsWith(github.ref, 'refs/tags/') }}"
     name: "Create GitHub release"
 
     runs-on: "ubuntu-latest"
@@ -169,7 +187,8 @@ jobs:
 
       - name: "Fetch git data"
         run: |
-          set -e
+          set -euo pipefail
+
           git fetch --depth=1 origin +refs/tags/*:refs/tags/*
           git fetch --prune --unshallow
 
@@ -183,7 +202,7 @@ jobs:
 
       - id: "badabump"
         name: "Run badabump"
-        run: "python3 -m badabump.ci prepare_release \"${{ github.ref }}\""
+        run: 'python3 -m badabump.ci prepare_release "${{ github.ref }}"'
 
       - name: "Create new release"
         uses: "actions/create-release@v1.1.4"

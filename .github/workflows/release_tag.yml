@@ -2,18 +2,20 @@ defaults:
   run:
     shell: "bash"
 
+name: "Auto Create Release Tag"
+
 on:
   pull_request:
     types: ["closed"]
 
 env:
-  BADABUMP_VERSION: "21.1.0"
-  PYTHON_VERSION: "3.9.2"
+  BADABUMP_VERSION: "21.3.1"
+  PYTHON_VERSION: "3.10.0"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   create_release_tag:
-    if: "startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true"
+    if: "${{ startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true }}"
     name: "Create release tag"
 
     runs-on: "ubuntu-latest"
@@ -44,10 +46,14 @@ jobs:
 
       - name: "Create release tag from latest commit"
         run: |
-          set -e
+          set -euo pipefail
 
           git config user.name badabump-release-bot[bot]
           git config user.email badabump-release-bot[bot]@users.noreply.github.com
 
-          git tag -a ${{ steps.badabump.outputs.tag_name }} -m "${{ steps.badabump.outputs.tag_message }}"
+          cat > ./tag_message.txt <<EOF
+          ${{ steps.badabump.outputs.tag_message }}
+          EOF
+
+          git tag -a ${{ steps.badabump.outputs.tag_name }} -F ./tag_message.txt
           git push --tag

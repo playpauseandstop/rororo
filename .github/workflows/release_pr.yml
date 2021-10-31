@@ -2,6 +2,8 @@ defaults:
   run:
     shell: "bash"
 
+name: "Create Release PR"
+
 on:
   workflow_dispatch:
     inputs:
@@ -11,13 +13,13 @@ on:
         default: ""
 
 env:
-  BADABUMP_VERSION: "21.1.0"
-  PYTHON_VERSION: "3.9.2"
+  BADABUMP_VERSION: "21.3.1"
+  PYTHON_VERSION: "3.10.0"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   create_release_pr:
-    if: "github.actor == 'playpauseandstop'"
+    if: "${{ github.actor == 'playpauseandstop' }}"
     name: "Create release PR"
 
     runs-on: "ubuntu-latest"
@@ -29,8 +31,9 @@ jobs:
 
       - name: "Fetch git tags"
         run: |
-          set -e
-          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          set -euo pipefail
+
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/* || :
           git fetch --prune --unshallow
 
       - name: "Install Python"
@@ -65,4 +68,3 @@ jobs:
           body: "${{ steps.badabump.outputs.changelog }}"
           labels: "chore"
           reviewers: "playpauseandstop"
-          assignees: "playpauseandstop"
