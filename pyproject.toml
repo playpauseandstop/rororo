@@ -120,7 +120,7 @@ environ-config = ">=20.1,<22.0"
 isodate = "^0.6.0"
 openapi-core = ">=0.13.4,<0.13.7"
 pyrsistent = ">=0.16,<0.19"
-PyYAML = "^5.1"
+PyYAML = ">=5.1,<7.0"
 typing-extensions = "^3.7"
 
 [tool.poetry.dev-dependencies]
@@ -132,7 +132,7 @@ pytest = "^6.2.5"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^3.0.0"
 pytest-env = "^0.6.2"
-types-PyYAML = "^5.4.10"
+types-PyYAML = "^6.0.0"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
@@ -177,7 +177,7 @@ commands =
 [testenv:py310-minimum-requirements]
 commands_pre =
   poetry install
-  poetry run python -m pip install attrs==19.2.0 environ-config==20.1.0 openapi-core==0.13.4 pyrsistent==0.16
+  poetry run python3 -m pip install attrs==19.2.0 environ-config==20.1.0 jsonschema==3.2.0 openapi-core==0.13.4 pyrsistent==0.16 PyYAML==5.1
 """
 
 [build-system]
