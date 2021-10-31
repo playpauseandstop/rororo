@@ -1,5 +1,11 @@
-2.2.3 (2021-10-31)
+2.3.0 (2021-10-31)
 ==================
+
+Use Python 3.10 as dev version, as well as update minimum supported
+`openapi-core` version to **0.13.4**.
+
+Also loose a bit `pyrsistent` & `PyYAML` requirements to allow dependent
+projects use latest versions of given libraries.
 
 **Other:**
 
