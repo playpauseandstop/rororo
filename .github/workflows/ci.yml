@@ -13,16 +13,16 @@ on:
 
 env:
   # Dev Python version
-  DEV_PYTHON_VERSION: "3.10.0-rc.2"
+  DEV_PYTHON_VERSION: "3.10.0"
   # Get latest versions by running,
   #
   # ```bash
   # pip-latest-release badabump coveralls poetry tox tox-gh-actions twine
   # ```
   #
-  BADABUMP_VERSION: "21.2.3"
+  BADABUMP_VERSION: "21.3.1"
   COVERALLS_VERSION: "3.2.0"
-  POETRY_VERSION: "1.1.10"
+  POETRY_VERSION: "1.1.11"
   TOX_VERSION: "3.24.4"
   TOX_GH_ACTIONS_VERSION: "2.8.1"
   TWINE_VERSION: "3.4.2"
@@ -70,7 +70,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10.0-rc.2"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
 
     runs-on: "ubuntu-latest"
 

@@ -1,7 +1,3 @@
 [virtualenvs]
 create = true
 in-project = true
-
-[experimental]
-# Disable new installer cause of https://github.com/python-poetry/poetry/issues/4210
-new-installer = false

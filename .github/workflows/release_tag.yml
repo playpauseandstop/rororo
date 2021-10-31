@@ -9,8 +9,8 @@ on:
     types: ["closed"]
 
 env:
-  BADABUMP_VERSION: "21.2.3"
-  PYTHON_VERSION: "3.10.0-rc.2"
+  BADABUMP_VERSION: "21.3.1"
+  PYTHON_VERSION: "3.10.0"
   PYTHONUNBUFFERED: "1"
 
 jobs:
@@ -51,5 +51,9 @@ jobs:
           git config user.name badabump-release-bot[bot]
           git config user.email badabump-release-bot[bot]@users.noreply.github.com
 
-          git tag -a ${{ steps.badabump.outputs.tag_name }} -m "${{ steps.badabump.outputs.tag_message }}"
+          cat > ./tag_message.txt <<EOF
+          ${{ steps.badabump.outputs.tag_message }}
+          EOF
+
+          git tag -a ${{ steps.badabump.outputs.tag_name }} -F ./tag_message.txt
           git push --tag
