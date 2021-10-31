@@ -118,7 +118,7 @@ contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
 environ-config = ">=20.1,<22.0"
 isodate = "^0.6.0"
-openapi-core = ">=0.13.3,<0.13.7"
+openapi-core = ">=0.13.4,<0.13.7"
 pyrsistent = ">=0.16,<0.19"
 PyYAML = "^5.1"
 typing-extensions = "^3.7"
@@ -126,11 +126,11 @@ typing-extensions = "^3.7"
 [tool.poetry.dev-dependencies]
 aioredis = {extras = ["hiredis"], version = "^2.0.0"}
 async_generator = {python = "~3.6", version = "^1.10"}
-coverage = "^5.5"
+coverage = "^6.1.1"
 mypy = "^0.910"
 pytest = "^6.2.5"
 pytest-aiohttp = "^0.3.0"
-pytest-cov = "^2.12.1"
+pytest-cov = "^3.0.0"
 pytest-env = "^0.6.2"
 types-PyYAML = "^5.4.10"
 
@@ -177,7 +177,7 @@ commands =
 [testenv:py310-minimum-requirements]
 commands_pre =
   poetry install
-  poetry run python -m pip install attrs==19.2.0 environ-config==20.1.0 openapi-core==0.13.3 pyrsistent==0.16
+  poetry run python -m pip install attrs==19.2.0 environ-config==20.1.0 openapi-core==0.13.4 pyrsistent==0.16
 """
 
 [build-system]
