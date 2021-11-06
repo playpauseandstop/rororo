@@ -1,3 +1,16 @@
+2.4.0 (2021-11-06)
+==================
+
+**Features:**
+
+- Ensure support of aiohttp 3.8.0 version (#205)
+
+**Other:**
+
+- (**deps**) bump actions/checkout from 2.3.4 to 2.3.5 (#204)
+- Switch to Furo theme (#206)
+- Tweak documentation (#207)
+
 2.3.0 (2021-10-31)
 ==================
 
