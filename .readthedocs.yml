@@ -1,10 +1,14 @@
 version: 2
 
-sphinx:
-  configuration: "docs/conf.py"
+build:
+  os: "ubuntu-20.04"
+  tools:
+    python: "3.10"
 
 python:
-  version: "3.8"
   install:
-    - requirements: "docs/requirements.txt"
-    - requirements: "docs/requirements-sphinx.txt"
+    - requirements: "./docs/requirements.txt"
+    - requirements: "./docs/requirements-sphinx.txt"
+
+sphinx:
+  configuration: "./docs/conf.py"

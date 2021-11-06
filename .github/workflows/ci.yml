@@ -20,7 +20,7 @@ env:
   # pip-latest-release badabump coveralls poetry tox tox-gh-actions twine
   # ```
   #
-  BADABUMP_VERSION: "21.3.1"
+  BADABUMP_VERSION: "21.3.3"
   COVERALLS_VERSION: "3.2.0"
   POETRY_VERSION: "1.1.11"
   TOX_VERSION: "3.24.4"
@@ -64,6 +64,25 @@ jobs:
 
       - name: "Import package"
         run: "poetry run python3 -c 'import rororo'"
+
+  docs:
+    name: "Verify documentation build well"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v2.3.5"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v2.2.2"
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Install docs requirements"
+        run: "python3 -m pip install -r ./docs/requirements.txt -r ./docs/requirements-sphinx.txt"
+
+      - name: "Build docs"
+        run: "python3 -m sphinx -b html ./docs/ ./docs/_build/"
 
   test:
     name: "Python ${{ matrix.python-version }}"

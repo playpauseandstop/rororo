@@ -36,12 +36,13 @@ TODAY = datetime.date.today()
 
 
 extensions = [
-    "alabaster",
     "sphinx.ext.autodoc",
-    "sphinx_autodoc_typehints",
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
+    "sphinx_copybutton",
+    "sphinxext.opengraph",
 ]
 
 templates_path = ["_templates"]
@@ -49,6 +50,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 project = PROJECT
+description = "aiohttp.web OpenAPI 3 schema first server applications."
 author = AUTHOR
 copyright = f"2017-{TODAY.year}, {AUTHOR}"
 
@@ -59,19 +61,10 @@ language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 pygments_style = "sphinx"
 
-html_theme = "alabaster"
-html_theme_options = {
-    "logo_name": True,
-    "description": "aiohttp.web OpenAPI 3 schema first server applications",
-    "github_user": "playpauseandstop",
-    "github_repo": project,
-    "github_banner": True,
-    "github_button": True,
-    "github_type": "star",
-    "fixed_sidebar": True,
-}
+html_theme = "furo"
+html_theme_options = {}
 html_static_path = ["_static"]
-html_sidebars = {"**": ["about.html", "localtoc.html", "searchbox.html"]}
+html_title = project
 
 htmlhelp_basename = "rororodoc"
 latex_elements = {}
@@ -105,3 +98,7 @@ intersphinx_mapping = {
     "https://aiohttp-middlewares.readthedocs.io/en/stable/": None,
     "https://pyrsistent.readthedocs.io/en/stable/": None,
 }
+
+ogp_site_url = "https://aiohttp-middlewares.readthedocs.io"
+ogp_site_name = project
+ogp_image = "hhttps://repository-images.githubusercontent.com/6331465/49f63180-4064-11ea-8518-eea960d54a55"
