@@ -47,7 +47,7 @@ As well as bunch other utilities to build effective server applications with
   <https://github.com/playpauseandstop/rororo>`_
 
 .. _`OpenAPI 3`: https://spec.openapis.org/oas/v3.0.3
-.. _`aiohttp.web`: https://aiohttp.readthedocs.io/en/stable/web.html
+.. _`aiohttp.web`: https://docs.aiohttp.org/en/stable/web.html
 .. _`Python`: https://www.python.org/
 
 Quick Start
