@@ -1,10 +1,10 @@
 [tool.badabump]
 version_type = "semver"
 version_files = [
-  "pyproject.toml",
-  "src/rororo/__init__.py",
-  "tests/rororo/openapi.json",
-  "tests/rororo/openapi.yaml",
+  "./pyproject.toml",
+  "./src/rororo/__init__.py",
+  "./tests/rororo/openapi.json",
+  "./tests/rororo/openapi.yaml",
 ]
 
 [tool.black]
@@ -111,8 +111,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-aiohttp = "^3.5"
-aiohttp-middlewares = "^1.1.0"
+aiohttp = "^3.7.0"
+aiohttp-middlewares = "^1.2.0"
 attrs = ">=19.2.0,<22"
 contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
@@ -172,12 +172,12 @@ whitelist_externals = poetry
 commands_pre =
   poetry install
 commands =
-  poetry run python -m pytest
+  poetry run python3 -m pytest
 
 [testenv:py310-minimum-requirements]
 commands_pre =
   poetry install
-  poetry run python3 -m pip install attrs==19.2.0 environ-config==20.1.0 jsonschema==3.2.0 openapi-core==0.13.4 pyrsistent==0.16 PyYAML==5.1
+  poetry run python3 -m pip install aiohttp==3.7.0 attrs==19.2.0 environ-config==20.1.0 jsonschema==3.2.0 openapi-core==0.13.4 pyrsistent==0.16 PyYAML==5.1
 """
 
 [build-system]

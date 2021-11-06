@@ -18,7 +18,7 @@ except ImportError:
     from typing import Literal, Protocol, TypedDict  # type: ignore
 
 from aiohttp import web
-from aiohttp.web_middlewares import _Handler
+from aiohttp_middlewares.annotations import Handler
 
 
 F = TypeVar("F", bound=Callable[..., Any])  # noqa: VNE001
@@ -26,7 +26,6 @@ T = TypeVar("T")
 
 Level = Literal["test", "dev", "staging", "prod"]
 
-Handler = _Handler
 ViewType = Type[web.View]
 
 DictStrAny = Dict[str, Any]
@@ -40,4 +39,4 @@ MappingStrStr = Mapping[str, str]
 Settings = Union[types.ModuleType, DictStrAny]
 
 
-(Protocol, TypedDict)  # Make flake8 happy
+(Handler, Protocol, TypedDict)  # Make flake8 happy

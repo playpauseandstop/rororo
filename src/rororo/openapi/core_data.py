@@ -108,7 +108,7 @@ def to_core_openapi_response_data(
 
         # TODO: Find better way to provide response from payload
         if isinstance(body, IOBasePayload):
-            return cast(bytes, body._value.getvalue())
+            return cast(bytes, body._value.getvalue())  # type: ignore[attr-defined]
 
         if isinstance(body, Payload):
             return cast(bytes, body._value)
