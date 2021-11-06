@@ -38,7 +38,7 @@ clean: clean-python
 
 distclean: clean distclean-python
 
-docs: $(DOCS_DIR)/requirements.txt $(DOCS_DIR)/requirements-sphinx.txt
+docs: install $(DOCS_DIR)/requirements.txt $(DOCS_DIR)/requirements-sphinx.txt
 	$(PYTHON_BIN) -m pip install -r $(DOCS_DIR)/requirements-sphinx.txt
 	$(PYTHON_BIN) -m sphinx_autobuild --host $(DOCS_HOST) --port $(DOCS_PORT) -b html $(DOCS_DIR)/ $(DOCS_DIR)/_build/
 

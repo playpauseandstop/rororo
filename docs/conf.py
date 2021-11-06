@@ -60,11 +60,11 @@ release = VERSION
 language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 pygments_style = "sphinx"
+pygments_dark_style = "monokai"
 
 html_theme = "furo"
 html_theme_options = {}
 html_static_path = ["_static"]
-html_title = project
 
 htmlhelp_basename = "rororodoc"
 latex_elements = {}
