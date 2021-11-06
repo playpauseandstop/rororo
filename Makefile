@@ -66,7 +66,7 @@ lint-only: lint-python-only
 
 list-outdated: list-outdated-python
 
-test: install lint clean validate test-only
+test: install clean validate test-only
 
 test-only:
 	PYTHONPATH=$(PYTHONPATH) TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)

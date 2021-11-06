@@ -44,16 +44,18 @@ jobs:
         name: "Run badabump"
         run: "python3 -m badabump.ci prepare_tag"
 
+      - name: "Save tag message into the file"
+        run: |
+          with open("./tag_message.txt", "w+") as handler:
+              handler.write("""${{ steps.badabump.outputs.tag_message }}""")
+        shell: "python"
+
       - name: "Create release tag from latest commit"
         run: |
           set -euo pipefail
 
           git config user.name badabump-release-bot[bot]
           git config user.email badabump-release-bot[bot]@users.noreply.github.com
-
-          cat > ./tag_message.txt <<EOF
-          ${{ steps.badabump.outputs.tag_message }}
-          EOF
 
           git tag -a ${{ steps.badabump.outputs.tag_name }} -F ./tag_message.txt
           git push --tag

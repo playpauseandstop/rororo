@@ -41,7 +41,7 @@ As well as bunch other utilities to build effective server applications with
 `Python`_ 3 & `aiohttp.web`_.
 
 * Works on `Python`_ 3.6+
-* Works with `aiohttp.web`_ 3.6+
+* Works with `aiohttp.web`_ 3.7+
 * BSD licensed
 * Source, issues, and pull requests `on GitHub
   <https://github.com/playpauseandstop/rororo>`_
