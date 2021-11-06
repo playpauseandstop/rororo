@@ -2,8 +2,8 @@
 rororo
 ======
 
-.. image:: https://github.com/playpauseandstop/rororo/workflows/ci/badge.svg
-    :target: https://github.com/playpauseandstop/rororo/actions?query=workflow%3A%22ci%22
+.. image:: https://github.com/playpauseandstop/rororo/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/playpauseandstop/rororo/actions/workflows/ci.yml
     :alt: CI Workflow
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
