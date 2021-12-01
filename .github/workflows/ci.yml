@@ -38,7 +38,7 @@ jobs:
     runs-on: "${{ matrix.os }}"
 
     steps:
-      - uses: "actions/checkout@v2.3.5"
+      - uses: "actions/checkout@v2.4.0"
 
       - name: "Install Python"
         uses: "actions/setup-python@v2.2.2"
@@ -71,7 +71,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.5"
+      - uses: "actions/checkout@v2.4.0"
 
       - name: "Install Python"
         uses: "actions/setup-python@v2.2.2"
@@ -101,7 +101,7 @@ jobs:
         options: "--entrypoint redis-server"
 
     steps:
-      - uses: "actions/checkout@v2.3.5"
+      - uses: "actions/checkout@v2.4.0"
 
       - name: "Install system packages"
         run: "sudo apt-get update -y && sudo apt-get install -y locales-all"
@@ -167,7 +167,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.5"
+      - uses: "actions/checkout@v2.4.0"
 
       - name: "Install Python"
         uses: "actions/setup-python@v2.2.2"
@@ -202,7 +202,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.3.5"
+      - uses: "actions/checkout@v2.4.0"
 
       - name: "Fetch git data"
         run: |
