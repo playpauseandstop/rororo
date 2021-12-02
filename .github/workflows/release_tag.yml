@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - id: "token"
-        uses: "tibdex/github-app-token@v1.4"
+        uses: "tibdex/github-app-token@v1.5"
         with:
           app_id: "${{ secrets.BADABUMP_APP_ID }}"
           private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
