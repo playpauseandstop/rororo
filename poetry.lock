@@ -23,7 +23,7 @@ speedups = ["aiodns", "brotli", "cchardet"]
 
 [[package]]
 name = "aiohttp-middlewares"
-version = "1.2.0"
+version = "1.2.1"
 description = "Collection of useful middlewares for aiohttp applications."
 category = "main"
 optional = false
@@ -712,8 +712,8 @@ aiohttp = [
     {file = "aiohttp-3.8.1.tar.gz", hash = "sha256:fc5471e1a54de15ef71c1bc6ebe80d4dc681ea600e68bfd1cbce40427f0b7578"},
 ]
 aiohttp-middlewares = [
-    {file = "aiohttp-middlewares-1.2.0.tar.gz", hash = "sha256:3ca1371aa7be3081ce6c31eae82c52e85cff9794e175915a1e73f83731e723f2"},
-    {file = "aiohttp_middlewares-1.2.0-py3-none-any.whl", hash = "sha256:96037a5d8767ddd2f62c5e9eb76bd25e8c2f341f316424c52ad6b15d2e8e7f79"},
+    {file = "aiohttp-middlewares-1.2.1.tar.gz", hash = "sha256:ef540be1a5bb28703268c2ca5792cf02f70d11ff080c26a3aa22c4f44c1f055c"},
+    {file = "aiohttp_middlewares-1.2.1-py3-none-any.whl", hash = "sha256:5cefc4b11947bd5de9c6163abe473c57b8fd830e20ad2737f932f366946dc78a"},
 ]
 aioredis = [
     {file = "aioredis-2.0.0-py3-none-any.whl", hash = "sha256:9921d68a3df5c5cdb0d5b49ad4fc88a4cfdd60c108325df4f0066e8410c55ffb"},
