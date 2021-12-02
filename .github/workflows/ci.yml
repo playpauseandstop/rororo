@@ -41,7 +41,7 @@ jobs:
       - uses: "actions/checkout@v2.4.0"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.2.2"
+        uses: "actions/setup-python@v2.3.1"
         with:
           python-version: "${{ env.DEV_PYTHON_VERSION }}"
 
@@ -74,7 +74,7 @@ jobs:
       - uses: "actions/checkout@v2.4.0"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.2.2"
+        uses: "actions/setup-python@v2.3.1"
         with:
           python-version: "${{ matrix.python-version }}"
 
@@ -107,7 +107,7 @@ jobs:
         run: "sudo apt-get update -y && sudo apt-get install -y locales-all"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.2.2"
+        uses: "actions/setup-python@v2.3.1"
         with:
           python-version: "${{ matrix.python-version }}"
 
@@ -170,7 +170,7 @@ jobs:
       - uses: "actions/checkout@v2.4.0"
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.2.2"
+        uses: "actions/setup-python@v2.3.1"
         with:
           python-version: "${{ env.DEV_PYTHON_VERSION }}"
 
@@ -212,7 +212,7 @@ jobs:
           git fetch --prune --unshallow
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.2.2"
+        uses: "actions/setup-python@v2.3.1"
         with:
           python-version: "${{ env.DEV_PYTHON_VERSION }}"
 
