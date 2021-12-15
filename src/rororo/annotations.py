@@ -13,9 +13,9 @@ from typing import Any, Callable, Dict, Mapping, Type, TypeVar, Union
 
 
 try:
-    from typing_extensions import Literal, Protocol, TypedDict
+    from typing import Literal, Protocol, TypedDict
 except ImportError:
-    from typing import Literal, Protocol, TypedDict  # type: ignore
+    from typing_extensions import Literal, Protocol, TypedDict  # type: ignore
 
 from aiohttp import web
 from aiohttp_middlewares.annotations import Handler
