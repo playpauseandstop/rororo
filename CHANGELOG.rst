@@ -1,6 +1,10 @@
 2.4.1 (2021-12-16)
 ==================
 
+Maintenance release, which in same time ensures that ``rororo`` installs
+``typing-extensions`` only for Python <3.8. Thanks `@q0w <https://github.com/q0w>`_
+for contribution.
+
 **Other:**
 
 - (**deps**) bump actions/checkout from 2.3.5 to 2.4.0 (#218)
