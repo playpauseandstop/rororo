@@ -1,3 +1,25 @@
+2.4.1 (2021-12-16)
+==================
+
+Maintenance release, which in same time ensures that ``rororo`` installs
+``typing-extensions`` only for Python <3.8. Thanks `@q0w <https://github.com/q0w>`_
+for contribution.
+
+**Other:**
+
+- (**deps**) bump actions/checkout from 2.3.5 to 2.4.0 (#218)
+- (**deps**) bump actions/setup-python from 2.2.2 to 2.3.1 (#216)
+- (**deps**) bump actions/cache from 2.1.6 to 2.1.7 (#214)
+- (**deps**) bump tibdex/github-app-token from 1.4 to 1.5 (#215)
+- (**deps**) bump peter-evans/create-pull-request from 3.10.1 to 3.11.0 (#217)
+- (**deps**) bump aiohttp from 3.8.0 to 3.8.1 (#211)
+- (**deps**) bump aiohttp-middlewares from 1.2.0 to 1.2.1 (#209)
+- (**deps**) bump typing-extensions from 3.10.0.2 to 4.0.1 (#213)
+- (**deps-dev**) bump coverage from 6.1.1 to 6.2 (#210)
+- (**deps-dev**) bump types-pyyaml from 6.0.0 to 6.0.1 (#212)
+- Fix link (#219)
+- Install typing_extensions only for python<3.8 (#220)
+
 2.4.0 (2021-11-06)
 ==================
 
