@@ -121,7 +121,7 @@ isodate = "^0.6.0"
 openapi-core = ">=0.13.4,<0.13.7"
 pyrsistent = ">=0.16,<0.19"
 PyYAML = ">=5.1,<7.0"
-typing-extensions = ">=3.7,<5.0"
+typing-extensions = {python = "<3.8", version = ">=3.7,<5.0"}
 
 [tool.poetry.dev-dependencies]
 aioredis = {extras = ["hiredis"], version = "^2.0.0"}
