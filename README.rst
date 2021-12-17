@@ -79,7 +79,12 @@ Example below, illustrates on how to handle operation ``hello_world`` from
     async def hello_world(request: web.Request) -> web.Response:
         with openapi_context(request) as context:
             name = context.parameters.query.get("name", "world")
-            return web.json_response({"message": f"Hello, {name}!"})
+            email = context.parameters.query.get(
+                "email", "world@example.com"
+            )
+            return web.json_response(
+                {"message": f"Hello, {name}!", "email": email}
+            )
 
 
     def create_app(argv: List[str] = None) -> web.Application:
