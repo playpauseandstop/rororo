@@ -124,7 +124,7 @@ PyYAML = ">=5.1,<7.0"
 typing-extensions = {python = "<3.8", version = ">=3.7,<5.0"}
 
 [tool.poetry.dev-dependencies]
-aioredis = {extras = ["hiredis"], version = "^2.0.0"}
+aioredis = {extras = ["hiredis"], version = "^2.0.1"}
 async_generator = {python = "~3.6", version = "^1.10"}
 coverage = "^6.2"
 mypy = "^0.920"
