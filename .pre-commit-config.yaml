@@ -3,7 +3,7 @@ default_language_version:
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.20.0"
+    rev: "v2.20.3"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -12,14 +12,14 @@ repos:
         stages: ["commit-msg"]
 
   - repo: "https://github.com/PyCQA/isort"
-    rev: "5.9.3"
+    rev: "5.10.1"
     hooks:
       - id: "isort"
         name: "Format code (isort)"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/psf/black"
-    rev: "21.9b0"
+    rev: "21.12b0"
     hooks:
       - id: "black"
         # By default black using `python3` instead `python` language, so
@@ -29,16 +29,16 @@ repos:
         exclude: ^docs/.*$
 
   - repo: "https://github.com/asottile/blacken-docs"
-    rev: "v1.11.0"
+    rev: "v1.12.0"
     hooks:
       - id: "blacken-docs"
         name: "Format docs (blacken-docs)"
         args: ["-l", "64"]
         additional_dependencies:
-          - "black==21.9b0"
+          - "black==21.12b0"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
-    rev: "v4.0.1"
+    rev: "v4.1.0"
     hooks:
       - id: "end-of-file-fixer"
       - id: "trailing-whitespace"
@@ -54,7 +54,7 @@ repos:
         additional_dependencies: &flake8_additional_dependencies
           - "flake8==4.0.1"
           - "flake8-broken-line==0.4.0"
-          - "flake8-bugbear==21.9.2"
+          - "flake8-bugbear==21.11.29"
           - "flake8-builtins==1.5.3"
           - "flake8-comprehensions==3.7.0"
           - "flake8-eradicate==1.2.0"
