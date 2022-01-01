@@ -36,7 +36,7 @@ yarl = ">=1.5.1,<2.0.0"
 
 [[package]]
 name = "aioredis"
-version = "2.0.0"
+version = "2.0.1"
 description = "asyncio (PEP 3156) Redis support"
 category = "dev"
 optional = false
@@ -634,7 +634,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "87d7836bf8a4e56a0b79aa1c7568711964997428a548b3cb28ca13dd287853b1"
+content-hash = "b4db9087bbbb2f472d7e1294ceb0dc02d183acd1ac09987c72a9a728f8b06c57"
 
 [metadata.files]
 aiohttp = [
@@ -716,8 +716,8 @@ aiohttp-middlewares = [
     {file = "aiohttp_middlewares-1.2.1-py3-none-any.whl", hash = "sha256:5cefc4b11947bd5de9c6163abe473c57b8fd830e20ad2737f932f366946dc78a"},
 ]
 aioredis = [
-    {file = "aioredis-2.0.0-py3-none-any.whl", hash = "sha256:9921d68a3df5c5cdb0d5b49ad4fc88a4cfdd60c108325df4f0066e8410c55ffb"},
-    {file = "aioredis-2.0.0.tar.gz", hash = "sha256:3a2de4b614e6a5f8e104238924294dc4e811aefbe17ddf52c04a93cbf06e67db"},
+    {file = "aioredis-2.0.1-py3-none-any.whl", hash = "sha256:9ac0d0b3b485d293b8ca1987e6de8658d7dafcca1cddfcd1d506cae8cdebfdd6"},
+    {file = "aioredis-2.0.1.tar.gz", hash = "sha256:eaa51aaf993f2d71f54b70527c440437ba65340588afeb786cd87c55c89cd98e"},
 ]
 aiosignal = [
     {file = "aiosignal-1.2.0-py3-none-any.whl", hash = "sha256:26e62109036cd181df6e6ad646f91f0dcfd05fe16d0cb924138ff2ab75d64e3a"},
