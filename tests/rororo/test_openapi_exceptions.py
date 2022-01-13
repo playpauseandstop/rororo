@@ -1,7 +1,9 @@
 import pytest
-from openapi_core.schema.exceptions import OpenAPIMappingError
-from openapi_core.schema.media_types.exceptions import OpenAPIMediaTypeError
-from openapi_core.schema.parameters.exceptions import OpenAPIParameterError
+from openapi_core.exceptions import (
+    MissingRequestBodyError,
+    OpenAPIParameterError,
+)
+from openapi_core.templating.media_types.exceptions import MediaTypeFinderError
 
 from rororo.openapi.exceptions import (
     BadRequest,
@@ -102,20 +104,24 @@ def test_validation_error_from_dict_value_error():
 @pytest.mark.parametrize(
     "method, error, expected_loc",
     (
-        (ValidationError.from_request_errors, OpenAPIMappingError(), ["body"]),
-        (
-            ValidationError.from_response_errors,
-            OpenAPIMappingError(),
-            ["response"],
-        ),
         (
             ValidationError.from_request_errors,
-            OpenAPIMediaTypeError(),
+            MissingRequestBodyError(),
             ["body"],
         ),
         (
             ValidationError.from_response_errors,
-            OpenAPIMediaTypeError(),
+            MissingRequestBodyError(),
+            ["response"],
+        ),
+        (
+            ValidationError.from_request_errors,
+            MediaTypeFinderError(),
+            ["body"],
+        ),
+        (
+            ValidationError.from_response_errors,
+            MediaTypeFinderError(),
             ["response"],
         ),
         (

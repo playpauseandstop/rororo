@@ -9,19 +9,19 @@ from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from openapi_core.casting.schemas.exceptions import CastError as CoreCastError
 from openapi_core.deserializing.exceptions import DeserializeError
 from openapi_core.deserializing.parameters.exceptions import (
-    EmptyParameterValue,
+    EmptyQueryParameterValue,
 )
-from openapi_core.exceptions import OpenAPIError as CoreOpenAPIError
-from openapi_core.schema.media_types.exceptions import (
-    InvalidContentType,
-    OpenAPIMediaTypeError,
-)
-from openapi_core.schema.parameters.exceptions import (
+from openapi_core.exceptions import (
     MissingParameter,
     MissingRequiredParameter,
+    OpenAPIError as CoreOpenAPIError,
     OpenAPIParameterError,
 )
-from openapi_core.schema.responses.exceptions import InvalidResponse
+from openapi_core.templating.media_types.exceptions import (
+    MediaTypeFinderError,
+    MediaTypeNotFound,
+)
+from openapi_core.templating.responses.exceptions import ResponseNotFound
 from openapi_core.unmarshalling.schemas.exceptions import (
     InvalidSchemaValue,
     UnmarshalError,
@@ -265,9 +265,11 @@ class ValidationError(OpenAPIError):
         result = []
 
         for err in errors:
-            if isinstance(err, (OpenAPIParameterError, EmptyParameterValue)):
+            if isinstance(
+                err, (OpenAPIParameterError, EmptyQueryParameterValue)
+            ):
                 result.append(get_parameter_error_details(base_loc, err))
-            elif isinstance(err, OpenAPIMediaTypeError):
+            elif isinstance(err, MediaTypeFinderError):
                 result.append(get_media_type_error_details(base_loc, err))
             elif isinstance(err, CastError):
                 result.append(
@@ -296,7 +298,7 @@ class ValidationError(OpenAPIError):
         loc: List[PathItem] = ["response"]
 
         for err in errors:
-            if isinstance(err, InvalidResponse):
+            if isinstance(err, ResponseNotFound):
                 available_responses = ", ".join(sorted(err.responses))
                 result.append(
                     {
@@ -307,7 +309,7 @@ class ValidationError(OpenAPIError):
                         ),
                     }
                 )
-            elif isinstance(err, OpenAPIMediaTypeError):
+            elif isinstance(err, MediaTypeFinderError):
                 result.append(get_media_type_error_details(loc, err))
             elif isinstance(err, UnmarshalError):
                 result.extend(get_unmarshal_error_details(loc, err))
@@ -365,9 +367,9 @@ def get_json_schema_validation_error_details(
 
 
 def get_media_type_error_details(
-    loc: List[PathItem], err: OpenAPIMediaTypeError
+    loc: List[PathItem], err: MediaTypeFinderError
 ) -> ValidationErrorItem:
-    if isinstance(err, InvalidContentType):
+    if isinstance(err, MediaTypeNotFound):
         return {
             "loc": loc,
             "message": (
@@ -388,7 +390,7 @@ def get_parameter_error_details(
 
     message = {
         DeserializeError: ERROR_PARAMETER_INVALID,
-        EmptyParameterValue: ERROR_PARAMETER_EMPTY,
+        EmptyQueryParameterValue: ERROR_PARAMETER_EMPTY,
         MissingParameter: ERROR_PARAMETER_MISSING,
         MissingRequiredParameter: ERROR_PARAMETER_REQUIRED,
     }[type(err)]
