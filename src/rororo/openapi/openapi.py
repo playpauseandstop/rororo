@@ -698,7 +698,7 @@ def setup_openapi(  # type: ignore
         if schema_path is None:
             raise ConfigurationError(
                 "Please supply only `spec` keyword argument, or only "
-                "`schema_path` positional argumnet, not both."
+                "`schema_path` positional argument, not both."
             )
 
         # Ensure OpenAPI schema is a readable file
