@@ -251,7 +251,7 @@ follows,
 
     def create_app(argv: List[str] = None) -> web.Application:
         app = web.Application()
-        setup_openapi(app, OPENAPI_YAML_PATH, opeartions)
+        setup_openapi(app, OPENAPI_YAML_PATH, operations)
         return app
 
 .. note::
