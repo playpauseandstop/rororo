@@ -17,7 +17,7 @@ License
 =======
 
 *rororo* is licensed under the terms of `BSD-3-Clause License
-<https://github.com/playpauseandstop/rororo/blob/LICENSE>`_.
+<https://github.com/playpauseandstop/rororo/blob/master/LICENSE>`_.
 
 Contents
 ========
