@@ -115,7 +115,7 @@ Class Based Views
 -----------------
 
 *rororo* supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
-as well. `Todo-Backend </examples/todobackend>`_ example illustrates how to use
+as well. `Todo-Backend <https://github.com/playpauseandstop/rororo/tree/master/examples/todobackend>`_ example illustrates how to use
 class based views for OpenAPI 3 servers.
 
 In snippet below, *rororo* expects that OpenAPI 3 schema contains operation \
@@ -131,5 +131,5 @@ ID ``UserView.get``,
 More Examples
 -------------
 
-Check `examples </examples>`_ folder to see other examples on how to build
+Check `examples <https://github.com/playpauseandstop/rororo/tree/master/examples>`_ folder to see other examples on how to build
 aiohttp.web OpenAPI 3 server applications.
