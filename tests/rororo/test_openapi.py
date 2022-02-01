@@ -203,7 +203,11 @@ async def test_any_object_request_body(aiohttp_client, schema_path):
         (
             {},
             422,
-            {"detail": [{"loc": ["body"], "message": "[] is too short"}]},
+            {
+                "detail": [
+                    {"loc": ["body"], "message": "{} is not of type array"}
+                ]
+            },
         ),
         (
             [],

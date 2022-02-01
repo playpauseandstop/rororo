@@ -1,8 +1,12 @@
+import json
 import logging
+from json import JSONEncoder
+from typing import Any
 
 import yaml
 from aiohttp import web
 from aiohttp_middlewares import error_context
+from openapi_core.spec.paths import SpecPath
 
 from ..annotations import MappingStrStr
 from .exceptions import ConfigurationError, OpenAPIError
@@ -10,6 +14,13 @@ from .utils import get_openapi_schema
 
 
 logger = logging.getLogger(__name__)
+
+
+class SpecPathEncoder(JSONEncoder):
+    def default(self, obj: Any) -> Any:
+        if isinstance(obj, SpecPath):
+            return obj.content()
+        return super().default(obj)
 
 
 async def default_error_handler(request: web.Request) -> web.Response:
@@ -27,6 +38,7 @@ async def default_error_handler(request: web.Request) -> web.Response:
             context.data,
             status=context.status,
             headers=headers,
+            dumps=lambda o: json.dumps(o, cls=SpecPathEncoder),
         )
 
 

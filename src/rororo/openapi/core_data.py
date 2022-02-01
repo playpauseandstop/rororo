@@ -1,9 +1,9 @@
-from typing import cast, Optional, Union
+import dataclasses
+from typing import cast, Optional, Tuple, Union
 
 from aiohttp import hdrs, web
 from aiohttp.payload import IOBasePayload, Payload
-from openapi_core.schema.operations.models import Operation
-from openapi_core.schema.specs.models import Spec
+from openapi_core.spec.paths import SpecPath
 from openapi_core.validation.request.datatypes import (
     OpenAPIRequest,
     RequestParameters,
@@ -11,7 +11,7 @@ from openapi_core.validation.request.datatypes import (
 from openapi_core.validation.response.datatypes import OpenAPIResponse
 from yarl import URL
 
-from ..annotations import Handler
+from ..annotations import DictStrAny, Handler
 from .constants import HANDLER_OPENAPI_MAPPING_KEY
 from .exceptions import OperationError
 from .utils import get_openapi_spec
@@ -19,7 +19,7 @@ from .utils import get_openapi_spec
 
 def find_core_operation(
     request: web.Request, handler: Handler
-) -> Optional[Operation]:
+) -> Optional[DictStrAny]:
     mapping = getattr(handler, HANDLER_OPENAPI_MAPPING_KEY, None)
     if not mapping:
         return None
@@ -36,11 +36,13 @@ def find_core_operation(
         return None
 
 
-def get_core_operation(spec: Spec, operation_id: str) -> Operation:
-    for path in spec.paths.values():
-        for operation in path.operations.values():
-            if operation.operation_id == operation_id:
-                return operation
+def get_core_operation(
+    spec: SpecPath, operation_id: str
+) -> Tuple[str, DictStrAny, DictStrAny]:
+    for paths, path in spec["paths"].items():
+        for operation in path.values():
+            if operation.get("operationId") == operation_id:
+                return paths, path, operation
     raise OperationError(
         f"Unable to find operation '{operation_id}' in given OpenAPI spec"
     )
@@ -95,6 +97,7 @@ def to_core_openapi_response(response: web.StreamResponse) -> OpenAPIResponse:
         data=to_core_openapi_response_data(response),
         status_code=response.status,
         mimetype=response.content_type,
+        headers=response.headers,
     )
 
 
@@ -120,10 +123,10 @@ def to_core_openapi_response_data(
 def to_core_request_parameters(request: web.Request) -> RequestParameters:
     header_attr = [
         item
-        for item in RequestParameters.__attrs_attrs__
+        for item in dataclasses.fields(RequestParameters)
         if item.name == "header"
     ][0]
-    is_dict_factory = header_attr.default.factory == dict
+    is_dict_factory = header_attr.default_factory == dict
 
     return RequestParameters(
         query=request.rel_url.query,
