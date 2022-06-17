@@ -1,4 +1,5 @@
 [flake8]
+ban-relative-imports = true
 extend-ignore = E501
 inline-quotes = double
 max-complexity = 15

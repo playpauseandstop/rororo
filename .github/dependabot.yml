@@ -10,6 +10,7 @@ updates:
       - "playpauseandstop"
     labels:
       - "build"
+      - "dependencies"
     allow:
       - dependency-type: "direct"
 
@@ -23,3 +24,5 @@ updates:
       - "playpauseandstop"
     labels:
       - "build"
+      - "ci"
+      - "dependencies"
