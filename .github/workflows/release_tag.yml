@@ -9,14 +9,13 @@ on:
     types: ["closed"]
 
 env:
-  BADABUMP_VERSION: "21.3.1"
-  PYTHON_VERSION: "3.10.1"
   PYTHONUNBUFFERED: "1"
+  BADABUMP_VERSION: "21.3.3"
 
 jobs:
   create_release_tag:
     if: "${{ startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true }}"
-    name: "Create release tag"
+    name: "Auto Create Release Tag"
 
     runs-on: "ubuntu-latest"
 
@@ -27,22 +26,23 @@ jobs:
           app_id: "${{ secrets.BADABUMP_APP_ID }}"
           private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
 
-      - uses: "actions/checkout@v2.4.0"
+      - uses: "actions/checkout@v3.0.2"
         with:
-          ref: "master"
+          ref: "main"
           token: "${{ steps.token.outputs.token }}"
 
-      - name: "Install Python"
-        uses: "actions/setup-python@v2.3.1"
+      - id: "python"
+        name: "Install Python"
+        uses: "actions/setup-python@v4.0.0"
         with:
-          python-version: "${{ env.PYTHON_VERSION }}"
+          python-version-file: ".python-version"
 
       - name: "Install badabump"
-        run: "python3 -m pip install badabump==${{ env.BADABUMP_VERSION }}"
+        run: "pipx install --python='${{ steps.python.outputs.python-path }}' badabump==${{ env.BADABUMP_VERSION }}"
 
       - id: "badabump"
         name: "Run badabump"
-        run: "python3 -m badabump.ci prepare_tag"
+        run: "badabump-ci prepare_tag"
 
       - name: "Save tag message into the file"
         run: |

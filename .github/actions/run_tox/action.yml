@@ -1,0 +1,53 @@
+name: "Run tox"
+description: "Composite action to install tox & tox-gh-actions and run tests via tox."
+
+inputs:
+  python-path:
+    description: "Path to Python executable"
+    required: true
+  python-version:
+    description: "Installed Python version"
+    required: true
+  tox-version:
+    description: "Tox version to use"
+    required: false
+    default: "3.25.0"
+  tox-gh-actions-version:
+    description: "Tox GitHub Actions plugin version to use"
+    required: false
+    default: "2.9.1"
+  use-coveralls:
+    description: "Send coverage to Coveralls"
+    required: false
+    default: "false"
+  coveralls-token:
+    description: "GitHub token to use, when sending coverage to Coveralls"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Install tox & tox-gh-actions"
+      run: |
+        set -euo pipefail
+
+        pipx install --python='${{ inputs.python-path }}' tox==${{ inputs.tox-version }}
+        pipx inject tox tox-gh-actions==${{ inputs.tox-gh-actions-version }}
+      shell: "bash"
+
+    - name: "Cache tox"
+      uses: "actions/cache@v3.0.4"
+      with:
+        path: "./.tox/"
+        key: "tox-${{ inputs.python-version }}"
+
+    - name: "Run tox"
+      run: "tox"
+      shell: "bash"
+
+    - name: "Send coverage to Coveralls"
+      if: "${{ inputs.use-coveralls == 'true' }}"
+      env:
+        GITHUB_TOKEN: "${{ inputs.coveralls-token }}"
+      run: "poetry run python3 -m coveralls --service=github"
+      shell: "bash"
