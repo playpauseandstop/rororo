@@ -113,7 +113,7 @@ classifiers = [
 python = "^3.6"
 aiohttp = "^3.7.0"
 aiohttp-middlewares = "^1.2.0"
-attrs = ">=19.2.0,<22"
+attrs = ">=19.2.0,<23"
 contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
 environ-config = ">=20.1,<22.0"
