@@ -1,6 +1,10 @@
 3.0.0 (2022-08-09)
 ==================
 
+``rororo==3.0.0`` release drops Python 3.6 support, as well as ensure that latest versions
+of dependent libraries, such as ``attrs``, ``aiohttp-middlewares``, and ``environ-config``
+can be installed alongside *rororo*.
+
 **Features:**
 
 - **BREAKING CHANGE:** Drop Python 3.6 support (#276)
