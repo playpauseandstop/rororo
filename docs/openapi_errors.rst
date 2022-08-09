@@ -54,7 +54,7 @@ header in case of missing HTTP Basic Auth details.
     *rororo* does not intend to check, whether authentication data is valid
     or not, so ``aiohttp.web`` application should make the authentication by
     itself. Most reliable way of doing that by providing ``@login_required``
-    decorator as `done in Hobotnica example <https://github.com/playpauseandstop/rororo/blob/master/examples/hobotnica/src/hobotnica/decorators.py>`_.
+    decorator as `done in Hobotnica example <https://github.com/playpauseandstop/rororo/blob/main/examples/hobotnica/src/hobotnica/decorators.py>`_.
 
 Request Parameter Validation Errors
 ===================================

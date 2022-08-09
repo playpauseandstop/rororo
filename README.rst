@@ -23,10 +23,10 @@ rororo
     :alt: Python versions
 
 .. image:: https://img.shields.io/pypi/l/rororo.svg
-    :target: https://github.com/playpauseandstop/rororo/blob/master/LICENSE
+    :target: https://github.com/playpauseandstop/rororo/blob/main/LICENSE
     :alt: BSD License
 
-.. image:: https://coveralls.io/repos/playpauseandstop/rororo/badge.svg?branch=master&service=github
+.. image:: https://coveralls.io/repos/playpauseandstop/rororo/badge.svg?branch=main&service=github
     :target: https://coveralls.io/github/playpauseandstop/rororo
     :alt: Coverage
 
@@ -40,7 +40,7 @@ approach.
 As well as bunch other utilities to build effective server applications with
 `Python`_ 3 & `aiohttp.web`_.
 
-* Works on `Python`_ 3.6+
+* Works on `Python`_ 3.7+
 * Works with `aiohttp.web`_ 3.7+
 * BSD licensed
 * Source, issues, and pull requests `on GitHub
@@ -57,7 +57,7 @@ Quick Start
 supported).
 
 Example below, illustrates on how to handle operation ``hello_world`` from
-`openapi.yaml <https://github.com/playpauseandstop/rororo/blob/master/tests/rororo/openapi.yaml>`_ schema file.
+`openapi.yaml`_ schema file.
 
 .. code-block:: python
 
@@ -95,6 +95,8 @@ Example below, illustrates on how to handle operation ``hello_world`` from
             server_url="/api",
         )
 
+.. _`openapi.yaml`: https://github.com/playpauseandstop/rororo/blob/main/tests/rororo/openapi.yaml
+
 Schema First Approach
 ---------------------
 
@@ -114,12 +116,11 @@ first libraries.
 Class Based Views
 -----------------
 
-*rororo* supports `class based views <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views>`_
-as well. `Todo-Backend <https://github.com/playpauseandstop/rororo/tree/master/examples/todobackend>`_ example illustrates how to use
-class based views for OpenAPI 3 servers.
+*rororo* supports `class based views`_ as well. `Todo-Backend`_ example
+illustrates how to use class based views for OpenAPI 3 servers.
 
-In snippet below, *rororo* expects that OpenAPI 3 schema contains operation \
-ID ``UserView.get``,
+In snippet below, *rororo* expects that OpenAPI 3 schema contains operation ID
+``UserView.get``,
 
 .. code-block:: python
 
@@ -128,8 +129,14 @@ ID ``UserView.get``,
         async def get(self) -> web.Response:
             ...
 
+
+.. _`class based views`: https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views
+.. _`Todo-Backend`: https://github.com/playpauseandstop/rororo/tree/main/examples/todobackend
+
 More Examples
 -------------
 
-Check `examples <https://github.com/playpauseandstop/rororo/tree/master/examples>`_ folder to see other examples on how to build
-aiohttp.web OpenAPI 3 server applications.
+Check `examples`_ folder to see other examples on how to build aiohttp.web
+OpenAPI 3 server applications.
+
+.. _`examples`: https://github.com/playpauseandstop/rororo/tree/main/examples

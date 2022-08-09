@@ -3,3 +3,6 @@ extend-ignore = E501
 inline-quotes = double
 max-complexity = 15
 multiline-quotes = double
+per-file-ignores =
+    *rororo/openapi/middlewares.py: PIE786
+    *rororo/settings.py: PIE786
