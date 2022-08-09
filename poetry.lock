@@ -159,6 +159,14 @@ requests = ">=1.0.0"
 yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
+name = "dictpath"
+version = "0.1.3"
+description = "Object-oriented dictionary paths"
+category = "main"
+optional = false
+python-versions = ">= 2.7, != 3.0.*, != 3.1.*, != 3.2.*, != 3.3.*, != 3.4.*"
+
+[[package]]
 name = "dnspython"
 version = "2.2.1"
 description = "DNS toolkit"
@@ -367,14 +375,15 @@ python-versions = "*"
 
 [[package]]
 name = "openapi-core"
-version = "0.13.6"
-description = ""
+version = "0.14.2"
+description = "client-side and server-side support for the OpenAPI Specification v3"
 category = "main"
 optional = false
 python-versions = ">= 2.7, != 3.0.*, != 3.1.*, != 3.2.*, != 3.3.*, != 3.4.*"
 
 [package.dependencies]
 attrs = "*"
+dictpath = "*"
 isodate = "*"
 lazy-object-proxy = "*"
 more-itertools = "*"
@@ -402,9 +411,9 @@ attrs = ">=19.2.0"
 jsonschema = ">=4.0.0,<5.0.0"
 
 [package.extras]
-rfc3339-validator = ["rfc3339-validator"]
-strict-rfc3339 = ["strict-rfc3339"]
 isodate = ["isodate"]
+strict-rfc3339 = ["strict-rfc3339"]
+rfc3339-validator = ["rfc3339-validator"]
 
 [[package]]
 name = "openapi-spec-validator"
@@ -421,8 +430,8 @@ PyYAML = ">=5.1"
 six = "*"
 
 [package.extras]
-dev = ["pre-commit"]
 requests = ["requests"]
+dev = ["pre-commit"]
 
 [[package]]
 name = "packaging"
@@ -463,8 +472,8 @@ python-versions = ">=3.6"
 importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
 
 [package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["pytest", "pytest-benchmark"]
+testing = ["pytest-benchmark", "pytest"]
+dev = ["tox", "pre-commit"]
 
 [[package]]
 name = "py"
@@ -529,7 +538,7 @@ pytest = ">=6.1.0"
 pytest-asyncio = ">=0.17.2"
 
 [package.extras]
-testing = ["coverage (==6.2)", "mypy (==0.931)"]
+testing = ["mypy (==0.931)", "coverage (==6.2)"]
 
 [[package]]
 name = "pytest-asyncio"
@@ -559,7 +568,7 @@ coverage = {version = ">=5.2.1", extras = ["toml"]}
 pytest = ">=4.6"
 
 [package.extras]
-testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtualenv"]
+testing = ["virtualenv", "pytest-xdist", "six", "process-tests", "hunter", "fields"]
 
 [[package]]
 name = "pytest-env"
@@ -693,7 +702,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "4640c223ea01529cf80a75b69835a9fa6f0d1803479e721e8696af6bada1e23f"
+content-hash = "2db7673d2906d38d4db9caf555dceba1ae7423cfade6c6d1d47975fabb078ce5"
 
 [metadata.files]
 aiohttp = [
@@ -855,6 +864,11 @@ coverage = [
 coveralls = [
     {file = "coveralls-3.3.1-py2.py3-none-any.whl", hash = "sha256:f42015f31d386b351d4226389b387ae173207058832fbf5c8ec4b40e27b16026"},
     {file = "coveralls-3.3.1.tar.gz", hash = "sha256:b32a8bb5d2df585207c119d6c01567b81fba690c9c10a753bfe27a335bfc43ea"},
+]
+dictpath = [
+    {file = "dictpath-0.1.3-py2-none-any.whl", hash = "sha256:225248e3c1e7c375495d5da5c390cbf3490f56ee42c151df733e5b2df6b521b5"},
+    {file = "dictpath-0.1.3-py3-none-any.whl", hash = "sha256:d5212361d1fb93909cff715f6e0404e17752cf7a48df3e140639e529a027c437"},
+    {file = "dictpath-0.1.3.tar.gz", hash = "sha256:751cde3b76b176d25f961b90c423a11a4d5ede9bd09ab0d64a85abb738c190d8"},
 ]
 dnspython = [
     {file = "dnspython-2.2.1-py3-none-any.whl", hash = "sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f"},
@@ -1175,9 +1189,9 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 openapi-core = [
-    {file = "openapi-core-0.13.6.tar.gz", hash = "sha256:b291e4cf40486a18d698c75a96b616f8d19d9e6f24367c79e061c8f52efc8603"},
-    {file = "openapi_core-0.13.6-py2-none-any.whl", hash = "sha256:ef4a6d4dfe607c14e8fc3d0da0bf1035f054894ad75454674da1b4070caeebd1"},
-    {file = "openapi_core-0.13.6-py3-none-any.whl", hash = "sha256:e8e3e7fec220614ede1ee1bc2e80d74bc47727c6e108e8212dcd97733cf31f26"},
+    {file = "openapi-core-0.14.2.tar.gz", hash = "sha256:62ad93c8114ce6025f25b004ff0f3674eea8bc4ae920c726e98921fdbe41b4f3"},
+    {file = "openapi_core-0.14.2-py2-none-any.whl", hash = "sha256:3426b5ae551a04f7d7a3a625ca600bff157affb4eb691d36412997f6a9ac6898"},
+    {file = "openapi_core-0.14.2-py3-none-any.whl", hash = "sha256:05e100cfb25b4c68d2f647b3f204da26630d79df02d5e0aacae2bcc1915a2796"},
 ]
 openapi-schema-validator = [
     {file = "openapi-schema-validator-0.3.0.tar.gz", hash = "sha256:cf2c96a45c9a9722ea06fc7264d2fc55e0e6258ba8ef291d0ea90b4c5c8bdcfc"},

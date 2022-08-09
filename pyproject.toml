@@ -125,7 +125,7 @@ contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
 environ-config = ">=20.1,<23"
 isodate = "^0.6.0"
-openapi-core = ">=0.13.4,<0.13.7"
+openapi-core = ">=0.13.4,<0.14.3"
 pyrsistent = ">=0.16,<0.19"
 PyYAML = ">=5.1,<7.0"
 typing-extensions = {python = "<3.8", version = ">=3.7,<5.0"}
