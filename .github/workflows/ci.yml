@@ -77,7 +77,22 @@ jobs:
         with:
           python-version: "${{ steps.python_and_poetry.outputs.python-version }}"
 
+      - name: "Validate OpenAPI schemas"
+        if: "${{ matrix.dev == 'true' }}"
+        run: |
+          set -euo pipefail
+
+          poetry run python3 -m openapi_spec_validator ./examples/hobotnica/src/hobotnica/openapi.yaml
+          poetry run python3 -m openapi_spec_validator ./examples/petstore/src/petstore/petstore-expanded.yaml
+          poetry run python3 -m openapi_spec_validator ./examples/simulations/src/simulations/openapi.yaml
+          poetry run python3 -m openapi_spec_validator ./examples/todobackend/src/todobackend/openapi.yaml
+          poetry run python3 -m openapi_spec_validator ./tests/rororo/openapi.json
+          poetry run python3 -m openapi_spec_validator ./tests/rororo/openapi.yaml
+
       - uses: "./.github/actions/run_tox"
+        env:
+          PYTHONPATH: "./examples/hobotnica/src:./examples/petstore/src:./examples/simulations/src:./examples/todobackend/src"
+          REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         with:
           python-path: "${{ steps.python_and_poetry.outputs.python-path }}"
           python-version: "${{ steps.python_and_poetry.outputs.python-version }}"
