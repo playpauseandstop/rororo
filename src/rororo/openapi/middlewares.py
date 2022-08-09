@@ -88,7 +88,7 @@ def openapi_middleware(
                 validate_response(request, response)
 
             return response
-        except Exception as err:  # noqa: PIE786
+        except Exception as err:
             return await get_error_response(
                 request, err, **error_middleware_kwargs or {}
             )

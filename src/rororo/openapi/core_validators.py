@@ -87,7 +87,9 @@ class EmailFormatter(Formatter):
     kwargs: ValidateEmailKwargsDict
 
     def __init__(self, kwargs: ValidateEmailKwargsDict = None) -> None:
-        self.kwargs: ValidateEmailKwargsDict = kwargs or {}
+        self.kwargs: ValidateEmailKwargsDict = kwargs or {
+            "check_deliverability": False
+        }
 
     def validate(self, value: str) -> bool:
         try:

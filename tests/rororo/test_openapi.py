@@ -342,7 +342,7 @@ async def test_email_format(aiohttp_client, schema_path):
     response = await client.get(
         "/api/hello", params={"email": "email@example.com"}
     )
-    assert response.status == 200
+    assert response.status == 200, await response.text()
     assert (await response.json())["email"] == "email@example.com"
 
 

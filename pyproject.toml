@@ -110,13 +110,13 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 aiohttp = "^3.7.0"
-aiohttp-middlewares = "^1.2.0"
-attrs = ">=19.2.0,<22"
+aiohttp-middlewares = ">=1.2.0,<3"
+attrs = ">=19.2.0,<23"
 contextvars = {python = "<3.7", version = "^2.4"}
 email-validator = "^1.0.5"
-environ-config = ">=20.1,<22.0"
+environ-config = ">=20.1,<23"
 isodate = "^0.6.0"
 openapi-core = ">=0.13.4,<0.13.7"
 pyrsistent = ">=0.16,<0.19"
@@ -126,39 +126,41 @@ typing-extensions = {python = "<3.8", version = ">=3.7,<5.0"}
 [tool.poetry.dev-dependencies]
 aioredis = {extras = ["hiredis"], version = "^2.0.1"}
 async_generator = {python = "~3.6", version = "^1.10"}
-coverage = "^6.2"
-mypy = "^0.931"
-pytest = "^6.2.5"
-pytest-aiohttp = "^0.3.0"
+coverage = {extras = ["toml"], version = "^6.4.3"}
+coveralls = "^3.3.1"
+mypy = "^0.971"
+pytest = "^7.1.2"
+pytest-aiohttp = "^1.0.4"
 pytest-cov = "^3.0.0"
 pytest-env = "^0.6.2"
-types-PyYAML = "^6.0.4"
+types-PyYAML = "^6.0.11"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
 
 [tool.pytest.ini_options]
-minversion = "6.2.5"
+minversion = "7.1.2"
 testpaths = ["./tests/"]
 addopts = "--cov --no-cov-on-fail"
 env = """
 LEVEL=test
 """
 log_level = "info"
+asyncio_mode = "auto"
 
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py36,py37,py38,py39,py310,py310-minimum-requirements
+envlist = py37,py38,py39,py310,py310-minimum-requirements,py311
 skipsdist = True
 
 [gh-actions]
 python =
-  3.6: py36
   3.7: py37
   3.8: py38
   3.9: py39
   3.10: py310
+  3.11: py311
 
 [testenv]
 passenv =
@@ -177,7 +179,16 @@ commands =
 [testenv:py310-minimum-requirements]
 commands_pre =
   poetry install
-  poetry run python3 -m pip install aiohttp==3.7.0 attrs==19.2.0 environ-config==20.1.0 jsonschema==3.2.0 openapi-core==0.13.4 pyrsistent==0.16 PyYAML==5.1
+  poetry run python3 -m pip install \
+    aiohttp==3.7.0 \
+    aiohttp-middlewares==1.2.0 \
+    attrs==19.2.0 \
+    email-validator==1.0.5 \
+    environ-config==20.1.0 \
+    jsonschema==3.2.0 \
+    openapi-core==0.13.4 \
+    pyrsistent==0.16 \
+    PyYAML==5.1
 """
 
 [build-system]

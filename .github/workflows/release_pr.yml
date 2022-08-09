@@ -25,9 +25,9 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v2.4.0"
+      - uses: "actions/checkout@v3.0.2"
         with:
-          ref: "master"
+          ref: "main"
 
       - name: "Fetch git tags"
         run: |
@@ -37,9 +37,9 @@ jobs:
           git fetch --prune --unshallow
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2.3.1"
+        uses: "actions/setup-python@v4.2.0"
         with:
-          python-version: "${{ env.PYTHON_VERSION }}"
+          python-version-file: ".python-version"
 
       - name: "Install badabump"
         run: "python3 -m pip install badabump==${{ env.BADABUMP_VERSION }}"

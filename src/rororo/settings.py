@@ -209,7 +209,7 @@ def inject_settings(
     if isinstance(mixed, str):
         try:
             mixed = import_module(mixed)
-        except Exception:  # noqa: PIE786
+        except Exception:
             if fail_silently:
                 return
             raise

@@ -24,7 +24,7 @@ PYTHONPATH = $(shell echo "$(EXAMPLES_SRC_DIRS)" | tr ' ' ':')
 
 # Project vars
 PIP_COMPILE ?= pip-compile
-TOX ?= python3 -m tox
+TOX ?= tox
 
 # Docs vars
 DOCS_HOST ?= localhost
