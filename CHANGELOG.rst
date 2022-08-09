@@ -1,3 +1,37 @@
+3.0.0 (2022-08-09)
+==================
+
+``rororo==3.0.0`` release drops Python 3.6 support, as well as ensures that latest versions
+of dependent libraries, such as ``attrs``, ``aiohttp-middlewares``, and ``environ-config``
+can be installed alongside *rororo*.
+
+**Features:**
+
+- **BREAKING CHANGE:** Drop Python 3.6 support (#276)
+
+**Other:**
+
+- (**deps**) bump isodate from 0.6.0 to 0.6.1 (#222)
+- Fix example code in README (#224)
+- (**deps-dev**) bump mypy from 0.910 to 0.920 (#223)
+- (**deps**) bump attrs from 21.2.0 to 21.4.0 (#227)
+- (**deps-dev**) bump aioredis from 2.0.0 to 2.0.1 (#225)
+- (**deps-dev**) bump mypy from 0.920 to 0.930 (#226)
+- (**deps**) bump peter-evans/create-pull-request from 3.11.0 to 3.12.0 (#228)
+- Update Python dev version to 3.10.1 (#229)
+- Fix operations typo (#230)
+- Fix more typos in README and code (#232)
+- (**deps**) bump pypa/gh-action-pypi-publish from 1.4.2 to 1.5.0 (#238)
+- Fix links in documentation (#234)
+- (**deps**) bump peter-evans/create-pull-request from 3.12.0 to 3.12.1 (#237)
+- (**deps-dev**) bump mypy from 0.930 to 0.931 (#235)
+- (**deps-dev**) bump types-pyyaml from 6.0.1 to 6.0.4 (#236)
+- (**deps**) bump pre-commit/action from 2.0.3 to 3.0.0 (#265)
+- (**deps**) bump pypa/gh-action-pypi-publish from 1.5.0 to 1.5.1 (#271)
+- (**deps**) bump tibdex/github-app-token from 1.5 to 1.6 (#272)
+- (**deps**) bump peter-evans/create-pull-request from 3.12.1 to 4.0.4 (#266)
+- Sync common project files (#279)
+
 2.4.1 (2021-12-16)
 ==================
 
