@@ -1,0 +1,40 @@
+defaults:
+  run:
+    shell: "bash"
+
+name: "Verify Docs Build Well"
+
+on:
+  workflow_call:
+    inputs:
+      wheel-version:
+        description: "Wheel version to use."
+        type: "string"
+        required: false
+        default: "0.37.1"
+
+jobs:
+  build_docs:
+    name: "Verify Docs Build Well"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v3.0.2"
+
+      - id: "python"
+        name: "Install Python"
+        uses: "actions/setup-python@v4.2.0"
+        with:
+          python-version-file: ".python-version"
+          cache: "pip"
+          cache-dependency-path: "./docs/requirements*.txt"
+
+      - name: "Install wheel"
+        run: "python3 -m pip install wheel==${{ inputs.wheel-version }}"
+
+      - name: "Install docs requirements"
+        run: "python3 -m pip install -r ./docs/requirements.txt -r ./docs/requirements-sphinx.txt"
+
+      - name: "Build docs"
+        run: "python3 -m sphinx -b html ./docs/ ./docs/_build/"
