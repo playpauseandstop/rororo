@@ -9,13 +9,12 @@ on:
     types: ["closed"]
 
 env:
-  BADABUMP_VERSION: "21.3.3"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   create_release_tag:
     if: "${{ startsWith(github.head_ref, 'chore/release-') && github.event.pull_request.merged == true }}"
-    name: "Create release tag"
+    name: "Auto Create Release Tag"
 
     runs-on: "ubuntu-latest"
 
@@ -31,17 +30,11 @@ jobs:
           ref: "main"
           token: "${{ steps.token.outputs.token }}"
 
-      - name: "Install Python"
-        uses: "actions/setup-python@v4.2.0"
-        with:
-          python-version-file: ".python-version"
-
-      - name: "Install badabump"
-        run: "python3 -m pip install badabump==${{ env.BADABUMP_VERSION }}"
+      - uses: "./.github/actions/install_badabump"
 
       - id: "badabump"
         name: "Run badabump"
-        run: "python3 -m badabump.ci prepare_tag"
+        run: "badabump-ci prepare_tag"
 
       - name: "Save tag message into the file"
         run: |

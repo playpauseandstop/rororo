@@ -145,7 +145,11 @@ dmypy.json
 
 # DotENV files
 .env.*
+!.env.dev
 !.env.test
 
 # Makefile target
 .install*
+
+# Sublime Text 3 workspace
+*.sublime-workspace

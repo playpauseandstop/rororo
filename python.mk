@@ -17,18 +17,20 @@
 	test-python-setup \
 	test-python-teardown
 
-GIT_DIR = ./.git
+GIT_DIR = .git
 
-PYTHON_DIST_DIR = ./dist
 PYTHON_VERISON = $(shell cat .python-version)
-VENV_DIR = ./.venv
+VENV_DIR = .venv
 PYTHON_BIN = $(VENV_DIR)/bin/python3
 
 STAGE ?= dev
 DOTENV ?= $(shell if [ -f ./dotenv.sh ]; then echo "./dotenv.sh "; fi)
 POETRY ?= $(DOTENV) poetry
+POETRY_INSTALL_ARGS ?=
 PRE_COMMIT ?= pre-commit
+PYENV ?= $(shell if [ -z "${CI}" ]; then echo "pyenv"; fi)
 PYTHON ?= $(DOTENV) $(PYTHON_BIN)
+PYTHON_DIST_DIR ?= dist
 
 build-python: install-python build-python-only
 build-python-only:
@@ -47,11 +49,11 @@ ensure-venv: .python-version
 	if [ -f "$(PYTHON_BIN)" ]; then \
 		if [ "$$("$(PYTHON_BIN)" -V)" != "Python $(PYTHON_VERISON)" ]; then \
 			echo "[python.mk] Updating virtualenv as venv version of $$("$(PYTHON_BIN)" -V) != $(PYTHON_VERISON)"; \
-			$(POETRY) env use $(PYTHON_VERISON); \
+			$(POETRY) env use $$($(PYENV) which python3); \
 		fi; \
 	else \
 		echo "[python.mk] Tell poetry to use Python $(PYTHON_VERISON) for creating virtual env"; \
-		$(POETRY) env use $(PYTHON_VERISON); \
+		$(POETRY) env use $$($(PYENV) which python3); \
 	fi
 
 install-python: .install-python
@@ -59,7 +61,7 @@ install-python: .install-python
 	touch $@
 
 install-python-only:
-	if [ "$(STAGE)" = "prod" ]; then $(POETRY) install --no-dev; else $(POETRY) install; fi
+	if [ "$(STAGE)" = "prod" ]; then $(POETRY) install $(POETRY_INSTALL_ARGS) --no-dev; else $(POETRY) install $(POETRY_INSTALL_ARGS); fi
 
 lint-python: install-python lint-python-only
 lint-python-only:
@@ -78,7 +80,6 @@ poetry.lock: pyproject.toml
 poetry.toml:
 	$(POETRY) config --local virtualenvs.create true
 	$(POETRY) config --local virtualenvs.in-project true
-	@version="$(PYTHON_VERISON)"; if [ "$${version:0:4}" = "3.10" ]; then $(POETRY) config --local experimental.new-installer false; fi
 
 python-version:
 	@echo "Expected: Python $(PYTHON_VERISON)"
@@ -88,7 +89,7 @@ test-python: install-python clean-python test-python-only
 
 test-python-only: STAGE = test
 test-python-only: test-python-setup
-	STAGE=$(STAGE) $(PYTHON) -m pytest
+	STAGE=$(STAGE) $(PYTHON) -m pytest $(TEST_ARGS)
 	@$(MAKE) -s test-python-teardown
 
 test-python-setup: STAGE = test
