@@ -1,0 +1,45 @@
+name: "Install Python & poetry"
+description: "Composite action to setup Python, install poetry, and setup cache for venv."
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: false
+  python-version-file:
+    description: "Read Python version from given file"
+    required: false
+  poetry-version:
+    description: "Poetry version to use"
+    required: false
+    default: "1.1.14"
+
+outputs:
+  python-path:
+    description: "Absolute path to Python executable"
+    value: "${{ steps.python.outputs.python-path }}"
+  python-version:
+    description: "Installed Python version"
+    value: "${{ steps.python.outputs.python-version }}"
+  poetry-version:
+    description: "Installed poetry version"
+    value: "${{ inputs.poetry-version }}"
+
+runs:
+  using: "composite"
+  steps:
+    - id: "python"
+      name: "Install Python"
+      uses: "actions/setup-python@v4.2.0"
+      with:
+        python-version: "${{ inputs.python-version }}"
+        python-version-file: "${{ inputs.python-version-file }}"
+
+    - name: "Install poetry"
+      shell: "bash"
+      run: "pipx install --python='${{ steps.python.outputs.python-path }}' poetry==${{ inputs.poetry-version }}"
+
+    - name: "Cache venv"
+      uses: "actions/cache@v3.0.6"
+      with:
+        path: "./.venv/"
+        key: "venv-${{ runner.os }}-${{ steps.python.outputs.python-version }}-${{ hashFiles('poetry.lock') }}"

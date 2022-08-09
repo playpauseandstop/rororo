@@ -1,0 +1,21 @@
+name: "Install badabump"
+description: "Composite action to install Python & badabump."
+
+inputs:
+  badabump-version:
+    description: "Badabump version to use"
+    required: false
+    default: "21.3.3"
+
+runs:
+  using: "composite"
+  steps:
+    - id: "python"
+      name: "Install Python"
+      uses: "actions/setup-python@v4.2.0"
+      with:
+        python-version-file: ".python-version"
+
+    - name: "Install badabump"
+      run: "pipx install --python='${{ steps.python.outputs.python-path }}' badabump==${{ inputs.badabump-version }}"
+      shell: "bash"
