@@ -11,8 +11,8 @@ import datetime
 import re
 from typing import Optional
 
-from .annotations import DictStrInt
-from .utils import to_int
+from rororo.annotations import DictStrInt
+from rororo.utils import to_int
 
 
 __all__ = (

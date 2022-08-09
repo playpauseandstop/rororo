@@ -1,6 +1,5 @@
+from hobotnica.data import GITHUB_PERSONAL_TOKEN, GITHUB_USERNAME
 from rororo.openapi.exceptions import InvalidCredentials
-
-from .data import GITHUB_PERSONAL_TOKEN, GITHUB_USERNAME
 
 
 def authenticate(*, username: str, personal_token: str) -> None:

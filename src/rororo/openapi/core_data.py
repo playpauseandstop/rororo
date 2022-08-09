@@ -11,10 +11,10 @@ from openapi_core.validation.request.datatypes import (
 from openapi_core.validation.response.datatypes import OpenAPIResponse
 from yarl import URL
 
-from ..annotations import Handler
-from .constants import HANDLER_OPENAPI_MAPPING_KEY
-from .exceptions import OperationError
-from .utils import get_openapi_spec
+from rororo.annotations import Handler
+from rororo.openapi.constants import HANDLER_OPENAPI_MAPPING_KEY
+from rororo.openapi.exceptions import OperationError
+from rororo.openapi.utils import get_openapi_spec
 
 
 def find_core_operation(

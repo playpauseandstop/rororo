@@ -1,8 +1,7 @@
 from typing import List
 
+from petstore.data import Pet
 from rororo.openapi.exceptions import ObjectDoesNotExist
-
-from .data import Pet
 
 
 def get_pet_or_404(pets: List[Pet], pet_id: int) -> Pet:

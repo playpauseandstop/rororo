@@ -11,7 +11,7 @@ import logging
 import sys
 from typing import Any, Optional, Union
 
-from .annotations import DictStrAny
+from rororo.annotations import DictStrAny
 
 
 class IgnoreErrorsFilter:

@@ -28,7 +28,14 @@ profile = "attrs"
 combine_as_imports = true
 force_alphabetical_sort_within_sections = true
 lines_between_types = 0
-src_paths = ["./", "./src/"]
+src_paths = [
+  "./",
+  "./examples/hobotnica/src/",
+  "./examples/petstore/src/",
+  "./examples/simulations/src/",
+  "./examples/todobackend/src/",
+  "./src/",
+]
 virtual_env = "./.venv/"
 
 [tool.mypy]

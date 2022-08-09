@@ -6,6 +6,7 @@ except ImportError:
 import aioredis
 import attr
 import pytest
+
 from todobackend.settings import Settings
 
 

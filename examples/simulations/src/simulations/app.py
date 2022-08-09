@@ -9,8 +9,7 @@ from pyrsistent import thaw
 
 from rororo import get_validated_data, OperationTableDef, setup_openapi
 from rororo.openapi.openapi import get_default_yaml_loader
-
-from .storage import DEFAULT_STORAGE
+from simulations.storage import DEFAULT_STORAGE
 
 
 operations = OperationTableDef()

@@ -2,10 +2,9 @@ from functools import wraps
 
 from aiohttp import web
 
+from hobotnica.auth import authenticate
 from rororo import openapi_context
 from rororo.annotations import Handler
-
-from .auth import authenticate
 
 
 def login_required(handler: Handler) -> Handler:

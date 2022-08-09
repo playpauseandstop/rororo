@@ -2,11 +2,10 @@ import uuid
 
 from aiohttp import web
 
+from hobotnica.data import ENVIRONMENT_VARS, GITHUB_REPOSITORIES
+from hobotnica.decorators import login_required
 from rororo import openapi_context, OperationTableDef
 from rororo.openapi.exceptions import ObjectDoesNotExist
-
-from .data import ENVIRONMENT_VARS, GITHUB_REPOSITORIES
-from .decorators import login_required
 
 
 operations = OperationTableDef()

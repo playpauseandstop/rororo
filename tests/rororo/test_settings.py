@@ -19,8 +19,7 @@ from rororo.settings import (
     setup_settings,
     setup_timezone,
 )
-
-from . import settings as settings_module
+from tests.rororo import settings as settings_module
 
 
 TEST_DEBUG = True

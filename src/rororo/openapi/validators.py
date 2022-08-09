@@ -1,10 +1,19 @@
 from aiohttp import web
 
-from .constants import REQUEST_CORE_REQUEST_KEY, REQUEST_OPENAPI_CONTEXT_KEY
-from .core_data import to_core_openapi_request, to_core_openapi_response
-from .core_validators import validate_core_request, validate_core_response
-from .data import OpenAPIContext
-from .utils import get_openapi_spec, get_validate_email_kwargs
+from rororo.openapi.constants import (
+    REQUEST_CORE_REQUEST_KEY,
+    REQUEST_OPENAPI_CONTEXT_KEY,
+)
+from rororo.openapi.core_data import (
+    to_core_openapi_request,
+    to_core_openapi_response,
+)
+from rororo.openapi.core_validators import (
+    validate_core_request,
+    validate_core_response,
+)
+from rororo.openapi.data import OpenAPIContext
+from rororo.openapi.utils import get_openapi_spec, get_validate_email_kwargs
 
 
 async def validate_request(request: web.Request) -> web.Request:

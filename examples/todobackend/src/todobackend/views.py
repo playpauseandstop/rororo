@@ -2,11 +2,10 @@ import attr
 from aiohttp import web
 
 from rororo import openapi_context, OperationTableDef
-
-from .constants import APP_STORAGE_KEY
-from .data import Todo
-from .storage import Storage
-from .validators import get_todo_or_404
+from todobackend.constants import APP_STORAGE_KEY
+from todobackend.data import Todo
+from todobackend.storage import Storage
+from todobackend.validators import get_todo_or_404
 
 
 operations = OperationTableDef()

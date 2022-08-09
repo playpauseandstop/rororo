@@ -10,7 +10,7 @@ on:
         default: "4.0.1"
 
     secrets:
-      pypi-username:
+      pypi-user:
         description: "PyPI username to use."
         required: true
       pypi-password:
@@ -44,5 +44,5 @@ jobs:
         if: "${{ startsWith(github.ref, 'refs/tags/') }}"
         uses: "pypa/gh-action-pypi-publish@v1.5.1"
         with:
-          user: "${{ secrets.pypi-username }}"
+          user: "${{ secrets.pypi-user }}"
           password: "${{ secrets.pypi-password }}"

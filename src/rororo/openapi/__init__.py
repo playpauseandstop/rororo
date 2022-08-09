@@ -8,8 +8,8 @@ aiohttp.web applications.
 
 """
 
-from .contexts import openapi_context
-from .exceptions import (
+from rororo.openapi.contexts import openapi_context
+from rororo.openapi.exceptions import (
     BadRequest,
     BasicInvalidCredentials,
     BasicSecurityError,
@@ -21,15 +21,19 @@ from .exceptions import (
     validation_error_context,
     ValidationError,
 )
-from .openapi import OperationTableDef, read_openapi_schema, setup_openapi
-from .utils import (
+from rororo.openapi.openapi import (
+    OperationTableDef,
+    read_openapi_schema,
+    setup_openapi,
+)
+from rororo.openapi.utils import (
     get_openapi_context,
     get_openapi_schema,
     get_openapi_spec,
     get_validated_data,
     get_validated_parameters,
 )
-from .views import default_error_handler
+from rororo.openapi.views import default_error_handler
 
 
 __all__ = (
