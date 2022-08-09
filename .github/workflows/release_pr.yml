@@ -49,7 +49,7 @@ jobs:
         run: "python3 -m badabump --ci ${{ github.event.inputs.args }}"
 
       - id: "token"
-        uses: "tibdex/github-app-token@v1.5"
+        uses: "tibdex/github-app-token@v1.6"
         with:
           app_id: "${{ secrets.BADABUMP_APP_ID }}"
           private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
