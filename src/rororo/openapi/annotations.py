@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Union
 
-from ..annotations import TypedDict
+from rororo.annotations import TypedDict
 
 
 SecurityDict = Dict[str, List[str]]

@@ -2,10 +2,9 @@ from aiohttp import web
 
 from rororo import openapi_context
 from rororo.openapi.exceptions import ObjectDoesNotExist
-
-from .constants import APP_STORAGE_KEY
-from .data import Todo
-from .storage import Storage
+from todobackend.constants import APP_STORAGE_KEY
+from todobackend.data import Todo
+from todobackend.storage import Storage
 
 
 async def get_todo_or_404(request: web.Request) -> Todo:

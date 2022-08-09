@@ -15,7 +15,7 @@ from aiohttp.helpers import ChainMapProxy
 from openapi_core.validation.request.datatypes import RequestParameters
 from pyrsistent import pmap
 
-from ..annotations import MappingStrAny
+from rororo.annotations import MappingStrAny
 
 
 @attr.dataclass(frozen=True, slots=True)

@@ -12,7 +12,7 @@ Python 3 & ``aiohttp.web``.
 
 """
 
-from .openapi import (
+from rororo.openapi import (
     get_openapi_context,
     get_openapi_schema,
     get_openapi_spec,
@@ -21,7 +21,11 @@ from .openapi import (
     OperationTableDef,
     setup_openapi,
 )
-from .settings import BaseSettings, setup_settings, setup_settings_from_environ
+from rororo.settings import (
+    BaseSettings,
+    setup_settings,
+    setup_settings_from_environ,
+)
 
 
 __all__ = (

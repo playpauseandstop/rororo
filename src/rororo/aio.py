@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 from aiohttp import web
 
-from .annotations import DictStrAny, Handler, Protocol
+from rororo.annotations import DictStrAny, Handler, Protocol
 
 
 __all__ = ("add_resource_context", "is_xhr_request", "parse_aioredis_url")

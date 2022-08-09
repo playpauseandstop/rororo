@@ -1,12 +1,13 @@
 import pytest
 from aiohttp import BasicAuth
+from yarl import URL
+
 from hobotnica.app import create_app
 from hobotnica.data import (
     GITHUB_PERSONAL_TOKEN,
     GITHUB_REPOSITORY,
     GITHUB_USERNAME,
 )
-from yarl import URL
 
 
 URL_REFERENCES = URL("/api/public/references")

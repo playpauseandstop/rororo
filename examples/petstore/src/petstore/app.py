@@ -3,10 +3,9 @@ from typing import List
 
 from aiohttp import web
 
+from petstore import views
+from petstore.settings import Settings
 from rororo import setup_openapi, setup_settings
-
-from . import views
-from .settings import Settings
 
 
 def create_app(

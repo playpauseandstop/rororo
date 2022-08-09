@@ -8,9 +8,8 @@ from aiohttp_middlewares import (
     timeout_middleware,
 )
 
+from hobotnica import views
 from rororo import BaseSettings, setup_openapi, setup_settings
-
-from . import views
 
 
 def create_app(

@@ -11,7 +11,7 @@ converting string to int or bool.
 from distutils.util import strtobool
 from typing import Any, Collection, Optional, Union
 
-from .annotations import T
+from rororo.annotations import T
 
 
 def ensure_collection(value: Collection[str]) -> Collection[str]:

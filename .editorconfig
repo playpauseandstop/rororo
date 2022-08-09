@@ -7,7 +7,7 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[{.babelrc,.compressrc,.eslintrc}]
+[{.babelrc,.compressrc,.eslintrc,.linguirc}]
 indent_size = 2
 
 [*.{css,cfg,html,ini,js,json,md,service,toml,yaml,yml,xml}]

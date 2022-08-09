@@ -7,11 +7,10 @@ from aioredis.client import Redis
 
 from rororo import setup_openapi, setup_settings
 from rororo.settings import APP_SETTINGS_KEY
-
-from . import views
-from .constants import APP_REDIS_KEY, APP_STORAGE_KEY
-from .settings import Settings
-from .storage import Storage
+from todobackend import views
+from todobackend.constants import APP_REDIS_KEY, APP_STORAGE_KEY
+from todobackend.settings import Settings
+from todobackend.storage import Storage
 
 
 def create_app(

@@ -36,7 +36,7 @@ from typing import (
 import environ
 from aiohttp import web
 
-from .annotations import (
+from rororo.annotations import (
     DictStrAny,
     Level,
     MappingStrAny,
@@ -44,8 +44,8 @@ from .annotations import (
     Settings,
     T,
 )
-from .logger import default_logging_dict
-from .utils import ensure_collection, to_bool
+from rororo.logger import default_logging_dict
+from rororo.utils import ensure_collection, to_bool
 
 
 APP_SETTINGS_KEY = "settings"

@@ -28,7 +28,7 @@ from openapi_core.unmarshalling.schemas.exceptions import (
 )
 from openapi_core.validation.exceptions import InvalidSecurity
 
-from ..annotations import DictStrAny, MappingStrStr, TypedDict
+from rororo.annotations import DictStrAny, MappingStrStr, TypedDict
 
 
 ERROR_FIELD_REQUIRED = "Field required"

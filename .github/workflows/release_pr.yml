@@ -13,14 +13,11 @@ on:
         default: ""
 
 env:
-  BADABUMP_VERSION: "21.3.1"
-  PYTHON_VERSION: "3.10.1"
   PYTHONUNBUFFERED: "1"
 
 jobs:
   create_release_pr:
-    if: "${{ github.actor == 'playpauseandstop' }}"
-    name: "Create release PR"
+    name: "Create Release PR"
 
     runs-on: "ubuntu-latest"
 
@@ -36,17 +33,11 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/* || :
           git fetch --prune --unshallow
 
-      - name: "Install Python"
-        uses: "actions/setup-python@v4.2.0"
-        with:
-          python-version-file: ".python-version"
-
-      - name: "Install badabump"
-        run: "python3 -m pip install badabump==${{ env.BADABUMP_VERSION }}"
+      - uses: "./.github/actions/install_badabump"
 
       - id: "badabump"
         name: "Run badabump"
-        run: "python3 -m badabump --ci ${{ github.event.inputs.args }}"
+        run: "badabump --ci ${{ github.event.inputs.args }}"
 
       - id: "token"
         uses: "tibdex/github-app-token@v1.6"
@@ -68,3 +59,4 @@ jobs:
           body: "${{ steps.badabump.outputs.changelog }}"
           labels: "chore"
           reviewers: "playpauseandstop"
+          assignees: "playpauseandstop"

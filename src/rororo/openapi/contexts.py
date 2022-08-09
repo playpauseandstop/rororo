@@ -3,8 +3,8 @@ from typing import Iterator
 
 from aiohttp import web
 
-from .data import OpenAPIContext
-from .utils import get_openapi_context
+from rororo.openapi.data import OpenAPIContext
+from rororo.openapi.utils import get_openapi_context
 
 
 @contextmanager

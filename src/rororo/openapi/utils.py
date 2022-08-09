@@ -6,16 +6,16 @@ from openapi_core.schema.specs.models import Spec
 from openapi_core.validation.request.datatypes import OpenAPIRequest
 from yarl import URL
 
-from ..annotations import DictStrAny
-from .annotations import ValidateEmailKwargsDict
-from .constants import (
+from rororo.annotations import DictStrAny
+from rororo.openapi.annotations import ValidateEmailKwargsDict
+from rororo.openapi.constants import (
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
     APP_VALIDATE_EMAIL_KWARGS_KEY,
     REQUEST_OPENAPI_CONTEXT_KEY,
 )
-from .data import OpenAPIContext, OpenAPIParameters
-from .exceptions import ConfigurationError, ContextError
+from rororo.openapi.data import OpenAPIContext, OpenAPIParameters
+from rororo.openapi.exceptions import ConfigurationError, ContextError
 
 
 def add_prefix(path: str, prefix: Optional[str]) -> str:

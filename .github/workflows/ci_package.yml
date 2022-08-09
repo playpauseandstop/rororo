@@ -1,0 +1,48 @@
+name: "Build & Deploy Package"
+
+on:
+  workflow_call:
+    inputs:
+      twine-version:
+        description: "Twine version to use."
+        type: "string"
+        required: false
+        default: "4.0.1"
+
+    secrets:
+      pypi-user:
+        description: "PyPI username to use."
+        required: true
+      pypi-password:
+        description: "PyPI password (token) to use."
+        required: true
+
+jobs:
+  package:
+    name: "Build & Deploy Package"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v3.0.2"
+
+      - id: "python_and_poetry"
+        uses: "./.github/actions/install_python_and_poetry"
+        with:
+          python-version-file: ".python-version"
+
+      - name: "Build package"
+        run: "poetry build"
+
+      - name: "Install twine"
+        run: "pipx install --python='${{ steps.python_and_poetry.outputs.python-path }}' twine==${{ inputs.twine-version }}"
+
+      - name: "Check package"
+        run: "twine check ./dist/*"
+
+      - name: "Publish package"
+        if: "${{ startsWith(github.ref, 'refs/tags/') }}"
+        uses: "pypa/gh-action-pypi-publish@v1.5.1"
+        with:
+          user: "${{ secrets.pypi-user }}"
+          password: "${{ secrets.pypi-password }}"

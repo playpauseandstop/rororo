@@ -1,4 +1,5 @@
 import pytest
+
 from petstore.app import create_app
 from petstore.data import Pet
 

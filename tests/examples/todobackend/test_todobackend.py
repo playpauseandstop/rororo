@@ -1,6 +1,7 @@
 import pytest
-from todobackend.app import create_app
 from yarl import URL
+
+from todobackend.app import create_app
 
 
 FAKE_UID = "b3f8d6d7-f4a5-44bb-ba36-85a6579b63c0"

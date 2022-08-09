@@ -1,0 +1,40 @@
+name: "Create GitHub Release"
+
+on:
+  workflow_call:
+    secrets:
+      release-token:
+        description: "Token to use for creating release."
+        required: true
+
+jobs:
+  release:
+    name: "Create GitHub Release"
+
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v3.0.2"
+
+      - name: "Fetch git data"
+        run: |
+          set -euo pipefail
+
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          git fetch --prune --unshallow
+
+      - uses: "./.github/actions/install_badabump"
+
+      - id: "badabump"
+        name: "Run badabump"
+        run: 'badabump-ci prepare_release "${{ github.ref }}"'
+
+      - name: "Create new release"
+        uses: "actions/create-release@v1.1.4"
+        env:
+          GITHUB_TOKEN: "${{ secrets.release-token }}"
+        with:
+          tag_name: "${{ steps.badabump.outputs.tag_name }}"
+          release_name: "${{ steps.badabump.outputs.release_name }}"
+          body: "${{ steps.badabump.outputs.release_body }}"
+          prerelease: "${{ steps.badabump.outputs.is_pre_release }}"

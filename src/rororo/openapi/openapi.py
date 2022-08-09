@@ -31,7 +31,7 @@ from openapi_core.shortcuts import create_spec
 from pyrsistent import pmap
 from yarl import URL
 
-from ..annotations import (
+from rororo.annotations import (
     DictStrAny,
     DictStrStr,
     F,
@@ -40,19 +40,19 @@ from ..annotations import (
     TypedDict,
     ViewType,
 )
-from ..settings import APP_SETTINGS_KEY, BaseSettings
-from . import views
-from .annotations import SecurityDict, ValidateEmailKwargsDict
-from .constants import (
+from rororo.openapi import views
+from rororo.openapi.annotations import SecurityDict, ValidateEmailKwargsDict
+from rororo.openapi.constants import (
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
     APP_VALIDATE_EMAIL_KWARGS_KEY,
     HANDLER_OPENAPI_MAPPING_KEY,
 )
-from .core_data import get_core_operation
-from .exceptions import ConfigurationError
-from .middlewares import openapi_middleware
-from .utils import add_prefix
+from rororo.openapi.core_data import get_core_operation
+from rororo.openapi.exceptions import ConfigurationError
+from rororo.openapi.middlewares import openapi_middleware
+from rororo.openapi.utils import add_prefix
+from rororo.settings import APP_SETTINGS_KEY, BaseSettings
 
 
 SchemaLoader = Callable[[bytes], DictStrAny]

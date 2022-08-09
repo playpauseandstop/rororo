@@ -5,7 +5,7 @@ import pyrsistent
 from aioredis.client import Redis
 from pyrsistent.typing import PVector
 
-from .data import Todo
+from todobackend.data import Todo
 
 
 class Storage:
