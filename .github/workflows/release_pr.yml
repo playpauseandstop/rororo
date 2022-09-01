@@ -46,7 +46,7 @@ jobs:
           private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
 
       - name: "Create pull request with changed files"
-        uses: "peter-evans/create-pull-request@v4.0.4"
+        uses: "peter-evans/create-pull-request@v4.1.1"
         with:
           token: "${{ steps.token.outputs.token }}"
           commit-message: |
