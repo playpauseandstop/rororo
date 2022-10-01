@@ -135,7 +135,7 @@ aioredis = {extras = ["hiredis"], version = "^2.0.1"}
 async_generator = {python = "~3.6", version = "^1.10"}
 coverage = {extras = ["toml"], version = "^6.4.3"}
 coveralls = "^3.3.1"
-mypy = "^0.971"
+mypy = "^0.981"
 pytest = "^7.1.2"
 pytest-aiohttp = "^1.0.4"
 pytest-cov = "^3.0.0"
