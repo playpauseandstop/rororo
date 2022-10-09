@@ -34,7 +34,7 @@ jobs:
           python-version-file: ".python-version"
 
       - name: "Install package"
-        run: "poetry install --only mail"
+        run: "poetry install --only main"
 
       - name: "Import package"
         run: "poetry run python3 -c 'import rororo; from rororo import aio, timedelta;'"
