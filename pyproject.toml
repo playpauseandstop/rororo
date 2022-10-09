@@ -194,7 +194,7 @@ commands =
 
 [testenv:py310-minimum-requirements]
 commands_pre =
-  poetry install
+  poetry install --only main,test
   poetry run python3 -m pip install \
     aiohttp==3.7.0 \
     aiohttp-middlewares==1.2.0 \
