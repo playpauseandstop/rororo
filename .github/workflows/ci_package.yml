@@ -24,7 +24,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v3.0.2"
+      - uses: "actions/checkout@v3.1.0"
 
       - id: "python_and_poetry"
         uses: "./.github/actions/install_python_and_poetry"
