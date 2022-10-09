@@ -3,7 +3,7 @@ default_language_version:
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.29.3"
+    rev: "v2.35.0"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -19,7 +19,7 @@ repos:
         exclude: ^docs/.*$
 
   - repo: "https://github.com/psf/black"
-    rev: "22.6.0"
+    rev: "22.10.0"
     hooks:
       - id: "black"
         # By default black using `python3` instead `python` language, so
@@ -35,7 +35,7 @@ repos:
         name: "Format docs (blacken-docs)"
         args: ["-l", "64"]
         additional_dependencies:
-          - "black==22.3.0"
+          - "black==22.10.0"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v4.3.0"
@@ -47,25 +47,25 @@ repos:
       - id: "check-yaml"
 
   - repo: "https://github.com/PyCQA/flake8"
-    rev: "4.0.1"
+    rev: "5.0.4"
     hooks:
       - id: "flake8"
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
-          - "flake8==4.0.1"
-          - "flake8-broken-line==0.4.0"
-          - "flake8-bugbear==22.7.1"
-          - "flake8-builtins==1.5.3"
+          - "flake8==5.0.4"
+          - "flake8-broken-line==0.6.0"
+          - "flake8-bugbear==22.9.23"
+          - "flake8-builtins==2.0.0"
           - "flake8-comprehensions==3.10.0"
-          - "flake8-eradicate==1.2.1"
-          - "flake8-isort==4.1.2.post0"
+          - "flake8-eradicate==1.4.0"
+          - "flake8-isort==5.0.0"
           - "flake8-mutable==1.2.0"
-          - "flake8-pie==0.15.0"
+          - "flake8-pie==0.16.0"
           - "flake8-quotes==3.3.1"
           - "flake8-string-format==0.3.0"
           - "flake8-tidy-imports==4.8.0"
           - "flake8-variables-names==0.0.5"
-          - "pep8-naming==0.13.1"
+          - "pep8-naming==0.13.2"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/asottile/yesqa"
@@ -84,4 +84,4 @@ repos:
         language: "python"
         "types": ["python"]
         require_serial: true
-        exclude: ^./docs/.*$
+        exclude: ^(docs|tests)/.*$

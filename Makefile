@@ -69,7 +69,7 @@ list-outdated: list-outdated-python
 test: install clean validate test-only
 
 test-only:
-	PYTHONPATH=$(PYTHONPATH) TOXENV=$(TOXENV) $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
+	PYTHONPATH=$(PYTHONPATH) TOXENV=$(TOXENV) LEVEL=test $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
 
 validate: install
 	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/hobotnica/src/hobotnica/openapi.yaml

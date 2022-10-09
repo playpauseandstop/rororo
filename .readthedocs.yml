@@ -4,11 +4,15 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "3.10"
-
-python:
-  install:
-    - requirements: "./docs/requirements.txt"
-    - requirements: "./docs/requirements-sphinx.txt"
+  jobs:
+    post_create_environment:
+      # Install poetry
+      - "curl -sSL https://install.python-poetry.org | python3 -"
+    post_install:
+      # Generate requirements.txt file
+      - "${HOME}/.local/bin/poetry export -f requirements.txt --without-hashes --only main,docs -o ${READTHEDOCS_VERSION}.txt"
+      # Install project and docs dependencies from generated requirements file
+      - "python3 -m pip install -r ${READTHEDOCS_VERSION}.txt"
 
 sphinx:
   configuration: "./docs/conf.py"

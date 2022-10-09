@@ -11,11 +11,11 @@ inputs:
   tox-version:
     description: "Tox version to use"
     required: false
-    default: "3.25.0"
+    default: "3.26.0"
   tox-gh-actions-version:
     description: "Tox GitHub Actions plugin version to use"
     required: false
-    default: "2.9.1"
+    default: "2.10.0"
   use-coveralls:
     description: "Send coverage to Coveralls"
     required: false
@@ -36,13 +36,18 @@ runs:
       shell: "bash"
 
     - name: "Cache tox"
-      uses: "actions/cache@v3.0.6"
+      uses: "actions/cache@v3.0.10"
       with:
         path: "./.tox/"
         key: "tox-${{ inputs.python-version }}"
 
     - name: "Run tox"
       run: "tox"
+      shell: "bash"
+
+    - name: "Install project"
+      if: "${{ inputs.use-coveralls == 'true' }}"
+      run: "poetry install --only test"
       shell: "bash"
 
     - name: "Send coverage to Coveralls"

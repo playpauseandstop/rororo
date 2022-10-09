@@ -2,6 +2,10 @@ name: "Install Python & poetry"
 description: "Composite action to setup Python, install poetry, and setup cache for venv."
 
 inputs:
+  cache-key-suffix:
+    description: "Cache key suffix to append to venv cache key"
+    required: false
+    default: ""
   python-version:
     description: "Python version to use"
     required: false
@@ -11,7 +15,7 @@ inputs:
   poetry-version:
     description: "Poetry version to use"
     required: false
-    default: "1.1.14"
+    default: "1.2.1"
 
 outputs:
   python-path:
@@ -39,7 +43,7 @@ runs:
       run: "pipx install --python='${{ steps.python.outputs.python-path }}' poetry==${{ inputs.poetry-version }}"
 
     - name: "Cache venv"
-      uses: "actions/cache@v3.0.6"
+      uses: "actions/cache@v3.0.10"
       with:
         path: "./.venv/"
-        key: "venv-${{ runner.os }}-${{ steps.python.outputs.python-version }}-${{ hashFiles('poetry.lock') }}"
+        key: "venv-${{ runner.os }}-${{ steps.python.outputs.python-version }}-${{ hashFiles('poetry.lock') }}${{ inputs.cache-key-suffix }}"
