@@ -1,5 +1,6 @@
 default_language_version:
-  python: "python3.10"
+  python: &python_version "python3.10"
+exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\.svg$
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
@@ -8,13 +9,16 @@ repos:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
         # needed to provide concrete version here as well
-        language_version: "python3.10"
+        language_version: *python_version
         stages: ["commit-msg"]
 
   - repo: "https://github.com/PyCQA/isort"
     rev: "5.10.1"
     hooks:
       - id: "isort"
+        # By default isort using `python3` instead `python` language, so
+        # needed to provide concrete version here as well
+        language_version: *python_version
         name: "Format code (isort)"
         exclude: ^docs/.*$
 
@@ -24,7 +28,7 @@ repos:
       - id: "black"
         # By default black using `python3` instead `python` language, so
         # needed to provide concrete version here as well
-        language_version: "python3.10"
+        language_version: *python_version
         name: "Format code (black)"
         exclude: ^docs/.*$
 
@@ -45,6 +49,15 @@ repos:
       - id: "check-json"
       - id: "check-toml"
       - id: "check-yaml"
+
+  - repo: "https://github.com/pre-commit/pygrep-hooks"
+    rev: "v1.9.0"
+    hooks:
+      - id: "python-check-blanket-noqa"
+      - id: "python-check-blanket-type-ignore"
+      - id: "rst-backticks"
+      - id: "rst-directive-colons"
+      - id: "rst-inline-touching-normal"
 
   - repo: "https://github.com/PyCQA/flake8"
     rev: "5.0.4"
@@ -84,4 +97,10 @@ repos:
         language: "python"
         "types": ["python"]
         require_serial: true
-        exclude: ^(docs|tests)/.*$
+        exclude: ^(docs|migrations|tests)/.*$
+
+  - repo: "https://github.com/shellcheck-py/shellcheck-py"
+    rev: "v0.8.0.4"
+    hooks:
+      - id: "shellcheck"
+        name: "Lint scripts (shellcheck)"
