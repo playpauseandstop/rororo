@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, Union
+from typing import cast, Union
 
 import pyrsistent
 from aioredis.client import Redis
@@ -25,7 +25,7 @@ class Storage:
         redis = self.redis
 
         await redis.lrem(self.data_key, 0, str(todo.uid))
-        return await redis.delete(self.build_item_key(todo))  # type: ignore
+        return cast(int, await redis.delete(self.build_item_key(todo)))
 
     async def delete_todos(self) -> int:
         redis = self.redis
@@ -37,7 +37,7 @@ class Storage:
         await redis.delete(self.data_key)
         return counter
 
-    async def get_todo(self, uid: uuid.UUID) -> Optional[Todo]:
+    async def get_todo(self, uid: uuid.UUID) -> Union[Todo, None]:
         data = await self.redis.hgetall(self.build_item_key(uid))
         if not data:
             return None

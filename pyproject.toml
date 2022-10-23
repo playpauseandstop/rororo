@@ -19,6 +19,8 @@ source = ["rororo"]
 source = ["./src/"]
 
 [tool.coverage.report]
+exclude_lines = ["if TYPE_CHECKING:", "@overload"]
+omit = ["./src/rororo/annotations.py"]
 fail_under = 95
 skip_covered = true
 show_missing = true
@@ -47,7 +49,7 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_decorators = true
 disallow_untyped_defs = true
-exclude = ["./docs/", "./tests/"]
+exclude = ["./docs/", "./migrations/", "./tests/"]
 follow_imports = "normal"
 follow_imports_for_stubs = true
 ignore_missing_imports = false

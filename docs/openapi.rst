@@ -13,9 +13,9 @@ two ways on using OpenAPI 3 within Python server applications:
 - Rely on OpenAPI 3 schema file (as done in
   `pyramid_openapi3 <https://github.com/Pylons/pyramid_openapi3>`_)
 
-While both ways have their pros & cons, `rororo` library is heavily inspired by
-`pyramid_openapi3 <https://github.com/Pylons/pyramid_openapi3>`_ and as result
-**requires valid** OpenAPI 3 schema file to be provided.
+While both ways have their pros & cons, ``rororo`` library is heavily inspired
+by `pyramid_openapi3 <https://github.com/Pylons/pyramid_openapi3>`_ and as
+result **requires valid** OpenAPI 3 schema file to be provided.
 
 In total, to build aiohttp.web OpenAPI 3 server applications with *rororo*
 you need to:

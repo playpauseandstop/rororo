@@ -1,4 +1,4 @@
-name: "Create GitHub Release"
+name: "(Reusable) Create GitHub Release"
 
 on:
   workflow_call:

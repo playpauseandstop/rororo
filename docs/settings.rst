@@ -172,8 +172,8 @@ In other words given function is a literally shortcut to,
 Step 3. Using settings
 ======================
 
-In `app.__main__` script
-------------------------
+In ``app.__main__`` script
+--------------------------
 
 If you run your ``app`` not via ``python -m aiohttp.web``, but via application
 own ``__main__.py``, it is OK to,

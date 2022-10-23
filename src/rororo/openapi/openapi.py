@@ -188,13 +188,13 @@ class OperationTableDef:
 
     @overload
     def register(self, handler: F) -> F:
-        ...  # pragma: no cover
+        ...
 
     @overload
     def register(self, operation_id: str) -> Callable[[F], F]:
-        ...  # pragma: no cover
+        ...
 
-    def register(self, mixed):  # type: ignore
+    def register(self, mixed):  # type: ignore[no-untyped-def]
         operation_id = mixed if isinstance(mixed, str) else mixed.__qualname__
 
         def decorator(handler: F) -> F:
@@ -202,7 +202,7 @@ class OperationTableDef:
 
             if self._is_view(handler):
                 mapping.update(
-                    self._register_view(handler, operation_id)  # type: ignore
+                    self._register_view(handler, operation_id)  # type: ignore[arg-type]
                 )
             else:
                 mapping.update(self._register_handler(handler, operation_id))
@@ -213,8 +213,7 @@ class OperationTableDef:
         return decorator(mixed) if callable(mixed) else decorator
 
     def _is_view(self, handler: F) -> bool:
-        is_class = inspect.isclass(handler)
-        return is_class and issubclass(handler, web.View)  # type: ignore
+        return inspect.isclass(handler) and issubclass(handler, web.View)
 
     def _register_handler(
         self, handler: Handler, operation_id: str
@@ -310,7 +309,7 @@ def create_schema_and_spec(
 
 
 @lru_cache(maxsize=128)
-def create_schema_and_spec_with_cache(  # type: ignore
+def create_schema_and_spec_with_cache(  # type: ignore[misc]
     path: Path, *, schema_loader: SchemaLoader = None
 ) -> Tuple[DictStrAny, Spec]:
     return create_schema_and_spec(path, schema_loader=schema_loader)
@@ -447,7 +446,7 @@ def setup_openapi(
     schema_loader: SchemaLoader = None,
     cache_create_schema_and_spec: bool = False,
     validate_email_kwargs: ValidateEmailKwargsDict = None,
-) -> web.Application:  # pragma: no cover
+) -> web.Application:
     ...
 
 
@@ -465,11 +464,11 @@ def setup_openapi(
     use_cors_middleware: bool = True,
     cors_middleware_kwargs: CorsMiddlewareKwargsDict = None,
     validate_email_kwargs: ValidateEmailKwargsDict = None,
-) -> web.Application:  # pragma: no cover
+) -> web.Application:
     ...
 
 
-def setup_openapi(  # type: ignore
+def setup_openapi(  # type: ignore[misc]
     app: web.Application,
     schema_path: Union[str, Path] = None,
     *operations: OperationTableDef,
@@ -715,7 +714,7 @@ def setup_openapi(  # type: ignore
 
         # Create the spec and put it to the application dict as well
         create_func: CreateSchemaAndSpec = (
-            create_schema_and_spec_with_cache  # type: ignore
+            create_schema_and_spec_with_cache  # type: ignore[assignment]
             if cache_create_schema_and_spec
             else create_schema_and_spec
         )

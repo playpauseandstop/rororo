@@ -249,18 +249,14 @@ class RequestValidator(BaseValidator, CoreRequestValidator):
         """
         return validate_security(self, request, operation)
 
-    def _unmarshal(  # type: ignore
-        self, param_or_media_type: Any, value: Any
-    ) -> Any:
+    def _unmarshal(self, param_or_media_type: Any, value: Any) -> Any:  # type: ignore[override]
         return super()._unmarshal(
             param_or_media_type, value, UnmarshalContext.REQUEST
         )
 
 
 class ResponseValidator(BaseValidator, CoreResponseValidator):
-    def _unmarshal(  # type: ignore
-        self, param_or_media_type: Any, value: Any
-    ) -> Any:
+    def _unmarshal(self, param_or_media_type: Any, value: Any) -> Any:  # type: ignore[override]
         return super()._unmarshal(
             param_or_media_type, value, UnmarshalContext.RESPONSE
         )
