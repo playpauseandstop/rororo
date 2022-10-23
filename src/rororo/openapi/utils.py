@@ -1,4 +1,4 @@
-from typing import Any, cast, Optional, Union
+from typing import Any, cast, Union
 
 from aiohttp import web
 from aiohttp.helpers import ChainMapProxy
@@ -18,7 +18,7 @@ from rororo.openapi.data import OpenAPIContext, OpenAPIParameters
 from rororo.openapi.exceptions import ConfigurationError, ContextError
 
 
-def add_prefix(path: str, prefix: Optional[str]) -> str:
+def add_prefix(path: str, prefix: Union[str, None]) -> str:
     if prefix:
         if prefix[-1] == "/":
             prefix = prefix[:-1]

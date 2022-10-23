@@ -1,4 +1,4 @@
-from typing import cast, List, Optional, Union
+from typing import cast, List, Union
 
 from aiohttp import BasicAuth, hdrs
 from openapi_core.schema.operations.models import Operation
@@ -29,13 +29,15 @@ def basic_auth_factory(value: str) -> BasicAuth:
     return BasicAuth.decode(f"Basic {value}")
 
 
-def get_jwt_security_data(request: OpenAPIRequest) -> Optional[str]:
+def get_jwt_security_data(request: OpenAPIRequest) -> Union[str, None]:
     """Get JWT bearer security data.
 
     At a moment, openapi-core attempts to decode JWT header using same rules
     as for basic auth, which might return unexpected results.
     """
-    header: Optional[str] = request.parameters.header.get(AUTHORIZATION_HEADER)
+    header: Union[str, None] = request.parameters.header.get(
+        AUTHORIZATION_HEADER
+    )
 
     # Header does not exist
     if header is None:
@@ -54,7 +56,7 @@ def get_jwt_security_data(request: OpenAPIRequest) -> Optional[str]:
 
 def get_security_data(
     validator: RequestValidator, request: OpenAPIRequest, scheme_name: str
-) -> Optional[Union[BasicAuth, str]]:
+) -> Union[BasicAuth, str, None]:
     """Get security data from request.
 
     Currently supported getting API Key & HTTP security data. OAuth & OpenID
@@ -83,7 +85,7 @@ def get_security_list(
 
 def get_security_scheme(
     validator: RequestValidator, scheme_name: str
-) -> Optional[SecurityScheme]:
+) -> Union[SecurityScheme, None]:
     return validator.spec.components.security_schemes.get(scheme_name)
 
 

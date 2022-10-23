@@ -9,7 +9,7 @@ Various utilities for `aiohttp <https://aiohttp.rtfd.io/>`_ and other
 """
 
 from contextlib import contextmanager
-from typing import Iterator, Optional, Union
+from typing import Iterator, Union
 from urllib.parse import urlparse
 
 from aiohttp import web
@@ -121,7 +121,7 @@ def is_xhr_request(request: web.Request) -> bool:
 
     :param request: Request instance.
     """
-    value: Optional[str] = request.headers.get("X-Requested-With")
+    value: Union[str, None] = request.headers.get("X-Requested-With")
     return value == "XMLHttpRequest"
 
 
@@ -140,7 +140,7 @@ def parse_aioredis_url(url: str) -> DictStrAny:
     """
     parts = urlparse(url)
 
-    db: Optional[Union[str, int]] = parts.path[1:] or None
+    db: Union[str, int, None] = parts.path[1:] or None
     if db:
         db = int(db)
 

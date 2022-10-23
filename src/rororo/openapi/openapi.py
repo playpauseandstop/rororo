@@ -4,17 +4,7 @@ import os
 import warnings
 from functools import lru_cache, partial
 from pathlib import Path
-from typing import (
-    Callable,
-    cast,
-    Deque,
-    Dict,
-    List,
-    Optional,
-    overload,
-    Tuple,
-    Union,
-)
+from typing import Callable, cast, Deque, Dict, List, overload, Tuple, Union
 
 import attr
 import yaml
@@ -344,7 +334,7 @@ def fix_spec_operations(spec: Spec, schema: DictStrAny) -> Spec:
     as unsecured. With missed operation security - use global security schema
     if it is defined.
     """
-    mapping: Dict[str, Optional[SecurityDict]] = {}
+    mapping: Dict[str, Union[SecurityDict, None]] = {}
 
     for path_data in schema["paths"].values():
         for maybe_operation_data in path_data.values():

@@ -1,6 +1,6 @@
 from collections import deque
 from functools import partial
-from typing import Any, cast, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, cast, Dict, Iterator, List, Tuple, Union
 
 import pyrsistent
 from email_validator import EmailNotValidError, validate_email
@@ -71,7 +71,7 @@ class ArrayUnmarshaller(CoreArrayUnmarshaller):
     arrays: https://github.com/p1c2u/openapi-core/issues/251
     """
 
-    def __call__(self, value: Any = NoValue) -> Optional[List[Any]]:
+    def __call__(self, value: Any = NoValue) -> Union[List[Any], None]:
         if value is None and self.schema.nullable:
             return None
         return cast(List[Any], super().__call__(value))
@@ -108,7 +108,7 @@ class ObjectUnmarshaller(CoreObjectUnmarshaller):
     objects: https://github.com/p1c2u/openapi-core/issues/232
     """
 
-    def __call__(self, value: Any = NoValue) -> Optional[Dict[Any, Any]]:
+    def __call__(self, value: Any = NoValue) -> Union[Dict[Any, Any], None]:
         if value is None and self.schema.nullable:
             return None
         return cast(Dict[Any, Any], super().__call__(value))

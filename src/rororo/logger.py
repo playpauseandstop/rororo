@@ -9,7 +9,7 @@ Logging utilities to simplify setting up Python logging.
 
 import logging
 import sys
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 from rororo.annotations import DictStrAny
 
@@ -81,7 +81,7 @@ def default_logging_dict(*loggers: str, **kwargs: Any) -> DictStrAny:
 
 def update_sentry_logging(
     logging_dict: DictStrAny,
-    sentry_dsn: Optional[str],
+    sentry_dsn: Union[str, None],
     *loggers: str,
     level: Union[str, int, None] = None,
     **kwargs: Any,

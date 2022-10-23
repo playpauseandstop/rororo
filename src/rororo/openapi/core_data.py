@@ -1,4 +1,4 @@
-from typing import cast, Optional, Union
+from typing import cast, Union
 
 from aiohttp import hdrs, web
 from aiohttp.payload import IOBasePayload, Payload
@@ -19,7 +19,7 @@ from rororo.openapi.utils import get_openapi_spec
 
 def find_core_operation(
     request: web.Request, handler: Handler
-) -> Optional[Operation]:
+) -> Union[Operation, None]:
     mapping = getattr(handler, HANDLER_OPENAPI_MAPPING_KEY, None)
     if not mapping:
         return None
@@ -69,7 +69,7 @@ async def to_core_openapi_request(request: web.Request) -> OpenAPIRequest:
     Afterwards opeanpi-core request can be used for validation request data
     against spec.
     """
-    body: Optional[Union[bytes, str]] = None
+    body: Union[bytes, str, None] = None
     if request.body_exists and request.can_read_body:
         raw_body = await request.read()
 
@@ -100,7 +100,7 @@ def to_core_openapi_response(response: web.StreamResponse) -> OpenAPIResponse:
 
 def to_core_openapi_response_data(
     response: web.StreamResponse,
-) -> Optional[bytes]:
+) -> Union[bytes, None]:
     if isinstance(response, web.Response):
         body = response.body
         if not body:
