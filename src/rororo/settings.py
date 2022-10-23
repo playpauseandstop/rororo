@@ -14,8 +14,6 @@ use within Settings data structures.
 
 """
 
-from __future__ import annotations
-
 import calendar
 import locale
 import logging
@@ -97,8 +95,8 @@ class BaseSettings:
 
     @classmethod
     def from_environ(
-        cls, environment: "os._Environ[str]" = os.environ
-    ) -> TBaseSettings:  # type: ignore[misc, type-var]
+        cls: Type[TBaseSettings], environment: "os._Environ[str]" = os.environ
+    ) -> TBaseSettings:
         """Load the configuration as declared by *cls* from *environ*.
 
         This is a typed helper, which ensures that ``Settings.from_environ()``
@@ -106,6 +104,8 @@ class BaseSettings:
 
             error: "Type[Settings]" has no attribute "from_environ"  [attr-defined]
 
+        TODO: Move to ``Self`` type annotation as proposed in
+        `PEP-673 <https://peps.python.org/pep-0673/#use-in-classmethod-signatures>`_
         """
         return cast(TBaseSettings, environ.to_config(cls, environment))
 
