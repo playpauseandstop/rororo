@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from aiohttp import web
 
@@ -9,7 +9,9 @@ from rororo import setup_openapi, setup_settings
 
 
 def create_app(
-    argv: List[str] = None, *, settings: Settings = None
+    argv: Union[List[str], None] = None,
+    *,
+    settings: Union[Settings, None] = None,
 ) -> web.Application:
     """Create aiohttp applicaiton for OpenAPI 3 Schema.
 

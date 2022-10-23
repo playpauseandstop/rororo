@@ -112,7 +112,7 @@ class BaseSettings:
     def apply(
         self,
         *,
-        loggers: Collection[str] = None,
+        loggers: Union[Collection[str], None] = None,
         remove_root_handlers: bool = False,
     ) -> None:
         """
@@ -151,7 +151,7 @@ class BaseSettings:
         return self.level == "test"
 
 
-def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
+def from_env(key: str, default: Union[T, None] = None) -> Union[str, T, None]:
     """Shortcut for safely reading environment variable.
 
     .. deprecated:: 2.0
@@ -274,14 +274,14 @@ def iter_settings(mixed: Settings) -> Iterator[Tuple[str, Any]]:
 
 def setup_locale(
     lc_all: str,
-    first_weekday: int = None,
+    first_weekday: Union[int, None] = None,
     *,
-    lc_collate: str = None,
-    lc_ctype: str = None,
-    lc_messages: str = None,
-    lc_monetary: str = None,
-    lc_numeric: str = None,
-    lc_time: str = None,
+    lc_collate: Union[str, None] = None,
+    lc_ctype: Union[str, None] = None,
+    lc_messages: Union[str, None] = None,
+    lc_monetary: Union[str, None] = None,
+    lc_numeric: Union[str, None] = None,
+    lc_time: Union[str, None] = None,
 ) -> str:
     """Shortcut helper to setup locale for backend application.
 
@@ -337,7 +337,7 @@ def setup_settings(
     app: web.Application,
     settings: BaseSettings,
     *,
-    loggers: Collection[str] = None,
+    loggers: Union[Collection[str], None] = None,
     remove_root_handlers: bool = False,
 ) -> web.Application:
     """Shortcut for applying settings for given ``aiohttp.web`` app.
@@ -354,8 +354,8 @@ def setup_settings_from_environ(
     app: web.Application,
     settings_class: Type[BaseSettings],
     *,
-    environ: "os._Environ[str]" = None,
-    loggers: Collection[str] = None,
+    environ: Union["os._Environ[str]", None] = None,
+    loggers: Union[Collection[str], None] = None,
     remove_root_handlers: bool = False,
 ) -> web.Application:
     """
