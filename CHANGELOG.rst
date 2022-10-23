@@ -1,3 +1,13 @@
+3.0.1 (2022-10-23)
+==================
+
+**Other:**
+
+- Sync common project files (#291)
+- Update Python dev version to 3.10.8 (#293)
+- Enforce mypy no-implicit-optional setting (#294)
+- Introduce no-optional pre-commit hook (#295)
+
 3.0.0 (2022-08-09)
 ==================
 
