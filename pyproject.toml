@@ -19,7 +19,8 @@ source = ["rororo"]
 source = ["./src/"]
 
 [tool.coverage.report]
-omit = ["if TYPE_CHECKING:", "@overload"]
+exclude_lines = ["if TYPE_CHECKING:", "@overload"]
+omit = ["./src/rororo/annotations.py"]
 fail_under = 95
 skip_covered = true
 show_missing = true
