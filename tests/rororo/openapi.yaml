@@ -2,7 +2,7 @@ openapi: "3.0.3"
 
 info:
   title: "rororo"
-  version: "3.0.0"
+  version: "3.0.1"
   contact:
     name: "Igor Davydenko (developer)"
     url: "https://igordavydenko.com"
