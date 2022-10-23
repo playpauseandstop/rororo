@@ -1,10 +1,12 @@
 from functools import partial
+from typing import Union
 
 from aiohttp import web
 from aiohttp_middlewares import error_middleware, get_error_response
 from aiohttp_middlewares.annotations import Middleware
 
-from rororo.annotations import DictStrAny, Handler
+from rororo.annotations import Handler
+from rororo.openapi.annotations import ErrorMiddlewareKwargsDict
 from rororo.openapi.constants import REQUEST_CORE_OPERATION_KEY
 from rororo.openapi.core_data import find_core_operation
 from rororo.openapi.validators import validate_request, validate_response
@@ -37,7 +39,7 @@ def openapi_middleware(
     *,
     is_validate_response: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: DictStrAny = None,
+    error_middleware_kwargs: Union[ErrorMiddlewareKwargsDict, None] = None,
 ) -> Middleware:
     """Middleware to handle requests to handlers covered by OpenAPI schema.
 

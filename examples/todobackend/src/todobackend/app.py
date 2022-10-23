@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import AsyncIterator, List
+from typing import AsyncIterator, List, Union
 
 from aiohttp import web
 from aiohttp_middlewares import https_middleware
@@ -14,7 +14,9 @@ from todobackend.storage import Storage
 
 
 def create_app(
-    argv: List[str] = None, *, settings: Settings = None
+    argv: Union[List[str], None] = None,
+    *,
+    settings: Union[Settings, None] = None,
 ) -> web.Application:
     if settings is None:
         settings = Settings.from_environ()

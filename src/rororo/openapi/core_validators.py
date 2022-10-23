@@ -1,6 +1,6 @@
 from collections import deque
 from functools import partial
-from typing import Any, cast, Dict, Iterator, List, Optional, Tuple
+from typing import Any, cast, Dict, Iterator, List, Optional, Tuple, Union
 
 import pyrsistent
 from email_validator import EmailNotValidError, validate_email
@@ -86,7 +86,9 @@ class EmailFormatter(Formatter):
 
     kwargs: ValidateEmailKwargsDict
 
-    def __init__(self, kwargs: ValidateEmailKwargsDict = None) -> None:
+    def __init__(
+        self, kwargs: Union[ValidateEmailKwargsDict, None] = None
+    ) -> None:
         self.kwargs: ValidateEmailKwargsDict = kwargs or {
             "check_deliverability": False
         }
@@ -168,7 +170,7 @@ class SchemaUnmarshallersFactory(CoreSchemaUnmarshallersFactory):
     def get_formatter(
         self,
         default_formatters: Dict[str, Formatter],
-        type_format: str = None,
+        type_format: Union[str, None] = None,
     ) -> Formatter:
         if type_format == SchemaFormat.DATETIME.value:
             return DATE_TIME_FORMATTER
@@ -263,7 +265,7 @@ class ResponseValidator(BaseValidator, CoreResponseValidator):
 
 
 def get_custom_formatters(
-    *, validate_email_kwargs: ValidateEmailKwargsDict = None
+    *, validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None
 ) -> Dict[str, Formatter]:
     return {"email": EmailFormatter(validate_email_kwargs)}
 
@@ -272,7 +274,7 @@ def validate_core_request(
     spec: Spec,
     core_request: OpenAPIRequest,
     *,
-    validate_email_kwargs: ValidateEmailKwargsDict = None,
+    validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
 ) -> Tuple[MappingStrAny, OpenAPIParameters, Any]:
     """
     Instead of validating request parameters & body in two calls, validate them
@@ -304,7 +306,7 @@ def validate_core_response(
     core_request: OpenAPIRequest,
     core_response: OpenAPIResponse,
     *,
-    validate_email_kwargs: ValidateEmailKwargsDict = None,
+    validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
 ) -> Any:
     """Pass custom formatters for validating response data."""
     custom_formatters = get_custom_formatters(

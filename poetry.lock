@@ -22,7 +22,7 @@ speedups = ["Brotli", "aiodns", "cchardet"]
 
 [[package]]
 name = "aiohttp-middlewares"
-version = "2.1.0"
+version = "2.1.1"
 description = "Collection of useful middlewares for aiohttp applications."
 category = "main"
 optional = false
@@ -99,7 +99,7 @@ python-versions = ">=3.5"
 dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy (>=0.900,!=0.940)", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "sphinx", "sphinx-notfound-page", "zope.interface"]
 docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
 tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "zope.interface"]
-tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
+tests-no-zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "Babel"
@@ -144,7 +144,7 @@ optional = false
 python-versions = ">=3.6.0"
 
 [package.extras]
-unicode_backport = ["unicodedata2"]
+unicode-backport = ["unicodedata2"]
 
 [[package]]
 name = "colorama"
@@ -683,7 +683,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "setuptools"
@@ -812,7 +812,7 @@ python-versions = ">=3.6"
 sphinx = ">=1.8"
 
 [package.extras]
-code_style = ["pre-commit (==2.12.1)"]
+code-style = ["pre-commit (==2.12.1)"]
 rtd = ["ipython", "myst-nb", "sphinx", "sphinx-book-theme"]
 
 [[package]]
@@ -1085,8 +1085,8 @@ aiohttp = [
     {file = "aiohttp-3.8.3.tar.gz", hash = "sha256:3828fb41b7203176b82fe5d699e0d845435f2374750a44b480ea6b930f6be269"},
 ]
 aiohttp-middlewares = [
-    {file = "aiohttp-middlewares-2.1.0.tar.gz", hash = "sha256:5863970d944dc63faedc96ef324a7fe2bcefefebe29acc90cd641236322d00c3"},
-    {file = "aiohttp_middlewares-2.1.0-py3-none-any.whl", hash = "sha256:c83d48702e6a8669981976f39a60e83d059dc01d7b1ee651aec5d4cb807ff784"},
+    {file = "aiohttp_middlewares-2.1.1-py3-none-any.whl", hash = "sha256:30237ca9669517a5b5bec0a65c2558edf65fa22f402db5cc8e0f8f4aef0e1040"},
+    {file = "aiohttp_middlewares-2.1.1.tar.gz", hash = "sha256:dbd20765d55ba670ef6e1c176b9cca27a4caa9e332e24a8a1febbe8b5edb13d2"},
 ]
 aioredis = [
     {file = "aioredis-2.0.1-py3-none-any.whl", hash = "sha256:9ac0d0b3b485d293b8ca1987e6de8658d7dafcca1cddfcd1d506cae8cdebfdd6"},

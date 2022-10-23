@@ -9,7 +9,7 @@ converting string to int or bool.
 """
 
 from distutils.util import strtobool
-from typing import Any, Collection, Optional, Union
+from typing import Any, Collection, Union
 
 from rororo.annotations import T
 
@@ -45,7 +45,7 @@ def to_bool(value: Any) -> bool:
     return bool(strtobool(value) if isinstance(value, str) else value)
 
 
-def to_int(value: str, default: T = None) -> Union[int, Optional[T]]:
+def to_int(value: str, default: Union[T, None] = None) -> Union[int, T, None]:
     """Convert given value to int.
 
     If conversion failed, return default value without raising Exception.

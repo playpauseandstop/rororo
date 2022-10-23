@@ -28,9 +28,9 @@ class AddResourceFunc(Protocol):
     def __call__(
         self,
         url: str,
-        get: Handler = None,
+        get: Union[Handler, None] = None,
         *,
-        name: str = None,
+        name: Union[str, None] = None,
         **kwargs: Handler,
     ) -> web.Resource:
         ...
@@ -38,7 +38,9 @@ class AddResourceFunc(Protocol):
 
 @contextmanager
 def add_resource_context(
-    router: web.UrlDispatcher, url_prefix: str = None, name_prefix: str = None
+    router: web.UrlDispatcher,
+    url_prefix: Union[str, None] = None,
+    name_prefix: Union[str, None] = None,
 ) -> Iterator[AddResourceFunc]:
     """Context manager for adding resources for given router.
 
@@ -65,7 +67,11 @@ def add_resource_context(
     """
 
     def add_resource(
-        url: str, get: Handler = None, *, name: str = None, **kwargs: Handler
+        url: str,
+        get: Union[Handler, None] = None,
+        *,
+        name: Union[str, None] = None,
+        **kwargs: Handler,
     ) -> web.Resource:
         """Inner function to create resource and add necessary routes to it.
 

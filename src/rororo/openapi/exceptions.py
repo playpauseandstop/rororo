@@ -68,7 +68,10 @@ class OpenAPIError(Exception):
     status = 500
 
     def __init__(
-        self, message: str = None, *, headers: MappingStrStr = None
+        self,
+        message: Union[str, None] = None,
+        *,
+        headers: Union[MappingStrStr, None] = None,
     ) -> None:
         super().__init__(message or self.default_message)
         self.headers = headers or self.default_headers
@@ -137,8 +140,8 @@ class ObjectDoesNotExist(OpenAPIError):
         self,
         label: str = OBJECT_LABEL,
         *,
-        message: str = None,
-        headers: MappingStrStr = None,
+        message: Union[str, None] = None,
+        headers: Union[MappingStrStr, None] = None,
     ) -> None:
         super().__init__(
             message or ERROR_NOT_FOUND_TEMPLATE.format(label=label),
@@ -188,8 +191,8 @@ class ValidationError(OpenAPIError):
     def __init__(
         self,
         *,
-        message: str = None,
-        errors: List[ValidationErrorItem] = None,
+        message: Union[str, None] = None,
+        errors: Union[List[ValidationErrorItem], None] = None,
     ) -> None:
         super().__init__(message or self.default_message)
 
@@ -232,7 +235,7 @@ class ValidationError(OpenAPIError):
 
     @classmethod
     def from_dict(  # type: ignore[misc]
-        cls, data: DictPathItemAny = None, **kwargs: Any
+        cls, data: Union[DictPathItemAny, None] = None, **kwargs: Any
     ) -> "ValidationError":
         if data and kwargs:
             raise ValueError(
@@ -259,7 +262,7 @@ class ValidationError(OpenAPIError):
         cls,
         errors: List[CoreOpenAPIError],
         *,
-        base_loc: List[PathItem] = None,
+        base_loc: Union[List[PathItem], None] = None,
     ) -> "ValidationError":
         base_loc = ["body"] if base_loc is None else base_loc
         result = []

@@ -1,6 +1,6 @@
 import copy
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import yaml
 from aiohttp import web
@@ -15,7 +15,7 @@ from simulations.storage import DEFAULT_STORAGE
 operations = OperationTableDef()
 
 
-def create_app(argv: List[str] = None) -> web.Application:
+def create_app(argv: Union[List[str], None] = None) -> web.Application:
     schema = yaml.load(
         (Path(__file__).parent / "openapi.yaml").read_bytes(),
         Loader=get_default_yaml_loader(),

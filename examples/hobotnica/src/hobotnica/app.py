@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from aiohttp import web
 from aiohttp_middlewares import (
@@ -13,7 +13,9 @@ from rororo import BaseSettings, setup_openapi, setup_settings
 
 
 def create_app(
-    argv: List[str] = None, *, settings: BaseSettings = None
+    argv: Union[List[str], None] = None,
+    *,
+    settings: Union[BaseSettings, None] = None,
 ) -> web.Application:
     if settings is None:
         settings = BaseSettings.from_environ()

@@ -20,12 +20,6 @@ import attr
 import yaml
 from aiohttp import hdrs, web
 from aiohttp_middlewares import cors_middleware
-from aiohttp_middlewares.annotations import (
-    ExceptionType,
-    StrCollection,
-    UrlCollection,
-)
-from aiohttp_middlewares.error import Config as ErrorMiddlewareConfig
 from openapi_core.schema.specs.models import Spec
 from openapi_core.shortcuts import create_spec
 from pyrsistent import pmap
@@ -37,11 +31,15 @@ from rororo.annotations import (
     F,
     Handler,
     Protocol,
-    TypedDict,
     ViewType,
 )
 from rororo.openapi import views
-from rororo.openapi.annotations import SecurityDict, ValidateEmailKwargsDict
+from rororo.openapi.annotations import (
+    CorsMiddlewareKwargsDict,
+    ErrorMiddlewareKwargsDict,
+    SecurityDict,
+    ValidateEmailKwargsDict,
+)
 from rororo.openapi.constants import (
     APP_OPENAPI_SCHEMA_KEY,
     APP_OPENAPI_SPEC_KEY,
@@ -59,30 +57,11 @@ SchemaLoader = Callable[[bytes], DictStrAny]
 Url = Union[str, URL]
 
 
-class CorsMiddlewareKwargsDict(TypedDict, total=False):
-    allow_all: bool
-    origins: Optional[UrlCollection]
-    urls: Optional[UrlCollection]
-    expose_headers: Optional[UrlCollection]
-    allow_headers: StrCollection
-    allow_methods: StrCollection
-    allow_credentials: bool
-    max_age: Optional[int]
-
-
 class CreateSchemaAndSpec(Protocol):
     def __call__(
-        self, path: Path, *, schema_loader: SchemaLoader = None
+        self, path: Path, *, schema_loader: Union[SchemaLoader, None] = None
     ) -> Tuple[DictStrAny, Spec]:  # pragma: no cover
         ...
-
-
-class ErrorMiddlewareKwargsDict(TypedDict, total=False):
-    default_handler: Handler
-    config: Optional[ErrorMiddlewareConfig]
-    ignore_exceptions: Optional[
-        Union[ExceptionType, Tuple[ExceptionType, ...]]
-    ]
 
 
 @attr.dataclass(slots=True)
@@ -254,7 +233,10 @@ class OperationTableDef:
 
 
 def convert_operations_to_routes(
-    operations: OperationTableDef, spec: Spec, *, prefix: str = None
+    operations: OperationTableDef,
+    spec: Spec,
+    *,
+    prefix: Union[str, None] = None,
 ) -> web.RouteTableDef:
     """Convert operations table defintion to routes table definition."""
 
@@ -302,7 +284,7 @@ def convert_operations_to_routes(
 
 
 def create_schema_and_spec(
-    path: Path, *, schema_loader: SchemaLoader = None
+    path: Path, *, schema_loader: Union[SchemaLoader, None] = None
 ) -> Tuple[DictStrAny, Spec]:
     schema = read_openapi_schema(path, loader=schema_loader)
     return (schema, create_spec(schema))
@@ -310,7 +292,7 @@ def create_schema_and_spec(
 
 @lru_cache(maxsize=128)
 def create_schema_and_spec_with_cache(  # type: ignore[misc]
-    path: Path, *, schema_loader: SchemaLoader = None
+    path: Path, *, schema_loader: Union[SchemaLoader, None] = None
 ) -> Tuple[DictStrAny, Spec]:
     return create_schema_and_spec(path, schema_loader=schema_loader)
 
@@ -318,8 +300,8 @@ def create_schema_and_spec_with_cache(  # type: ignore[misc]
 def find_route_prefix(
     oas: DictStrAny,
     *,
-    server_url: Union[str, URL] = None,
-    settings: BaseSettings = None,
+    server_url: Union[Url, None] = None,
+    settings: Union[BaseSettings, None] = None,
 ) -> str:
     if server_url is not None:
         return get_route_prefix(server_url)
@@ -401,7 +383,7 @@ def get_route_prefix(mixed: Url) -> str:
 
 
 def read_openapi_schema(
-    path: Path, *, loader: SchemaLoader = None
+    path: Path, *, loader: Union[SchemaLoader, None] = None
 ) -> DictStrAny:
     """Read OpenAPI Schema from given path.
 
@@ -436,16 +418,16 @@ def setup_openapi(
     app: web.Application,
     schema_path: Union[str, Path],
     *operations: OperationTableDef,
-    server_url: Url = None,
+    server_url: Union[Url, None] = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: ErrorMiddlewareKwargsDict = None,
+    error_middleware_kwargs: Union[ErrorMiddlewareKwargsDict, None] = None,
     use_cors_middleware: bool = True,
-    cors_middleware_kwargs: CorsMiddlewareKwargsDict = None,
-    schema_loader: SchemaLoader = None,
+    cors_middleware_kwargs: Union[CorsMiddlewareKwargsDict, None] = None,
+    schema_loader: Union[SchemaLoader, None] = None,
     cache_create_schema_and_spec: bool = False,
-    validate_email_kwargs: ValidateEmailKwargsDict = None,
+    validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
 ) -> web.Application:
     ...
 
@@ -456,34 +438,34 @@ def setup_openapi(
     *operations: OperationTableDef,
     schema: DictStrAny,
     spec: Spec,
-    server_url: Url = None,
+    server_url: Union[Url, None] = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: ErrorMiddlewareKwargsDict = None,
+    error_middleware_kwargs: Union[ErrorMiddlewareKwargsDict, None] = None,
     use_cors_middleware: bool = True,
-    cors_middleware_kwargs: CorsMiddlewareKwargsDict = None,
-    validate_email_kwargs: ValidateEmailKwargsDict = None,
+    cors_middleware_kwargs: Union[CorsMiddlewareKwargsDict, None] = None,
+    validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
 ) -> web.Application:
     ...
 
 
 def setup_openapi(  # type: ignore[misc]
     app: web.Application,
-    schema_path: Union[str, Path] = None,
+    schema_path: Union[str, Path, None] = None,
     *operations: OperationTableDef,
-    schema: DictStrAny = None,
-    spec: Spec = None,
-    server_url: Url = None,
+    schema: Union[DictStrAny, None] = None,
+    spec: Union[Spec, None] = None,
+    server_url: Union[Url, None] = None,
     is_validate_response: bool = True,
     has_openapi_schema_handler: bool = True,
     use_error_middleware: bool = True,
-    error_middleware_kwargs: DictStrAny = None,
+    error_middleware_kwargs: Union[ErrorMiddlewareKwargsDict, None] = None,
     use_cors_middleware: bool = True,
-    cors_middleware_kwargs: DictStrAny = None,
-    schema_loader: SchemaLoader = None,
+    cors_middleware_kwargs: Union[CorsMiddlewareKwargsDict, None] = None,
+    schema_loader: Union[SchemaLoader, None] = None,
     cache_create_schema_and_spec: bool = False,
-    validate_email_kwargs: ValidateEmailKwargsDict = None,
+    validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
 ) -> web.Application:
     """Setup OpenAPI schema to use with aiohttp.web application.
 
