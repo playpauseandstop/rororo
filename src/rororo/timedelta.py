@@ -9,7 +9,7 @@ Useful functions to work with timedelta instances.
 
 import datetime
 import re
-from typing import Optional, Union
+from typing import Union
 
 from rororo.annotations import DictStrInt
 from rororo.utils import to_int
@@ -76,7 +76,7 @@ TIMEDELTA_FORMATS = {
 
 def str_to_timedelta(
     value: str, fmt: Union[str, None] = None
-) -> Optional[datetime.timedelta]:
+) -> Union[datetime.timedelta, None]:
     """
     Convert string value to timedelta instance according to the given format.
 
@@ -179,7 +179,7 @@ def timedelta_average(*values: datetime.timedelta) -> datetime.timedelta:
 
 def timedelta_div(
     first: datetime.timedelta, second: datetime.timedelta
-) -> Optional[float]:
+) -> Union[float, None]:
     """Implement divison for timedelta instances.
 
     :param first: First timedelta instance.

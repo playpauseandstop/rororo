@@ -2,7 +2,7 @@ import logging
 import re
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Tuple, Union
 
 import attr
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
@@ -385,7 +385,7 @@ def get_parameter_error_details(
     loc: List[PathItem],
     err: OpenAPIParameterError,
 ) -> ValidationErrorItem:
-    parameter_name: Optional[str] = getattr(err, "name", None)
+    parameter_name: Union[str, None] = getattr(err, "name", None)
     if parameter_name is None:
         return get_common_error_details(loc, err)
 

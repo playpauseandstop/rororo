@@ -28,7 +28,6 @@ from typing import (
     Collection,
     Iterator,
     MutableMapping,
-    Optional,
     Tuple,
     Type,
     TypeVar,
@@ -88,8 +87,8 @@ class BaseSettings:
     locale: str = environ.var(name="LOCALE", default="en_US.UTF-8")
 
     # Sentry settings
-    sentry_dsn: Optional[str] = environ.var(name="SENTRY_DSN", default=None)
-    sentry_release: Optional[str] = environ.var(
+    sentry_dsn: Union[str, None] = environ.var(name="SENTRY_DSN", default=None)
+    sentry_release: Union[str, None] = environ.var(
         name="SENTRY_RELEASE", default=None
     )
 
