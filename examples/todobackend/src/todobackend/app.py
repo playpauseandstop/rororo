@@ -17,7 +17,7 @@ def create_app(
     argv: List[str] = None, *, settings: Settings = None
 ) -> web.Application:
     if settings is None:
-        settings = Settings.from_environ()  # type: ignore
+        settings = Settings.from_environ()
 
     app = setup_openapi(
         setup_settings(

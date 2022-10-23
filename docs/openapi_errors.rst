@@ -34,9 +34,9 @@ Under the hood rororo uses next logic for generating security error,
 
 - When an operation is guarded with one and only security scheme of HTTP Basic
   authentication and ``Authorization`` header is missed or contains wrong data -
-  `401 Unauthenticated` error raised
+  ``401 Unauthenticated`` error raised
 - If an operation guarded with other security scheme or with multiple security
-  schemes and security data is missed in request - `403 Access Denied` error
+  schemes and security data is missed in request - ``403 Access Denied`` error
   raised
 
 Both of given errors results in next JSON:
@@ -245,7 +245,7 @@ purpose of *rororo* HTTP Exceptions to simplify process of generating and
 raising custom errors from your OpenAPI server handlers.
 
 For example, to raise a `Bad Request <https://httpstatuses.com/400>`_ error
-with `"Check your request"` message use next code,
+with ``"Check your request"``` message use next code,
 
 .. code-block:: python
 
@@ -269,8 +269,8 @@ with `"Check your request"` message use next code,
 
         ...
 
-Similarly you can use `SecurityError`, `InvalidCredentials`, and `ServerError`
-to generate 403 or 500 errors.
+Similarly you can use ``SecurityError``, ``InvalidCredentials``, and
+``ServerError`` to generate 403 or 500 errors.
 
 On top of that *rororo* provides custom way to generate validation errors &
 not found errors.

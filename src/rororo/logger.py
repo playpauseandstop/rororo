@@ -91,7 +91,7 @@ def update_sentry_logging(
     .. deprecated:: 2.0
         Deprecated in favor of
         `sentry-sdk <https://pypi.org/project/sentry-sdk>`_ and will be removed
-        in **3.0**.
+        in **4.0**.
 
     .. note::
         Sentry logging requires `raven <http://pypi.org/project/raven>`_

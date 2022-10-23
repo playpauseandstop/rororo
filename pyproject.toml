@@ -19,6 +19,7 @@ source = ["rororo"]
 source = ["./src/"]
 
 [tool.coverage.report]
+omit = ["if TYPE_CHECKING:", "@overload"]
 fail_under = 95
 skip_covered = true
 show_missing = true
@@ -47,7 +48,7 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_decorators = true
 disallow_untyped_defs = true
-exclude = ["./docs/", "./tests/"]
+exclude = ["./docs/", "./migrations/", "./tests/"]
 follow_imports = "normal"
 follow_imports_for_stubs = true
 ignore_missing_imports = false

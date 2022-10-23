@@ -14,6 +14,8 @@ use within Settings data structures.
 
 """
 
+from __future__ import annotations
+
 import calendar
 import locale
 import logging
@@ -24,34 +26,31 @@ from importlib import import_module
 from logging.config import dictConfig
 from typing import (
     Any,
+    cast,
     Collection,
     Iterator,
     MutableMapping,
     Optional,
     Tuple,
     Type,
+    TypeVar,
     Union,
 )
 
 import environ
 from aiohttp import web
 
-from rororo.annotations import (
-    DictStrAny,
-    Level,
-    MappingStrAny,
-    MappingStrStr,
-    Settings,
-    T,
-)
+from rororo.annotations import DictStrAny, Level, MappingStrAny, Settings, T
 from rororo.logger import default_logging_dict
 from rororo.utils import ensure_collection, to_bool
 
 
 APP_SETTINGS_KEY = "settings"
 
+TBaseSettings = TypeVar("TBaseSettings", bound="BaseSettings")
 
-@environ.config(prefix=None, frozen=True)
+
+@environ.config(prefix=None, from_environ=None, frozen=True)
 class BaseSettings:
     """Base Settings data structure for configuring ``aiohttp.web`` apps.
 
@@ -95,6 +94,20 @@ class BaseSettings:
     sentry_release: Optional[str] = environ.var(
         name="SENTRY_RELEASE", default=None
     )
+
+    @classmethod
+    def from_environ(
+        cls, environment: "os._Environ[str]" = os.environ
+    ) -> TBaseSettings:  # type: ignore[misc, type-var]
+        """Load the configuration as declared by *cls* from *environ*.
+
+        This is a typed helper, which ensures that ``Settings.from_environ()``
+        calls within typed context will not result in following mypy error::
+
+            error: "Type[Settings]" has no attribute "from_environ"  [attr-defined]
+
+        """
+        return cast(TBaseSettings, environ.to_config(cls, environment))
 
     def apply(
         self,
@@ -142,7 +155,7 @@ def from_env(key: str, default: T = None) -> Union[str, Optional[T]]:
     """Shortcut for safely reading environment variable.
 
     .. deprecated:: 2.0
-        Use :func:`os.getenv` instead. Will be removed in **3.0**.
+        Use :func:`os.getenv` instead. Will be removed in **4.0**.
 
     :param key: Environment var key.
     :param default:
@@ -163,7 +176,7 @@ def immutable_settings(defaults: Settings, **optionals: Any) -> MappingStrAny:
     .. deprecated:: 2.0
         Function deprecated in favor or using `attrs <https://www.attrs.org>`_
         or `dataclasses <https://docs.python.org/3/library/dataclasses.html>`_
-        for declaring settings classes. Will be removed in **3.0**.
+        for declaring settings classes. Will be removed in **4.0**.
 
     :param defaults:
        Read settings values from module or dict-like instance.
@@ -341,7 +354,7 @@ def setup_settings_from_environ(
     app: web.Application,
     settings_class: Type[BaseSettings],
     *,
-    environ: MappingStrStr = None,
+    environ: "os._Environ[str]" = None,
     loggers: Collection[str] = None,
     remove_root_handlers: bool = False,
 ) -> web.Application:
@@ -356,7 +369,7 @@ def setup_settings_from_environ(
     """
     return setup_settings(
         app,
-        settings_class.from_environ(environ or os.environ),  # type: ignore
+        settings_class.from_environ(environ or os.environ),
         loggers=loggers,
         remove_root_handlers=remove_root_handlers,
     )

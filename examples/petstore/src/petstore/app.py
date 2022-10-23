@@ -36,7 +36,7 @@ def create_app(
     """
     # Instantiate settings
     if settings is None:
-        settings = Settings.from_environ()  # type: ignore
+        settings = Settings.from_environ()
 
     # Store the settings within the app
     app = setup_settings(
