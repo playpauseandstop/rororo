@@ -1,6 +1,12 @@
 3.0.1 (2022-10-23)
 ==================
 
+This release ensures dependency on ``openapi-spec-validator<=0.4.0``, so now it is safe to
+run ``poetry update`` in projects, which depend on ``rororo==3.0.1``. Previously, 
+``poetry update`` have been install latest ``openapi-spec-validator==0.5.1`` and as result
+introduce ``ImportError: cannot import name 'default_handlers' from 'openapi_spec_validator'``
+to the project :(
+
 **Other:**
 
 - Sync common project files (#291)
