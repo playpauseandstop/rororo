@@ -1,5 +1,5 @@
 default_language_version:
-  python: &python_version "python3.10"
+  python: &python_version "python3.11"
 exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\.svg$
 minimum_pre_commit_version: "1.17.0"
 repos:

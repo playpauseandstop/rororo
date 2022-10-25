@@ -1,4 +1,4 @@
-name: "Build & Deploy Package"
+name: "(Reusable) Build & Deploy Package"
 
 on:
   workflow_call:
