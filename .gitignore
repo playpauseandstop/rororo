@@ -141,7 +141,6 @@ dmypy.json
 
 # AWS CDK files
 /cdk.out
-/cdk.context.json
 
 # DotENV files
 .env.*
@@ -153,3 +152,9 @@ dmypy.json
 
 # Sublime Text 3 workspace
 *.sublime-workspace
+
+# Auto-generated .gz static files
+static/**/*.gz
+
+# Do not ignore dist files in vendored static files
+!static/vendor/**/dist/

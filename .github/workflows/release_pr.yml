@@ -40,13 +40,13 @@ jobs:
         run: "badabump --ci ${{ github.event.inputs.args }}"
 
       - id: "token"
-        uses: "tibdex/github-app-token@v1.7"
+        uses: "tibdex/github-app-token@v1.7.0"
         with:
           app_id: "${{ secrets.BADABUMP_APP_ID }}"
           private_key: "${{ secrets.BADABUMP_APP_PRIVATE_KEY }}"
 
       - name: "Create pull request with changed files"
-        uses: "peter-evans/create-pull-request@v4.2.0"
+        uses: "peter-evans/create-pull-request@v4.2.3"
         with:
           token: "${{ steps.token.outputs.token }}"
           commit-message: |

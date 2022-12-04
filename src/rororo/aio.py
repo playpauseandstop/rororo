@@ -136,6 +136,12 @@ def parse_aioredis_url(url: str) -> DictStrAny:
             url = url or "redis://localhost:6379/0"
             return await create_redis(**parse_aioredis_url(url))
 
+    .. deprecated:: 3.0.2
+        As *aioredis* library `deprecated in favor of redis library
+        <https://github.com/aio-libs/aioredis-py#-aioredis-is-now-in-redis-py-420rc1->`_,
+        which supports instantiating client instance from URL string - this
+        function will be removed in **4.0**.
+
     :param url: URL to access Redis instance, started with ``redis://``.
     """
     parts = urlparse(url)

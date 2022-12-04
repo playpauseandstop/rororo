@@ -3,9 +3,9 @@ try:
 except ImportError:
     from async_generator import asynccontextmanager
 
-import aioredis
 import attr
 import pytest
+from redis import asyncio as aioredis
 
 from todobackend.settings import Settings
 
