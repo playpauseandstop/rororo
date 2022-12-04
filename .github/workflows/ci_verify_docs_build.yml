@@ -2,7 +2,7 @@ defaults:
   run:
     shell: "bash"
 
-name: "Verify Docs Build Well"
+name: "(Reusable) Verify Docs Build Well"
 
 on:
   workflow_call:

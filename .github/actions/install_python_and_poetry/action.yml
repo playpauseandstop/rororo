@@ -43,7 +43,7 @@ runs:
       run: "pipx install --python='${{ steps.python.outputs.python-path }}' poetry==${{ inputs.poetry-version }}"
 
     - name: "Cache venv"
-      uses: "actions/cache@v3.0.10"
+      uses: "actions/cache@v3.0.11"
       with:
         path: "./.venv/"
         key: "venv-${{ runner.os }}-${{ steps.python.outputs.python-version }}-${{ hashFiles('poetry.lock') }}${{ inputs.cache-key-suffix }}"

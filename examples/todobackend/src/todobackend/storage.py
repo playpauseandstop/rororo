@@ -1,15 +1,22 @@
+from __future__ import annotations
+
 import uuid
-from typing import cast, Union
+from typing import TYPE_CHECKING
 
 import pyrsistent
-from aioredis.client import Redis
 from pyrsistent.typing import PVector
 
 from todobackend.data import Todo
 
 
+if TYPE_CHECKING:
+    from typing import Union
+
+    from redis.asyncio import Redis
+
+
 class Storage:
-    def __init__(self, *, redis: Redis, data_key: str) -> None:
+    def __init__(self, *, redis: Redis[str], data_key: str) -> None:
         self.redis = redis
         self.data_key = data_key
 
@@ -25,7 +32,7 @@ class Storage:
         redis = self.redis
 
         await redis.lrem(self.data_key, 0, str(todo.uid))
-        return cast(int, await redis.delete(self.build_item_key(todo)))
+        return await redis.delete(self.build_item_key(todo))
 
     async def delete_todos(self) -> int:
         redis = self.redis
@@ -59,5 +66,6 @@ class Storage:
 
     async def save_todo(self, todo: Todo) -> None:
         await self.redis.hset(
-            self.build_item_key(todo), mapping=todo.to_storage()
+            self.build_item_key(todo),
+            mapping=todo.to_storage(),  # type: ignore[arg-type]
         )

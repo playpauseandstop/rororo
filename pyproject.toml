@@ -5,10 +5,10 @@ build-backend = "poetry.core.masonry.api"
 [tool.badabump]
 version_type = "semver"
 version_files = [
-  "./pyproject.toml",
-  "./src/rororo/__init__.py",
-  "./tests/rororo/openapi.json",
-  "./tests/rororo/openapi.yaml",
+  "pyproject.toml",
+  "src/rororo/__init__.py",
+  "tests/rororo/openapi.json",
+  "tests/rororo/openapi.yaml",
 ]
 
 [tool.black]
@@ -20,11 +20,17 @@ branch = true
 source = ["rororo"]
 
 [tool.coverage.paths]
-source = ["./src/"]
+source = ["src/"]
 
 [tool.coverage.report]
-exclude_lines = ["if TYPE_CHECKING:", "@overload"]
-omit = ["./src/*/main.py", "./src/*/annotations.py"]
+exclude_lines = [
+  "if TYPE_CHECKING:",
+  "@overload",
+]
+omit = [
+  "src/*/main.py",
+  "src/*/annotations.py",
+]
 fail_under = 95
 skip_covered = true
 show_missing = true
@@ -35,14 +41,14 @@ combine_as_imports = true
 force_alphabetical_sort_within_sections = true
 lines_between_types = 0
 src_paths = [
-  "./",
-  "./examples/hobotnica/src/",
-  "./examples/petstore/src/",
-  "./examples/simulations/src/",
-  "./examples/todobackend/src/",
-  "./src/",
+  "",
+  "examples/hobotnica/src/",
+  "examples/petstore/src/",
+  "examples/simulations/src/",
+  "examples/todobackend/src/",
+  "src/",
 ]
-virtual_env = "./.venv/"
+virtual_env = ".venv/"
 
 [tool.mypy]
 allow_untyped_globals = true
@@ -53,14 +59,14 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_decorators = true
 disallow_untyped_defs = true
-exclude = ["./docs/", "./migrations/", "./tests/"]
+exclude = ["docs/", "migrations/", "tests/"]
 follow_imports = "normal"
 follow_imports_for_stubs = true
 ignore_missing_imports = false
 namespace_packages = true
 no_implicit_optional = true
-mypy_path = "./src/"
-python_executable = "./.venv/bin/python3"
+mypy_path = "src/"
+python_executable = ".venv/bin/python3"
 show_column_numbers = true
 show_error_codes = true
 warn_redundant_casts = true
@@ -69,16 +75,6 @@ warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
 module = [
-  "conftest",
-  "migrations.*",
-  "tests.*",
-  "*.tests",
-]
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = [
-  "aioredis.*",
   "email_validator.*",
   "environ.*",
   "isodate.*",
@@ -126,7 +122,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-aiohttp = "^3.7.0"
+aiohttp = "^3.8.1"
 aiohttp-middlewares = ">=1.2.0,<3"
 attrs = ">=19.2.0,<23"
 email-validator = "^1.0.5"
@@ -134,37 +130,39 @@ environ-config = ">=20.1,<23"
 isodate = "^0.6.0"
 openapi-core = ">=0.13.4,<0.13.7"
 openapi-spec-validator = "<=0.4.0"
-pyrsistent = ">=0.16,<0.19"
-PyYAML = ">=5.1,<7.0"
-typing-extensions = {python = "<3.8", version = ">=3.7,<5.0"}
+pyrsistent = ">=0.16,<0.20"
+pyyaml = ">=5.1,<7.0"
+typing-extensions = {python = "<3.8", version = ">=3.7,<5"}
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^0.982"
-types-PyYAML = "^6.0.12"
+mypy = "^0.991"
+types-pyyaml = "^6.0.12.2"
+types-redis = "^4.3.21.6"
 
 [tool.poetry.group.test.dependencies]
-aioredis = {extras = ["hiredis"], version = "^2.0.1"}
 coverage = {extras = ["toml"], version = "^6.5.0"}
 coveralls = "^3.3.1"
-pytest = "^7.1.3"
+hiredis = "^2.0.0"
+pytest = "^7.2.0"
 pytest-aiohttp = "^1.0.4"
+pytest-asyncio = "^0.20.2"
 pytest-cov = "^4.0.0"
-
+redis = "^4.4.0"
 
 [tool.poetry.group.docs.dependencies]
 furo = "^2022.9.29"
-Sphinx = "^5.2.3"
+sphinx = "^5.3.0"
 sphinx-autobuild = "^2021.3.14"
-sphinx-autodoc-typehints = "^1.19.4"
-sphinx-copybutton = "^0.5.0"
-sphinxext-opengraph = "^0.6.3"
+sphinx-autodoc-typehints = "^1.19.5"
+sphinx-copybutton = "^0.5.1"
+sphinxext-opengraph = "^0.7.3"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
 
 [tool.pytest.ini_options]
-minversion = "7.1.3"
-testpaths = ["./tests/"]
+minversion = "7.2.0"
+testpaths = ["tests/"]
 addopts = "--cov --no-cov-on-fail"
 log_level = "info"
 # Local pytest options
@@ -203,7 +201,7 @@ commands =
 commands_pre =
   poetry install --only main,test
   poetry run python3 -m pip install \
-    aiohttp==3.7.0 \
+    aiohttp==3.8.1 \
     aiohttp-middlewares==1.2.0 \
     attrs==19.2.0 \
     email-validator==1.0.5 \

@@ -527,14 +527,14 @@ async def test_request_body_nested_object(aiohttp_client, schema_path):
     response = await client.post("/api/nested-object", json=TEST_NESTED_OBJECT)
     assert response.status == 200
     assert response.headers["X-Data-Type"] == "<class 'pyrsistent._pmap.PMap'>"
-    assert (
-        response.headers["X-Data-Data-Data-Items-Type"]
-        == "<class 'pvectorc.PVector'>"
-    )
-    assert (
-        response.headers["X-Data-Data-Str-Items-Type"]
-        == "<class 'pvectorc.PVector'>"
-    )
+
+    for suffix in ("Data-Items-Type", "Str-Items-Type"):
+        value = response.headers[f"X-Data-Data-{suffix}"]
+        assert value in {
+            "<class 'pvectorc.PVector'>",
+            "<class 'pyrsistent._pvector.PythonPVector'>",
+        }
+
     assert response.headers["X-Data-UID-Type"] == "<class 'uuid.UUID'>"
     assert await response.json() == TEST_NESTED_OBJECT
 

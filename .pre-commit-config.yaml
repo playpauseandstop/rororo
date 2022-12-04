@@ -1,10 +1,10 @@
 default_language_version:
-  python: &python_version "python3.10"
+  python: &python_version "python3.11"
 exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\.svg$
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.35.0"
+    rev: "v2.37.1"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -48,7 +48,7 @@ repos:
           - "black==22.10.0"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
-    rev: "v4.3.0"
+    rev: "v4.4.0"
     hooks:
       - id: "end-of-file-fixer"
       - id: "trailing-whitespace"
@@ -71,19 +71,19 @@ repos:
       - id: "flake8"
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
-          - "flake8==5.0.4"
           - "flake8-broken-line==0.6.0"
-          - "flake8-bugbear==22.9.23"
-          - "flake8-builtins==2.0.0"
-          - "flake8-comprehensions==3.10.0"
+          - "flake8-bugbear==22.10.27"
+          - "flake8-builtins==2.0.1"
+          - "flake8-comprehensions==3.10.1"
           - "flake8-eradicate==1.4.0"
-          - "flake8-isort==5.0.0"
+          - "flake8-isort==5.0.3"
           - "flake8-mutable==1.2.0"
           - "flake8-pie==0.16.0"
           - "flake8-quotes==3.3.1"
           - "flake8-string-format==0.3.0"
           - "flake8-tidy-imports==4.8.0"
           - "flake8-variables-names==0.0.5"
+          - "flake8==5.0.4"
           - "pep8-naming==0.13.2"
         exclude: ^docs/.*$
 
@@ -103,7 +103,7 @@ repos:
         language: "python"
         "types": ["python"]
         require_serial: true
-        exclude: ^(docs|migrations|tests)/.*$
+        exclude: ^(.*/)?(docs|migrations|tests)/.*$
 
   - repo: "https://github.com/shellcheck-py/shellcheck-py"
     rev: "v0.8.0.4"
