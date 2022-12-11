@@ -29,7 +29,7 @@ repos:
         exclude: ^docs/.*$
 
   - repo: "https://github.com/psf/black"
-    rev: "22.10.0"
+    rev: "22.12.0"
     hooks:
       - id: "black"
         # By default black using `python3` instead `python` language, so
@@ -72,7 +72,7 @@ repos:
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
           - "flake8-broken-line==0.6.0"
-          - "flake8-bugbear==22.10.27"
+          - "flake8-bugbear==22.12.6"
           - "flake8-builtins==2.0.1"
           - "flake8-comprehensions==3.10.1"
           - "flake8-eradicate==1.4.0"

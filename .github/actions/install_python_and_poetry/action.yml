@@ -6,34 +6,40 @@ inputs:
     description: "Cache key suffix to append to venv cache key"
     required: false
     default: ""
+
   python-version:
     description: "Python version to use"
     required: false
+
   python-version-file:
     description: "Read Python version from given file"
     required: false
+
   poetry-version:
     description: "Poetry version to use"
     required: false
-    default: "1.2.2"
+    default: "1.3.0"
 
 outputs:
   python-path:
     description: "Absolute path to Python executable"
     value: "${{ steps.python.outputs.python-path }}"
+
   python-version:
     description: "Installed Python version"
     value: "${{ steps.python.outputs.python-version }}"
+
   poetry-version:
     description: "Installed poetry version"
     value: "${{ inputs.poetry-version }}"
 
 runs:
   using: "composite"
+
   steps:
     - id: "python"
       name: "Install Python"
-      uses: "actions/setup-python@v4.3.0"
+      uses: "actions/setup-python@v4.3.1"
       with:
         python-version: "${{ inputs.python-version }}"
         python-version-file: "${{ inputs.python-version-file }}"
