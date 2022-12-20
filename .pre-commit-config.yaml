@@ -4,7 +4,7 @@ exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.37.1"
+    rev: "v2.38.0"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -19,12 +19,9 @@ repos:
         name: "Format code (no-optional)"
 
   - repo: "https://github.com/PyCQA/isort"
-    rev: "5.10.1"
+    rev: "v5.11.3"
     hooks:
       - id: "isort"
-        # By default isort using `python3` instead `python` language, so
-        # needed to provide concrete version here as well
-        language_version: *python_version
         name: "Format code (isort)"
         exclude: ^docs/.*$
 
@@ -32,9 +29,6 @@ repos:
     rev: "22.12.0"
     hooks:
       - id: "black"
-        # By default black using `python3` instead `python` language, so
-        # needed to provide concrete version here as well
-        language_version: *python_version
         name: "Format code (black)"
         exclude: ^docs/.*$
 
@@ -79,12 +73,12 @@ repos:
           - "flake8-isort==5.0.3"
           - "flake8-mutable==1.2.0"
           - "flake8-pie==0.16.0"
-          - "flake8-quotes==3.3.1"
+          - "flake8-quotes==3.3.2"
           - "flake8-string-format==0.3.0"
           - "flake8-tidy-imports==4.8.0"
           - "flake8-variables-names==0.0.5"
           - "flake8==5.0.4"
-          - "pep8-naming==0.13.2"
+          - "pep8-naming==0.13.3"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/asottile/yesqa"
@@ -106,7 +100,7 @@ repos:
         exclude: ^(.*/)?(docs|migrations|tests)/.*$
 
   - repo: "https://github.com/shellcheck-py/shellcheck-py"
-    rev: "v0.8.0.4"
+    rev: "v0.9.0.2"
     hooks:
       - id: "shellcheck"
         name: "Lint scripts (shellcheck)"

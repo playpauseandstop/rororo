@@ -156,5 +156,8 @@ dmypy.json
 # Auto-generated .gz static files
 static/**/*.gz
 
+# Do not ignore translated messages
+!locales/**/*.mo
+
 # Do not ignore dist files in vendored static files
 !static/vendor/**/dist/
