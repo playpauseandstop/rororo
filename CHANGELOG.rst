@@ -1,3 +1,21 @@
+3.1.0 (2022-12-26)
+==================
+
+**Features:**
+
+- Set aiohttp 3.8.1 as minimum supported version (#304)
+
+**Fixes:**
+
+- [#308] Depend on specific openapi-spec-validator version (#309)
+
+**Other:**
+
+- Update dev Python version to 3.11.1 (#306)
+- (**deps**) bump certifi from 2022.9.24 to 2022.12.7 (#305)
+- Sync common project files (#307)
+- Update CI workflows & composite actions (#310)
+
 3.0.1 (2022-10-23)
 ==================
 
