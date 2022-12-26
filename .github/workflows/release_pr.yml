@@ -17,12 +17,13 @@ env:
 
 jobs:
   create_release_pr:
+    if: "${{ github.actor == 'playpauseandstop' }}"
     name: "Create Release PR"
 
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v3.1.0"
+      - uses: "actions/checkout@v3.2.0"
         with:
           ref: "main"
 

@@ -5,14 +5,14 @@ inputs:
   badabump-version:
     description: "Badabump version to use"
     required: false
-    default: "21.3.3"
+    default: "22.1.0"
 
 runs:
   using: "composite"
   steps:
     - id: "python"
       name: "Install Python"
-      uses: "actions/setup-python@v4.3.1"
+      uses: "actions/setup-python@v4.4.0"
       with:
         python-version-file: ".python-version"
 
