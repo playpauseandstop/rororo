@@ -43,4 +43,4 @@ __all__ = (
 
 __author__ = "Igor Davydenko"
 __license__ = "BSD-3-Clause"
-__version__ = "3.0.1"
+__version__ = "3.1.0"
