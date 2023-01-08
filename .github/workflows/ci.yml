@@ -40,6 +40,10 @@ jobs:
       - name: "Install package"
         run: "poetry install --only main"
 
+      - name: "Check that the poetry.lock file corresponds to the current version of pyproject.toml"
+        if: "${{ matrix.os == 'ubuntu-latest' }}"
+        run: "poetry lock --check"
+
       - name: "Import package"
         run: "poetry run python3 -c 'import rororo; from rororo import aio, timedelta;'"
 
