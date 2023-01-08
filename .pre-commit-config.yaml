@@ -4,7 +4,7 @@ exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.38.0"
+    rev: "v2.39.1"
     hooks:
       - id: "commitizen"
         # By default commitizen using `python3` instead `python` language, so
@@ -19,7 +19,7 @@ repos:
         name: "Format code (no-optional)"
 
   - repo: "https://github.com/PyCQA/isort"
-    rev: "v5.11.3"
+    rev: "5.11.4"
     hooks:
       - id: "isort"
         name: "Format code (isort)"
@@ -60,24 +60,22 @@ repos:
       - id: "rst-inline-touching-normal"
 
   - repo: "https://github.com/PyCQA/flake8"
-    rev: "5.0.4"
+    rev: "6.0.0"
     hooks:
       - id: "flake8"
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
-          - "flake8-broken-line==0.6.0"
           - "flake8-bugbear==22.12.6"
-          - "flake8-builtins==2.0.1"
+          - "flake8-builtins==2.1.0"
           - "flake8-comprehensions==3.10.1"
-          - "flake8-eradicate==1.4.0"
-          - "flake8-isort==5.0.3"
+          - "flake8-isort==6.0.0"
           - "flake8-mutable==1.2.0"
           - "flake8-pie==0.16.0"
           - "flake8-quotes==3.3.2"
           - "flake8-string-format==0.3.0"
           - "flake8-tidy-imports==4.8.0"
           - "flake8-variables-names==0.0.5"
-          - "flake8==5.0.4"
+          - "flake8==6.0.0"
           - "pep8-naming==0.13.3"
         exclude: ^docs/.*$
 
@@ -93,7 +91,7 @@ repos:
     hooks:
       - id: "mypy"
         name: "Lint code (mypy)"
-        entry: "./.venv/bin/mypy"
+        entry: ".venv/bin/mypy"
         language: "python"
         "types": ["python"]
         require_serial: true
