@@ -5,21 +5,26 @@ inputs:
   python-path:
     description: "Path to Python executable"
     required: true
+
   python-version:
     description: "Installed Python version"
     required: true
+
   tox-version:
     description: "Tox version to use"
     required: false
-    default: "3.26.0"
+    default: "4.2.6"
+
   tox-gh-actions-version:
     description: "Tox GitHub Actions plugin version to use"
     required: false
-    default: "2.10.0"
+    default: "3.0.0"
+
   use-coveralls:
     description: "Send coverage to Coveralls"
     required: false
     default: "false"
+
   coveralls-token:
     description: "GitHub token to use, when sending coverage to Coveralls"
     required: false
@@ -36,9 +41,9 @@ runs:
       shell: "bash"
 
     - name: "Cache tox"
-      uses: "actions/cache@v3.2.1"
+      uses: "actions/cache@v3.2.2"
       with:
-        path: "./.tox/"
+        path: ".tox/"
         key: "tox-${{ inputs.python-version }}"
 
     - name: "Run tox"

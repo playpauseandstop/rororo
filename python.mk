@@ -5,7 +5,7 @@ VENV_DIR = .venv
 PYTHON_BIN = $(VENV_DIR)/bin/python3
 
 STAGE ?= dev
-DOTENV ?= $(shell if [ -f ./dotenv.sh ]; then echo "./dotenv.sh "; fi)
+DOTENV ?= $(shell if [ -f dotenv.sh ]; then echo "./dotenv.sh"; fi)
 POETRY ?= $(DOTENV) poetry
 POETRY_INSTALL_ARGS ?=
 PRE_COMMIT ?= pre-commit

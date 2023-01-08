@@ -117,7 +117,7 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP :: WSGI",
   "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
   "Topic :: Utilities",
-  "Typing :: Typed"
+  "Typing :: Typed",
 ]
 
 [tool.poetry.dependencies]
@@ -137,25 +137,25 @@ typing-extensions = {python = "<3.8", version = ">=3.7,<5"}
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.991"
 types-pyyaml = "^6.0.12.2"
-types-redis = "^4.3.21.6"
+types-redis = "^4.4.0.0"
+
+[tool.poetry.group.docs.dependencies]
+furo = "^2022.12.7"
+sphinx = "^5.3.0"
+sphinx-autobuild = "^2021.3.14"
+sphinx-autodoc-typehints = "^1.20.1"
+sphinx-copybutton = "^0.5.1"
+sphinxext-opengraph = "^0.7.5"
 
 [tool.poetry.group.test.dependencies]
 coverage = {extras = ["toml"], version = "^6.5.0"}
 coveralls = "^3.3.1"
-hiredis = "^2.0.0"
+hiredis = "^2.1.0"
 pytest = "^7.2.0"
 pytest-aiohttp = "^1.0.4"
-pytest-asyncio = "^0.20.2"
+pytest-asyncio = "^0.20.3"
 pytest-cov = "^4.0.0"
-redis = "^4.4.0"
-
-[tool.poetry.group.docs.dependencies]
-furo = "^2022.9.29"
-sphinx = "^5.3.0"
-sphinx-autobuild = "^2021.3.14"
-sphinx-autodoc-typehints = "^1.19.5"
-sphinx-copybutton = "^0.5.1"
-sphinxext-opengraph = "^0.7.3"
+redis = "^4.4.1"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/playpauseandstop/rororo/issues"
@@ -167,6 +167,9 @@ addopts = "--cov --no-cov-on-fail"
 log_level = "info"
 # Local pytest options
 asyncio_mode = "auto"
+filterwarnings = [
+  "ignore:You supplied `schema_path` positional argument as well as supplying `schema` & `spec` keyword arguments. `schema_path` will be ignored in favor of `schema` & `spec` args.:UserWarning"
+]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -183,19 +186,19 @@ python =
   3.11: py311
 
 [testenv]
+allowlist_externals = poetry
 passenv =
-  PYTHONPATH
-  PYTEST_ADDOPTS
-  REDIS_URL
   LEVEL
+  PYTEST_ADDOPTS
+  PYTHONPATH
+  REDIS_URL
 setenv =
   USER=playpauseandstop
 skip_install = True
-whitelist_externals = poetry
 commands_pre =
   poetry install --only main,test
 commands =
-  poetry run python3 -m pytest
+  python3 -m pytest
 
 [testenv:py310-minimum-requirements]
 commands_pre =

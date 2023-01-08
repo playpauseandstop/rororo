@@ -68,6 +68,11 @@ test: install clean validate test-only
 test-only:
 	PYTHONPATH=$(PYTHONPATH) TOXENV=$(TOXENV) LEVEL=test $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
 
+.PHONY: test-%
+test-%: install clean
+	PYTHONPATH=$(PYTHONPATH) TOXENV=$(subst test-,,$@) LEVEL=test $(TOX) $(TOX_ARGS) -- $(TEST_ARGS)
+
+.PHONY: validate
 validate: install
 	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/hobotnica/src/hobotnica/openapi.yaml
 	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/petstore/src/petstore/petstore-expanded.yaml
