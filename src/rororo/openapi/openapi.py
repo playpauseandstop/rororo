@@ -4,7 +4,17 @@ import os
 import warnings
 from functools import lru_cache, partial
 from pathlib import Path
-from typing import Callable, cast, Deque, Dict, List, overload, Tuple, Union
+from typing import (
+    Callable,
+    cast,
+    Deque,
+    Dict,
+    List,
+    overload,
+    Tuple,
+    Type,
+    Union,
+)
 
 import attr
 import yaml
@@ -82,6 +92,7 @@ class OperationTableDef:
         from rororo import OperationTableDef
 
         operations = OperationTableDef()
+
 
         # Expect OpenAPI 3 schema to contain operationId: hello_world
         @operations.register
@@ -360,8 +371,10 @@ def fix_spec_operations(spec: Spec, schema: DictStrAny) -> Spec:
     return spec
 
 
-def get_default_yaml_loader() -> SchemaLoader:
-    return cast(SchemaLoader, getattr(yaml, "CSafeLoader", yaml.SafeLoader))
+def get_default_yaml_loader() -> Type[yaml.BaseLoader]:
+    return cast(
+        Type[yaml.BaseLoader], getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+    )
 
 
 def get_route_name(operation_id: str) -> str:
@@ -704,7 +717,8 @@ def setup_openapi(  # type: ignore[misc]
         warnings.warn(
             "You supplied `schema_path` positional argument as well as "
             "supplying `schema` & `spec` keyword arguments. `schema_path` "
-            "will be ignored in favor of `schema` & `spec` args."
+            "will be ignored in favor of `schema` & `spec` args.",
+            stacklevel=2,
         )
 
     # Fix all operation securities within OpenAPI spec
