@@ -4,10 +4,10 @@ exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\
 minimum_pre_commit_version: "1.17.0"
 repos:
   - repo: "https://github.com/commitizen-tools/commitizen"
-    rev: "v2.39.1"
+    rev: "v2.42.0"
     hooks:
       - id: "commitizen"
-        # By default commitizen using `python3` instead `python` language, so
+        # By default commitizen using `python3` language version, so
         # needed to provide concrete version here as well
         language_version: *python_version
         stages: ["commit-msg"]
@@ -19,27 +19,27 @@ repos:
         name: "Format code (no-optional)"
 
   - repo: "https://github.com/PyCQA/isort"
-    rev: "5.11.4"
+    rev: "5.12.0"
     hooks:
       - id: "isort"
         name: "Format code (isort)"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/psf/black"
-    rev: "22.12.0"
+    rev: "23.1.0"
     hooks:
       - id: "black"
         name: "Format code (black)"
         exclude: ^docs/.*$
 
   - repo: "https://github.com/asottile/blacken-docs"
-    rev: "v1.12.1"
+    rev: "1.13.0"
     hooks:
       - id: "blacken-docs"
         name: "Format docs (blacken-docs)"
         args: ["-l", "64"]
         additional_dependencies:
-          - "black==22.10.0"
+          - "black==23.1.0"
 
   - repo: "https://github.com/pre-commit/pre-commit-hooks"
     rev: "v4.4.0"
@@ -51,7 +51,7 @@ repos:
       - id: "check-yaml"
 
   - repo: "https://github.com/pre-commit/pygrep-hooks"
-    rev: "v1.9.0"
+    rev: "v1.10.0"
     hooks:
       - id: "python-check-blanket-noqa"
       - id: "python-check-blanket-type-ignore"
@@ -65,7 +65,7 @@ repos:
       - id: "flake8"
         name: "Lint code (flake8)"
         additional_dependencies: &flake8_additional_dependencies
-          - "flake8-bugbear==22.12.6"
+          - "flake8-bugbear==23.2.13"
           - "flake8-builtins==2.1.0"
           - "flake8-comprehensions==3.10.1"
           - "flake8-isort==6.0.0"
