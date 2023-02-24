@@ -628,23 +628,24 @@ idna = ">=2.0.0"
 
 [[package]]
 name = "environ-config"
-version = "22.1.0"
+version = "23.1.0"
 description = "Boilerplate-free configuration with env variables."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "environ-config-22.1.0.tar.gz", hash = "sha256:7c7dbc5601060667301e992f6f0544c01e5144c86f1b2ec0b053e322788bb602"},
-    {file = "environ_config-22.1.0-py2.py3-none-any.whl", hash = "sha256:db7b36c948e6e896aa71573c3ced375f259b80901dd6cc5bfcc7f7f5d64d5cfe"},
+    {file = "environ_config-23.1.0-py3-none-any.whl", hash = "sha256:545162734328d5dd228e7ca48081db099eb9b0a8d4b5394e3c65f7a267c79c5f"},
+    {file = "environ_config-23.1.0.tar.gz", hash = "sha256:3c7013910c1d4738df6b4cf379f597c6ea58b5f272cea0382b24f1eb51bff689"},
 ]
 
 [package.dependencies]
 attrs = ">=17.4.0"
+importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 
 [package.extras]
 aws = ["boto3"]
-dev = ["boto3", "coverage[toml]", "furo", "moto", "pre-commit", "pytest", "sphinx"]
-docs = ["furo", "sphinx"]
+dev = ["environ-config[docs,tests]"]
+docs = ["environ-config[aws]", "furo", "myst-parser", "sphinx", "sphinx-notfound-page"]
 tests = ["coverage[toml]", "moto", "pytest"]
 
 [[package]]
@@ -1050,6 +1051,7 @@ category = "dev"
 optional = false
 python-versions = "*"
 files = [
+    {file = "livereload-2.6.3-py2.py3-none-any.whl", hash = "sha256:ad4ac6f53b2d62bb6ce1a5e6e96f1f00976a32348afedcb4b6d68df2a1d346e4"},
     {file = "livereload-2.6.3.tar.gz", hash = "sha256:776f2f865e59fde56490a56bcc6773b6917366bce0c267c60ee8aaf1a0959869"},
 ]
 
@@ -2191,4 +2193,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "ad5959ba57017aac25cb7634b198ac5e0b2b1ab461e04691363a694308cb1e55"
+content-hash = "599efec595827f052e20afe62346a88cd3511b391d5a02fbfadc14e5fdc7bdeb"
