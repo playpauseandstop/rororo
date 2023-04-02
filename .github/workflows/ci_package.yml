@@ -25,7 +25,7 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: "actions/checkout@v3.3.0"
+      - uses: "actions/checkout@v3.5.0"
 
       - id: "python_and_poetry"
         uses: "./.github/actions/install_python_and_poetry"
@@ -43,7 +43,7 @@ jobs:
 
       - name: "Publish package"
         if: "${{ startsWith(github.ref, 'refs/tags/') }}"
-        uses: "pypa/gh-action-pypi-publish@v1.6.4"
+        uses: "pypa/gh-action-pypi-publish@v1.8.4"
         with:
           user: "${{ secrets.pypi-user }}"
           password: "${{ secrets.pypi-password }}"
