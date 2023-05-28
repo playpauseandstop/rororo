@@ -9,16 +9,17 @@ from aiohttp_middlewares import (
 )
 
 from hobotnica import views
-from rororo import BaseSettings, setup_openapi, setup_settings
+from hobotnica.settings import Settings
+from rororo import setup_openapi, setup_settings
 
 
 def create_app(
     argv: Union[List[str], None] = None,
     *,
-    settings: Union[BaseSettings, None] = None,
+    settings: Union[Settings, None] = None,
 ) -> web.Application:
     if settings is None:
-        settings = BaseSettings.from_environ()
+        settings = Settings.from_environ()
 
     app = setup_openapi(
         setup_settings(
@@ -36,6 +37,7 @@ def create_app(
         views.operations,
         cors_middleware_kwargs={"allow_all": True},
         cache_create_schema_and_spec=settings.is_test,
+        use_error_middleware=settings.use_error_middleware,
     )
     print(f"{app.middlewares=}")
     return app

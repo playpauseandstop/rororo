@@ -1,3 +1,5 @@
+from typing import Callable
+
 import pytest
 from aiohttp import BasicAuth
 from aiohttp.test_utils import TestClient
@@ -22,8 +24,16 @@ URL_REPOSITORY_ENV = URL_REPOSITORY / "env"
 
 
 @pytest.fixture(scope="function")
-async def test_hobotnica_client(aiohttp_client) -> TestClient:
-    return await aiohttp_client(create_app())
+def test_hobotnica_client_factory(aiohttp_client) -> Callable[[], TestClient]:
+    async def factory() -> TestClient:
+        return await aiohttp_client(create_app())
+
+    return factory
+
+
+@pytest.fixture(scope="function")
+async def test_hobotnica_client(test_hobotnica_client_factory) -> TestClient:
+    return await test_hobotnica_client_factory()
 
 
 async def test_create_repository_201(test_hobotnica_client):
@@ -46,9 +56,15 @@ async def test_list_all_references(test_hobotnica_client):
     }
 
 
-async def test_list_all_references_deprecated(test_hobotnica_client):
+@pytest.mark.parametrize("use_error_middleware", ("false", "true"))
+async def test_list_all_references_deprecated(
+    monkeypatch, test_hobotnica_client_factory, use_error_middleware
+):
     """Should accept redirect and list all references."""
-    response = await test_hobotnica_client.get(URL_REFERENCES_DEPRECATED)
+    monkeypatch.setenv("USE_ERROR_MIDDLEWARE", use_error_middleware)
+
+    client = await test_hobotnica_client_factory()
+    response = await client.get(URL_REFERENCES_DEPRECATED)
     assert response.status == 200
     assert await response.json() == {
         "default_env": {"CI": "1", "HOBOTNICA": "1"}
