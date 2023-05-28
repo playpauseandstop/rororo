@@ -376,7 +376,7 @@ def setup_settings_from_environ(
     """
     return setup_settings(
         app,
-        to_config(BaseSettings, environ or os.environ),  # type: ignore[arg-type]
+        settings_class.from_environ(environ or os.environ),
         loggers=loggers,
         remove_root_handlers=remove_root_handlers,
     )
