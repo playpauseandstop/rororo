@@ -21,7 +21,7 @@ def create_app(
     if settings is None:
         settings = Settings.from_environ()
 
-    app = setup_openapi(
+    return setup_openapi(
         setup_settings(
             web.Application(
                 middlewares=(
@@ -39,5 +39,3 @@ def create_app(
         cache_create_schema_and_spec=settings.is_test,
         use_error_middleware=settings.use_error_middleware,
     )
-    print(f"{app.middlewares=}")
-    return app
