@@ -82,5 +82,6 @@ validate: install
 	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/petstore/src/petstore/petstore-expanded.yaml
 	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/simulations/src/simulations/openapi.yaml
 	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/todobackend/src/todobackend/openapi.yaml
+	$(PYTHON_BIN) -m openapi_spec_validator $(EXAMPLES_DIR)/vc-api/src/vc_api/vc-api.yaml
 	$(PYTHON_BIN) -m openapi_spec_validator $(TESTS_DIR)/$(PROJECT)/openapi.json
 	$(PYTHON_BIN) -m openapi_spec_validator $(TESTS_DIR)/$(PROJECT)/openapi.yaml
