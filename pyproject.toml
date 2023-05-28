@@ -124,7 +124,7 @@ classifiers = [
 python = "^3.7"
 aiohttp = "^3.8.1"
 aiohttp-middlewares = ">=1.2.0,<3"
-attrs = ">=19.2.0,<23"
+attrs = ">=19.2.0,<24"
 email-validator = "^1.0.5"
 environ-config = ">=20.1,<23"
 isodate = "^0.6.0"
