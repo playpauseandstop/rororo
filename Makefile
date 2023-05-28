@@ -37,15 +37,6 @@ $(DOCS_DIR)/requirements.txt: poetry.lock
 $(DOCS_DIR)/requirements-sphinx.txt: $(DOCS_DIR)/requirements-sphinx.in
 	$(PIP_COMPILE) -Ur --allow-unsafe $(DOCS_DIR)/requirements-sphinx.in
 
-.PHONY: example
-example: install
-ifeq ($(EXAMPLE),)
-	@echo "USAGE: make $@ EXAMPLE=(hobotnica|petstore|simulations|todobackend)"
-	@exit 1
-else
-	PYTHONPATH=$(PYTHONPATH) $(PYTHON_BIN) -m aiohttp.web $(EXAMPLE).app:create_app
-endif
-
 .PHONY: install
 install: install-python
 
@@ -60,6 +51,19 @@ lint-only: lint-python-only
 
 .PHONY: list-outdated
 list-outdated: list-outdated-python
+
+.PHONY: run-example
+run-example: install
+ifeq ($(EXAMPLE),)
+	@echo "USAGE: make $@ EXAMPLE=(hobotnica|petstore|simulations|todobackend)"
+	@exit 1
+else
+	PYTHONPATH=examples/$(EXAMPLE)/src/ $(PYTHON_BIN) -m aiohttp.web $(EXAMPLE).app:create_app
+endif
+
+.PHONY: run-example-%
+run-example-%: install
+	@$(MAKE) run-example EXAMPLE=$(subst run-example-,,$@)
 
 .PHONY: test
 test: install clean validate test-only

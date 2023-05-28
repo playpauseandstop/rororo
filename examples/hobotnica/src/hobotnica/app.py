@@ -20,7 +20,7 @@ def create_app(
     if settings is None:
         settings = BaseSettings.from_environ()
 
-    return setup_openapi(
+    app = setup_openapi(
         setup_settings(
             web.Application(
                 middlewares=(
@@ -37,3 +37,5 @@ def create_app(
         cors_middleware_kwargs={"allow_all": True},
         cache_create_schema_and_spec=settings.is_test,
     )
+    print(f"{app.middlewares=}")
+    return app

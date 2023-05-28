@@ -1,5 +1,6 @@
 import pytest
 from aiohttp import BasicAuth
+from aiohttp.test_utils import TestClient
 from yarl import URL
 
 from hobotnica.app import create_app
@@ -11,6 +12,7 @@ from hobotnica.data import (
 
 
 URL_REFERENCES = URL("/api/public/references")
+URL_REFERENCES_DEPRECATED = URL_REFERENCES / "deprecated"
 URL_REPOSITORIES = URL("/api/repositories")
 URL_FAVORITES_REPOSITORIES = URL_REPOSITORIES / "favorites"
 URL_OWNER_REPOSITORIES = URL_REPOSITORIES / GITHUB_USERNAME
@@ -19,9 +21,13 @@ URL_REPOSITORY = URL_REPOSITORIES / GITHUB_USERNAME / GITHUB_REPOSITORY
 URL_REPOSITORY_ENV = URL_REPOSITORY / "env"
 
 
-async def test_create_repository_201(aiohttp_client):
-    client = await aiohttp_client(create_app())
-    response = await client.post(
+@pytest.fixture(scope="function")
+async def test_hobotnica_client(aiohttp_client) -> TestClient:
+    return await aiohttp_client(create_app())
+
+
+async def test_create_repository_201(test_hobotnica_client):
+    response = await test_hobotnica_client.post(
         URL_REPOSITORIES,
         json={"owner": GITHUB_USERNAME, "name": GITHUB_REPOSITORY},
         headers={
@@ -32,18 +38,25 @@ async def test_create_repository_201(aiohttp_client):
     assert response.status == 201
 
 
-async def test_list_all_references(aiohttp_client):
-    client = await aiohttp_client(create_app())
-    response = await client.get(URL_REFERENCES)
+async def test_list_all_references(test_hobotnica_client):
+    response = await test_hobotnica_client.get(URL_REFERENCES)
     assert response.status == 200
     assert await response.json() == {
         "default_env": {"CI": "1", "HOBOTNICA": "1"}
     }
 
 
-async def test_list_favorites_repositories_204(aiohttp_client):
-    client = await aiohttp_client(create_app())
-    response = await client.get(
+async def test_list_all_references_deprecated(test_hobotnica_client):
+    """Should accept redirect and list all references."""
+    response = await test_hobotnica_client.get(URL_REFERENCES_DEPRECATED)
+    assert response.status == 200
+    assert await response.json() == {
+        "default_env": {"CI": "1", "HOBOTNICA": "1"}
+    }
+
+
+async def test_list_favorites_repositories_204(test_hobotnica_client):
+    response = await test_hobotnica_client.get(
         URL_FAVORITES_REPOSITORIES,
         headers={
             "X-GitHub-Username": GITHUB_USERNAME,
@@ -54,9 +67,8 @@ async def test_list_favorites_repositories_204(aiohttp_client):
     assert response.headers["X-Order"] == "date"
 
 
-async def test_list_owner_repositories_200(aiohttp_client):
-    client = await aiohttp_client(create_app())
-    response = await client.get(
+async def test_list_owner_repositories_200(test_hobotnica_client):
+    response = await test_hobotnica_client.get(
         URL_OWNER_REPOSITORIES,
         headers={
             "Authorization": BasicAuth(
@@ -81,9 +93,10 @@ async def test_list_owner_repositories_200(aiohttp_client):
         {"X-GitHub-Personal-Token": GITHUB_PERSONAL_TOKEN},
     ),
 )
-async def test_list_owner_repositories_401(aiohttp_client, invalid_headers):
-    client = await aiohttp_client(create_app())
-    response = await client.get(
+async def test_list_owner_repositories_401(
+    test_hobotnica_client, invalid_headers
+):
+    response = await test_hobotnica_client.get(
         URL_OWNER_REPOSITORIES, headers=invalid_headers
     )
 
@@ -92,9 +105,8 @@ async def test_list_owner_repositories_401(aiohttp_client, invalid_headers):
     assert await response.json() == {"detail": "Not authenticated"}
 
 
-async def test_list_owner_repositories_422(aiohttp_client):
-    client = await aiohttp_client(create_app())
-    response = await client.get(
+async def test_list_owner_repositories_422(test_hobotnica_client):
+    response = await test_hobotnica_client.get(
         URL_REPOSITORIES / "ab",
         headers={
             "Authorization": BasicAuth(
@@ -123,9 +135,10 @@ async def test_list_owner_repositories_422(aiohttp_client):
         },
     ),
 )
-async def test_list_repositories_200(aiohttp_client, headers):
-    client = await aiohttp_client(create_app())
-    response = await client.get(URL_REPOSITORIES, headers=headers)
+async def test_list_repositories_200(test_hobotnica_client, headers):
+    response = await test_hobotnica_client.get(
+        URL_REPOSITORIES, headers=headers
+    )
 
     assert response.status == 200
     data = await response.json()
@@ -156,10 +169,11 @@ async def test_list_repositories_200(aiohttp_client, headers):
     ),
 )
 async def test_list_repositories_403_invalid_credentials(
-    aiohttp_client, invalid_headers
+    test_hobotnica_client, invalid_headers
 ):
-    client = await aiohttp_client(create_app())
-    response = await client.get(URL_REPOSITORIES, headers=invalid_headers)
+    response = await test_hobotnica_client.get(
+        URL_REPOSITORIES, headers=invalid_headers
+    )
     assert response.status == 403
     assert await response.json() == {"detail": "Invalid credentials"}
 
@@ -174,10 +188,11 @@ async def test_list_repositories_403_invalid_credentials(
     ),
 )
 async def test_list_repositories_403_not_authenticated(
-    aiohttp_client, invalid_headers
+    test_hobotnica_client, invalid_headers
 ):
-    client = await aiohttp_client(create_app())
-    response = await client.get(URL_REPOSITORIES, headers=invalid_headers)
+    response = await test_hobotnica_client.get(
+        URL_REPOSITORIES, headers=invalid_headers
+    )
     assert response.status == 403
     assert await response.json() == {"detail": "Not authenticated"}
 
@@ -189,9 +204,10 @@ async def test_list_repositories_403_not_authenticated(
         {"Authorization": f"Bearer {GITHUB_PERSONAL_TOKEN}"},
     ),
 )
-async def test_list_repositories_422(aiohttp_client, invalid_headers):
-    client = await aiohttp_client(create_app())
-    response = await client.get(URL_REPOSITORIES, headers=invalid_headers)
+async def test_list_repositories_422(test_hobotnica_client, invalid_headers):
+    response = await test_hobotnica_client.get(
+        URL_REPOSITORIES, headers=invalid_headers
+    )
     assert response.status == 422
     assert await response.json() == {
         "detail": [
@@ -203,10 +219,8 @@ async def test_list_repositories_422(aiohttp_client, invalid_headers):
     }
 
 
-async def test_retrieve_owner_env_200(aiohttp_client):
-    client = await aiohttp_client(create_app())
-
-    response = await client.get(
+async def test_retrieve_owner_env_200(test_hobotnica_client):
+    response = await test_hobotnica_client.get(
         URL_OWNER_REPOSITORIES_ENV,
         headers={
             "Authorization": BasicAuth(
@@ -221,10 +235,8 @@ async def test_retrieve_owner_env_200(aiohttp_client):
     }
 
 
-async def test_retrieve_repository_200(aiohttp_client):
-    client = await aiohttp_client(create_app())
-
-    response = await client.get(
+async def test_retrieve_repository_200(test_hobotnica_client):
+    response = await test_hobotnica_client.get(
         URL_REPOSITORY,
         headers={
             "X-GitHub-Username": GITHUB_USERNAME,
@@ -254,18 +266,16 @@ async def test_retrieve_repository_200(aiohttp_client):
         },
     ),
 )
-async def test_retrieve_repository_403(aiohttp_client, invalid_headers):
-    client = await aiohttp_client(create_app())
-
-    response = await client.get(URL_REPOSITORY, headers=invalid_headers)
+async def test_retrieve_repository_403(test_hobotnica_client, invalid_headers):
+    response = await test_hobotnica_client.get(
+        URL_REPOSITORY, headers=invalid_headers
+    )
     assert response.status == 403
     assert await response.json() == {"detail": "Not authenticated"}
 
 
-async def test_retrieve_repository_env_200(aiohttp_client):
-    client = await aiohttp_client(create_app())
-
-    response = await client.get(
+async def test_retrieve_repository_env_200(test_hobotnica_client):
+    response = await test_hobotnica_client.get(
         URL_REPOSITORY_ENV,
         headers={
             "X-GitHub-Username": GITHUB_USERNAME,

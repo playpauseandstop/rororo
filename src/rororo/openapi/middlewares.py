@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Union
+from typing import Tuple, Type, Union
 
 from aiohttp import web
 from aiohttp_middlewares import error_middleware, get_error_response
@@ -35,6 +35,28 @@ def get_actual_handler(handler: Handler) -> Handler:
     return handler
 
 
+def ensure_ignore_exceptions(
+    kwargs: ErrorMiddlewareKwargsDict, *ignore: Type[Exception]
+) -> None:
+    """Ensure all passed exceptions ignored by error middleware.
+
+    This is useful for ignoring handling redirection exceptions.
+    """
+    current = kwargs.get("ignore_exceptions")
+
+    to_ignore: Tuple[Type[Exception], ...]
+    if current is not None:
+        to_ignore = (
+            current + ignore
+            if isinstance(current, tuple)
+            else (current,) + ignore
+        )
+    else:
+        to_ignore = ignore
+
+    kwargs["ignore_exceptions"] = to_ignore
+
+
 def openapi_middleware(
     *,
     is_validate_response: bool = True,
@@ -49,6 +71,11 @@ def openapi_middleware(
     ``setup_openapi`` function, you'll need to add given middleware to your
     :class:`aiohttp.web.Applicaiton` manually.
     """
+
+    error_middleware_kwargs = error_middleware_kwargs or {}
+    # Do not handle ``HTTPRedirection`` errors by error middleware, as they
+    # will result in meaningless responses of ``{"detail": "Found"}``
+    ensure_ignore_exceptions(error_middleware_kwargs, web.HTTPRedirection)
 
     error_middleware_instance = (
         error_middleware(**error_middleware_kwargs or {})
@@ -90,6 +117,11 @@ def openapi_middleware(
                 validate_response(request, response)
 
             return response
+        except web.HTTPRedirection:
+            # Do not handle redirection errors, it is normal to
+            # ``web.Application`` to ask to redirect to other page via
+            # 301 <= X <= 399 error
+            raise
         except Exception as err:
             return await get_error_response(
                 request, err, **error_middleware_kwargs or {}
