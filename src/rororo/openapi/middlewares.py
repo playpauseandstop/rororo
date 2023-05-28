@@ -118,7 +118,7 @@ def openapi_middleware(
 
             return response
         except web.HTTPRedirection:
-            # Do not handle redirection errors, it is normal to
+            # Do not handle redirection errors, it is normal for
             # ``web.Application`` to ask to redirect to other page via
             # 301 <= X <= 399 error
             raise
