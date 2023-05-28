@@ -125,7 +125,7 @@ aiohttp = "^3.8.1"
 aiohttp-middlewares = ">=1.2.0,<3"
 attrs = ">=19.2.0,<24"
 email-validator = ">=1.0.5,<3.0.0"
-environ-config = ">=20.1,<23"
+environ-config = "^23.2.0"
 isodate = "^0.6.0"
 openapi-core = ">=0.13.4,<0.13.7"
 openapi-spec-validator = "0.4.0"
@@ -207,7 +207,6 @@ commands_pre =
     aiohttp-middlewares==1.2.0 \
     attrs==19.2.0 \
     email-validator==1.0.5 \
-    environ-config==20.1.0 \
     jsonschema==3.2.0 \
     openapi-core==0.13.4 \
     pyrsistent==0.16 \
