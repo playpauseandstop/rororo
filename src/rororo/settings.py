@@ -195,10 +195,10 @@ def immutable_settings(defaults: Settings, **optionals: Any) -> MappingStrAny:
 
         And yes each additional key overwrite default setting value.
     """
-    settings = {key: value for key, value in iter_settings(defaults)}
+    settings_dict = dict(iter_settings(defaults))
     for key, value in iter_settings(optionals):
-        settings[key] = value
-    return types.MappingProxyType(settings)
+        settings_dict[key] = value
+    return types.MappingProxyType(settings_dict)
 
 
 def inject_settings(
