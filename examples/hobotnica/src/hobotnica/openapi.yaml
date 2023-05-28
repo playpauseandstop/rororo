@@ -31,12 +31,23 @@ paths:
       security: []
       responses:
         <<: *default_responses
-        "200":
+        "200": &list_all_references_200_response
           description: "References list"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AnyObject"
+
+  "/public/references/deprecated":
+    get:
+      operationId: "list_all_references_deprecated"
+      summary: "List all references for UI needs"
+      deprecated: true
+      tags: ["public"]
+      security: []
+      responses:
+        <<: *default_responses
+        "200": *list_all_references_200_response
 
   "/repositories":
     get:

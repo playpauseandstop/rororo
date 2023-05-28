@@ -32,6 +32,11 @@ async def list_all_references(request: web.Request) -> web.Response:
 
 
 @operations.register
+async def list_all_references_deprecated(request: web.Request) -> web.Response:
+    raise web.HTTPFound(request.app.router["list_all_references"].url_for())
+
+
+@operations.register
 @login_required
 async def list_favorites_repositories(request: web.Request) -> web.Response:
     with openapi_context(request) as context:
