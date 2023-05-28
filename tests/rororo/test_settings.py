@@ -17,6 +17,7 @@ from rororo.settings import (
     setup_locale,
     setup_logging,
     setup_settings,
+    setup_settings_from_environ,
     setup_timezone,
 )
 from tests.rororo import settings as settings_module
@@ -271,6 +272,22 @@ def test_setup_settings():
 
     setup_settings(app, BaseSettings())
     assert "settings" in app
+
+
+def test_setup_settings_from_environ(monkeypatch):
+    """Should setup settings for application from environ."""
+    # Set environment variable
+    monkeypatch.setenv("MY_KEY", "my_value")
+
+    # Define custom settings class
+    @environ.config(prefix="", frozen=True)
+    class MySettings(BaseSettings):
+        my_key: str = environ.var(name="MY_KEY")
+
+    # Check that all works well
+    app = setup_settings_from_environ(web.Application(), MySettings)
+    assert isinstance(app["settings"], MySettings)
+    assert app["settings"].my_key == "my_value"
 
 
 def test_setup_timezone():
