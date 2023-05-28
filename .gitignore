@@ -139,19 +139,26 @@ dmypy.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
+# Profiler files
+*.prof
+
+# macOS Finder files
+.*DS_Store*
+
+# Local DotEnv files
+.env*.local
+
+# Makefile install targets
+.install*
+
 # AWS CDK files
 /cdk.out
 
-# DotENV files
-.env.*
-!.env.dev
-!.env.test
+# Shared Data files
+data/shared/
 
-# Makefile target
-.install*
-
-# Sublime Text 3 workspace
-*.sublime-workspace
+# Media files
+media/
 
 # Auto-generated .gz static files
 static/**/*.gz
