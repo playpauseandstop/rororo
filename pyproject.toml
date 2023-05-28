@@ -75,7 +75,6 @@ warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
 module = [
-  "email_validator.*",
   "environ.*",
   "isodate.*",
   "jsonschema.*",
