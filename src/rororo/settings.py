@@ -24,7 +24,6 @@ from importlib import import_module
 from logging.config import dictConfig
 from typing import (
     Any,
-    cast,
     Collection,
     Iterator,
     MutableMapping,
@@ -36,8 +35,16 @@ from typing import (
 
 import environ
 from aiohttp import web
+from environ import to_config
 
-from rororo.annotations import DictStrAny, Level, MappingStrAny, Settings, T
+from rororo.annotations import (
+    DictStrAny,
+    DictStrStr,
+    Level,
+    MappingStrAny,
+    Settings,
+    T,
+)
 from rororo.logger import default_logging_dict
 from rororo.utils import ensure_collection, to_bool
 
@@ -47,7 +54,7 @@ APP_SETTINGS_KEY = "settings"
 TBaseSettings = TypeVar("TBaseSettings", bound="BaseSettings")
 
 
-@environ.config(prefix=None, from_environ=None, frozen=True)
+@environ.config(prefix="", frozen=True)
 class BaseSettings:
     """Base Settings data structure for configuring ``aiohttp.web`` apps.
 
@@ -61,7 +68,7 @@ class BaseSettings:
         from rororo.settings import BaseSettings
 
 
-        @environ.config(prefix=None, frozen=True)
+        @environ.config(prefix="", frozen=True)
         class Settings(BaseSettings):
             other_name: str = environ.var(
                 name="OTHER_NAME", default="other-value"
@@ -94,7 +101,8 @@ class BaseSettings:
 
     @classmethod
     def from_environ(
-        cls: Type[TBaseSettings], environment: "os._Environ[str]" = os.environ
+        cls: Type[TBaseSettings],
+        environ: Union[DictStrStr, "os._Environ[str]"] = os.environ,
     ) -> TBaseSettings:
         """Load the configuration as declared by *cls* from *environ*.
 
@@ -106,7 +114,7 @@ class BaseSettings:
         TODO: Move to ``Self`` type annotation as proposed in
         `PEP-673 <https://peps.python.org/pep-0673/#use-in-classmethod-signatures>`_
         """
-        return cast(TBaseSettings, environ.to_config(cls, environment))
+        return to_config(cls, environ)  # type: ignore[arg-type]
 
     def apply(
         self,
@@ -353,7 +361,7 @@ def setup_settings_from_environ(
     app: web.Application,
     settings_class: Type[BaseSettings],
     *,
-    environ: Union["os._Environ[str]", None] = None,
+    environ: Union[DictStrStr, "os._Environ[str]", None] = None,
     loggers: Union[Collection[str], None] = None,
     remove_root_handlers: bool = False,
 ) -> web.Application:
@@ -368,7 +376,7 @@ def setup_settings_from_environ(
     """
     return setup_settings(
         app,
-        settings_class.from_environ(environ or os.environ),
+        to_config(BaseSettings, environ or os.environ),  # type: ignore[arg-type]
         loggers=loggers,
         remove_root_handlers=remove_root_handlers,
     )
