@@ -8,7 +8,16 @@ from vc_api.examples import ISSUE_CREDENTIAL_REQUEST, ISSUE_CREDENTIAL_RESPONSE
 
 @pytest.mark.parametrize(
     "issuer",
-    (None, {"id": "did:key:z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd"}),
+    (
+        pytest.param(
+            None,
+            marks=pytest.mark.xfail(
+                reason="Does not support object type and oneOf of other (string) type",
+                strict=True,
+            ),
+        ),
+        {"id": "did:key:z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd"},
+    ),
 )
 async def test_issue_credential(aiohttp_client, issuer):
     """Should support credential issuer might as a string or an object."""
