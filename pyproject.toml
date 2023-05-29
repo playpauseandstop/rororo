@@ -86,7 +86,7 @@ ignore_missing_imports = true
 
 [tool.poetry]
 name = "rororo"
-version = "3.1.0"
+version = "3.2.0"
 description = "aiohttp.web OpenAPI 3 schema first server applications."
 authors = ["Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"

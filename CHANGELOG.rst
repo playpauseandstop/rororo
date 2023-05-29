@@ -1,3 +1,43 @@
+3.2.0 (2023-05-29)
+==================
+
+The latest _rororo_ version allows to install library alongside latest version
+of ``attrs`` & ``email-validator`` and **require** latest ``environ-config``
+version. On top of that ``rororo==3.2.0`` ensure that ``web.HTTPRedirection``
+errors will not handled by error middleware and will result in proper redirects.
+
+**Features:**
+
+- Ensure support of ``environ-config@^23.2.0`` (#360)
+
+**Fixes:**
+
+- (**settings**) Ensure ``setup_settings_from_environ`` function works well (#361)
+- [#191] (**openapi**) Do not handle redirection errors (#362)
+
+**Other:**
+
+- Monthly maintenance (Jan 2023) (#314)
+- Bump dev Python version to 3.11.2 (#326)
+- (**deps**) bump actions/checkout from 3.2.0 to 3.3.0 (#323)
+- (**deps-dev**) bump redis from 4.5.1 to 4.5.3 (#328)
+- (**deps-dev**) bump types-redis from 4.5.1.3 to 4.5.3.0 (#329)
+- (**deps**) bump requests from 2.28.2 to 2.31.0 (#353)
+- (**deps**) bump attrs from 22.2.0 to 23.1.0 (#349)
+- Bump dev Python version to 3.11.3 (#359)
+- (**deps**) bump actions/checkout from 3.3.0 to 3.5.2 (#352)
+- (**deps**) bump email-validator from 1.3.1 to 2.0.0.post2 (#346)
+- (**deps-dev**) bump mypy from 1.0.1 to 1.3.0 (#357)
+- (**deps-dev**) bump redis from 4.5.3 to 4.5.4 (#330)
+- (**deps-dev**) bump pytest from 7.2.1 to 7.3.1 (#347)
+- (**deps-dev**) bump pytest-asyncio from 0.20.3 to 0.21.0 (#336)
+- (**deps-dev**) bump types-pyyaml from 6.0.12.8 to 6.0.12.10 (#358)
+- (**deps-dev**) bump types-redis from 4.5.3.0 to 4.5.5.2 (#356)
+- (**deps-dev**) bump furo from 2022.12.7 to 2023.3.27 (#332)
+- (**deps-dev**) bump sphinx-copybutton from 0.5.1 to 0.5.2 (#344)
+- (**deps-dev**) bump sphinx-autodoc-typehints from 1.22 to 1.23.0 (#345)
+- [#159] (**openapi**) Cover oneOf schema from Verifiable Credential API with test (#363)
+
 3.1.0 (2022-12-26)
 ==================
 
