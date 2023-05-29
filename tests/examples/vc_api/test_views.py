@@ -25,8 +25,8 @@ async def test_issue_credential(aiohttp_client, issuer):
     request_data = copy.deepcopy(ISSUE_CREDENTIAL_REQUEST)
     response_data = copy.deepcopy(ISSUE_CREDENTIAL_RESPONSE)
     if issuer:
-        request_data["credential"] |= {"issuer": issuer}
-    response_data["verifiableCredential"] |= request_data["credential"]
+        request_data["credential"].update({"issuer": issuer})
+    response_data["verifiableCredential"].update(request_data["credential"])
 
     # Perform request and check that everything works well
     client = await aiohttp_client(create_app())

@@ -16,6 +16,8 @@ async def issue_credential(request: web.Request) -> web.Response:
     request_data = get_validated_data(request)
 
     response_data = copy.deepcopy(ISSUE_CREDENTIAL_RESPONSE)
-    response_data["verifiableCredential"] |= thaw(request_data["credential"])
+    response_data["verifiableCredential"].update(
+        thaw(request_data["credential"])
+    )
 
     return web.json_response(response_data, status=201)
