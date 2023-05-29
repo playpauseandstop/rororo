@@ -24,21 +24,6 @@ ISSUE_CREDENTIAL_REQUEST = {
 
 ISSUE_CREDENTIAL_RESPONSE = {
     "verifiableCredential": {
-        "@context": [
-            "https://www.w3.org/2018/credentials/v1",
-            "https://www.w3.org/2018/credentials/examples/v1",
-        ],
-        "id": "http://example.gov/credentials/3732",
-        "type": ["VerifiableCredential", "UniversityDegreeCredential"],
-        "issuer": "did:example:123",
-        "issuanceDate": "2020-03-16T22:37:26.544Z",
-        "credentialSubject": {
-            "id": "did:example:123",
-            "degree": {
-                "type": "BachelorDegree",
-                "name": "Bachelor of Science and Arts",
-            },
-        },
         "proof": {
             "type": "Ed25519Signature2018",
             "created": "2020-04-02T18:28:08Z",

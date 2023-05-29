@@ -46,7 +46,7 @@ src_paths = [
   "examples/petstore/src/",
   "examples/simulations/src/",
   "examples/todobackend/src/",
-  "examples/vc_api/src/",
+  "examples/vc-api/src/",
   "src/",
 ]
 virtual_env = ".venv/"
