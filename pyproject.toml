@@ -46,6 +46,7 @@ src_paths = [
   "examples/petstore/src/",
   "examples/simulations/src/",
   "examples/todobackend/src/",
+  "examples/vc-api/src/",
   "src/",
 ]
 virtual_env = ".venv/"
@@ -94,7 +95,7 @@ homepage = "https://igordavydenko.com/projects/#rororo"
 repository = "https://github.com/playpauseandstop/rororo"
 documentation = "https://rororo.readthedocs.io/"
 packages = [
-  {include = "rororo", from = "src/"},
+  {from = "src/", include = "rororo"},
 ]
 keywords = [
   "aiohttp",

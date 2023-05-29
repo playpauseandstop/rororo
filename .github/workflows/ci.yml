@@ -104,7 +104,7 @@ jobs:
       - uses: "./.github/actions/run_tox"
         env:
           LEVEL: "test"
-          PYTHONPATH: "examples/hobotnica/src:examples/petstore/src:examples/simulations/src:examples/todobackend/src"
+          PYTHONPATH: "examples/hobotnica/src:examples/petstore/src:examples/simulations/src:examples/todobackend/src:examples/vc-api/src"
           REDIS_URL: "redis://localhost:${{ job.services.redis.ports[6379] }}/0"
         with:
           python-path: "${{ steps.python_and_poetry.outputs.python-path }}"
