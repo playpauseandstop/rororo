@@ -1,13 +1,18 @@
 3.2.0 (2023-05-29)
 ==================
 
+The latest _rororo_ version allows to install library alongside latest version
+of ``attrs`` & ``email-validator`` and **require** latest ``environ-config``
+version. On top of that ``rororo==3.2.0`` ensure that ``web.HTTPRedirection``
+errors will not handled by error middleware and will result in proper redirects.
+
 **Features:**
 
-- Ensure support of `environ-config@^23.2.0` (#360)
+- Ensure support of ``environ-config@^23.2.0`` (#360)
 
 **Fixes:**
 
-- (**settings**) Ensure `setup_settings_from_environ` function works well (#361)
+- (**settings**) Ensure ``setup_settings_from_environ`` function works well (#361)
 - [#191] (**openapi**) Do not handle redirection errors (#362)
 
 **Other:**
