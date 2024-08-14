@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Tuple, Type, Union
+from typing import Awaitable, Callable, Tuple, Type, Union
 
 from aiohttp import web
 from aiohttp_middlewares import error_middleware, get_error_response
@@ -77,7 +77,9 @@ def openapi_middleware(
     # will result in meaningless responses of ``{"detail": "Found"}``
     ensure_ignore_exceptions(error_middleware_kwargs, web.HTTPRedirection)
 
-    error_middleware_instance = (
+    error_middleware_instance: (
+        Callable[[web.Request, Handler], Awaitable[web.StreamResponse]] | None
+    ) = (
         error_middleware(**error_middleware_kwargs or {})
         if use_error_middleware
         else None
