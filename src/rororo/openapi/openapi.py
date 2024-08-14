@@ -96,14 +96,12 @@ class OperationTableDef:
 
         # Expect OpenAPI 3 schema to contain operationId: hello_world
         @operations.register
-        async def hello_world(request: web.Request) -> web.Response:
-            ...
+        async def hello_world(request: web.Request) -> web.Response: ...
 
 
         # Explicitly use `operationId: "helloWorld"`
         @operations.register("helloWorld")
-        async def hello_world(request: web.Request) -> web.Response:
-            ...
+        async def hello_world(request: web.Request) -> web.Response: ...
 
     Class based views supported as well. In most generic way you just need
     to decorate your view with ``@operations.register`` decorator and ensure
@@ -116,8 +114,7 @@ class OperationTableDef:
 
         @operations.register
         class UserView(web.View):
-            async def get(self) -> web.Response:
-                ...
+            async def get(self) -> web.Response: ...
 
     expects for operation ID ``UserView.get`` to be declared in OpenAPI schema.
 
@@ -127,8 +124,7 @@ class OperationTableDef:
 
         @operations.register("users")
         class UserView(web.View):
-            async def get(self) -> web.Response:
-                ...
+            async def get(self) -> web.Response: ...
 
     expects for operation ID ``users.get`` to be declared in OpenAPI schema.
 
@@ -139,8 +135,7 @@ class OperationTableDef:
         @operations.register
         class UserView(web.View):
             @operations.register("me")
-            async def get(self) -> web.Response:
-                ...
+            async def get(self) -> web.Response: ...
 
     expects for operation ID ``me`` to be declared in OpenAPI schema.
 
@@ -167,12 +162,10 @@ class OperationTableDef:
         return self
 
     @overload
-    def register(self, handler: F) -> F:
-        ...
+    def register(self, handler: F) -> F: ...
 
     @overload
-    def register(self, operation_id: str) -> Callable[[F], F]:
-        ...
+    def register(self, operation_id: str) -> Callable[[F], F]: ...
 
     def register(self, mixed):  # type: ignore[no-untyped-def]
         operation_id = mixed if isinstance(mixed, str) else mixed.__qualname__
@@ -431,8 +424,7 @@ def setup_openapi(
     schema_loader: Union[SchemaLoader, None] = None,
     cache_create_schema_and_spec: bool = False,
     validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
-) -> web.Application:
-    ...
+) -> web.Application: ...
 
 
 @overload
@@ -449,8 +441,7 @@ def setup_openapi(
     use_cors_middleware: bool = True,
     cors_middleware_kwargs: Union[CorsMiddlewareKwargsDict, None] = None,
     validate_email_kwargs: Union[ValidateEmailKwargsDict, None] = None,
-) -> web.Application:
-    ...
+) -> web.Application: ...
 
 
 def setup_openapi(  # type: ignore[misc]

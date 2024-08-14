@@ -399,4 +399,4 @@ def setup_timezone(timezone: str) -> None:
 
 
 # Make flake8 happy
-(setup_logging, to_bool)
+(setup_logging, to_bool)  # noqa: B018

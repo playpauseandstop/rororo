@@ -10,7 +10,7 @@ trim_trailing_whitespace = true
 [{.babelrc,.compressrc,.eslintrc,.linguirc}]
 indent_size = 2
 
-[*.{css,cfg,html,ini,j2,js,json,md,service,toml,yaml,yml,xml}]
+[*.{css,cfg,gql,html,ini,j2,js,json,jsx,md,service,toml,ts,tsx,yaml,yml,xml}]
 indent_size = 2
 
 [*.{nginx,nginx.j2,py,rst,sh}]
