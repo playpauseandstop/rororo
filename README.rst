@@ -40,7 +40,7 @@ approach.
 As well as bunch other utilities to build effective server applications with
 `Python`_ 3 & `aiohttp.web`_.
 
-* Works on `Python`_ 3.7+
+* Works on `Python`_ 3.8+
 * Works with `aiohttp.web`_ 3.8.1+
 * BSD licensed
 * Source, issues, and pull requests `on GitHub
@@ -62,7 +62,6 @@ Example below, illustrates on how to handle operation ``hello_world`` from
 .. code-block:: python
 
     from pathlib import Path
-    from typing import List
 
     from aiohttp import web
     from rororo import (
@@ -87,7 +86,7 @@ Example below, illustrates on how to handle operation ``hello_world`` from
             )
 
 
-    def create_app(argv: List[str] = None) -> web.Application:
+    def create_app(argv: list[str] = None) -> web.Application:
         return setup_openapi(
             web.Application(),
             Path(__file__).parent / "openapi.yaml",
@@ -126,8 +125,7 @@ In snippet below, *rororo* expects that OpenAPI 3 schema contains operation ID
 
     @operations.register
     class UserView(web.View):
-        async def get(self) -> web.Response:
-            ...
+        async def get(self) -> web.Response: ...
 
 
 .. _`class based views`: https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-class-based-views

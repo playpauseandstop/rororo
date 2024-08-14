@@ -39,4 +39,4 @@ MappingStrStr = Mapping[str, str]
 Settings = Union[types.ModuleType, DictStrAny]
 
 
-(Handler, Protocol, TypedDict)  # Make flake8 happy
+(Handler, Protocol, TypedDict)  # Make flake8 happy  # noqa: B018

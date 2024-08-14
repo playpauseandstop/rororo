@@ -32,8 +32,7 @@ class AddResourceFunc(Protocol):
         *,
         name: Union[str, None] = None,
         **kwargs: Handler,
-    ) -> web.Resource:
-        ...
+    ) -> web.Resource: ...
 
 
 @contextmanager

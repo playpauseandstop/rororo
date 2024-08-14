@@ -3,12 +3,9 @@ ban-relative-imports = true
 classmethod-decorators =
     classmethod
     validator
-extend-ignore = E501, PIE786
-extend-select = TC, TC1
+extend-ignore =
+    E501
+    PIE786
 inline-quotes = double
 max-complexity = 15
 multiline-quotes = double
-per-file-ignores =
-    */models.py: TC
-    */models/*.py: TC
-type-checking-strict = true

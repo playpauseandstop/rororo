@@ -29,7 +29,7 @@ jobs:
     runs-on: "${{ matrix.os }}"
 
     steps:
-      - uses: "actions/checkout@v3.5.2"
+      - uses: "actions/checkout@v4.1.7"
 
       - id: "python_and_poetry"
         uses: "./.github/actions/install_python_and_poetry"
@@ -53,7 +53,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
         include:
           - cache-key-suffix: "-main-dev"
 
@@ -73,7 +73,7 @@ jobs:
         options: "--entrypoint redis-server"
 
     steps:
-      - uses: "actions/checkout@v3.5.2"
+      - uses: "actions/checkout@v4.1.7"
 
       - name: "Install system packages"
         run: "sudo apt-get update -yqq && sudo apt-get install -yq locales-all"
@@ -115,10 +115,10 @@ jobs:
   package:
     needs: ["test"]
 
+    permissions:
+      id-token: "write"
+
     uses: "./.github/workflows/ci_package.yml"
-    secrets:
-      pypi-user: "${{ secrets.PYPI_USERNAME }}"
-      pypi-password: "${{ secrets.PYPI_PASSWORD }}"
 
   release:
     needs: ["package"]

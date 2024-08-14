@@ -21,7 +21,7 @@ async def default_error_handler(request: web.Request) -> web.Response:
         if isinstance(err, OpenAPIError):
             headers = err.headers
         else:
-            logger.error(context.message, exc_info=True)
+            logger.error(context.message, exc_info=True)  # noqa: LOG014
 
         return web.json_response(
             context.data,

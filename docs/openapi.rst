@@ -135,11 +135,9 @@ OpenAPI schema to declare ``UsersView.get`` & ``UsersView.post`` operation IDs,
 
     @operations.register
     class UsersView(web.View):
-        async def get(self) -> web.Response:
-            ...
+        async def get(self) -> web.Response: ...
 
-        async def post(self) -> web.Response:
-            ...
+        async def post(self) -> web.Response: ...
 
 Next, it might be useful to provide different prefix instead of ``UsersView``.
 In example below, *rororo* expects OpenAPI schema to provide ``users.get`` &
@@ -149,11 +147,9 @@ In example below, *rororo* expects OpenAPI schema to provide ``users.get`` &
 
     @operations.register("users")
     class UsersView(web.View):
-        async def get(self) -> web.Response:
-            ...
+        async def get(self) -> web.Response: ...
 
-        async def post(self) -> web.Response:
-            ...
+        async def post(self) -> web.Response: ...
 
 Finally, it might be useful to provide custom *operationId* instead of guessing
 it from view or view method name. Example below, illustrates the case, when
@@ -164,12 +160,10 @@ OpenAPI schema contains ``list_users`` & ``create_user`` operation IDs,
     @operations.register
     class UsersView(web.View):
         @operations.register("list_users")
-        async def get(self) -> web.Response:
-            ...
+        async def get(self) -> web.Response: ...
 
         @operations.register("create_user")
-        async def post(self) -> web.Response:
-            ...
+        async def post(self) -> web.Response: ...
 
 To access :class:`rororo.openapi.data.OpenAPIContext` in class based views you
 need to pass ``self.request`` into :func:`rororo.openapi.openapi_context` or
@@ -238,7 +232,6 @@ follows,
 .. code-block:: python
 
     from pathlib import Path
-    from typing import List
 
     from aiohttp import web
     from rororo import setup_openapi
@@ -249,7 +242,7 @@ follows,
     OPENAPI_YAML_PATH = Path(__file__).parent / "openapi.yaml"
 
 
-    def create_app(argv: List[str] = None) -> web.Application:
+    def create_app(argv: list[str] = None) -> web.Application:
         app = web.Application()
         setup_openapi(app, OPENAPI_YAML_PATH, operations)
         return app
