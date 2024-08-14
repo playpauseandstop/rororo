@@ -130,7 +130,7 @@ environ-config = "^23.2.0"
 isodate = "^0.6.0"
 openapi-core = ">=0.13.4,<0.13.7"
 openapi-spec-validator = "0.4.0"
-pyrsistent = ">=0.16,<0.20"
+pyrsistent = ">=0.16,<0.21"
 pyyaml = ">=5.1,<7.0"
 typing-extensions = {python = "<3.8", version = ">=3.7,<5"}
 
