@@ -172,7 +172,7 @@ filterwarnings = [
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py38,py39,py310,py310-minimum-requirements,py311
+envlist = py38,py39,py310,py310-minimum-requirements,py311,py312
 skipsdist = True
 
 [gh-actions]
@@ -181,6 +181,7 @@ python =
   3.9: py39
   3.10: py310
   3.11: py311
+  3.12: py312
 
 [testenv]
 allowlist_externals = poetry
