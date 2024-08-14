@@ -2,7 +2,7 @@ default_install_hook_types:
   - "commit-msg"
   - "pre-commit"
 default_language_version:
-  python: &python_version "python3.11"
+  python: &python_version "python3.12"
 exclude: ^(archive|assets|migrations)/.*|.*/(migrations|test-data|vendor)/.*|.*\.svg$
 minimum_pre_commit_version: "1.17.0"
 

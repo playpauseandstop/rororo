@@ -53,11 +53,11 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         include:
           - cache-key-suffix: "-main-dev"
 
-          - python-version: "3.11"
+          - python-version: "3.12"
             cache-key-suffix: "-main-dev-test"
             dev: "true"
 
