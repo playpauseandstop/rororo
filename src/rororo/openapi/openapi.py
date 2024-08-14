@@ -285,7 +285,7 @@ def create_schema_and_spec(
 
 
 @lru_cache(maxsize=128)
-def create_schema_and_spec_with_cache(  # type: ignore[misc]
+def create_schema_and_spec_with_cache(
     path: Path, *, schema_loader: Union[SchemaLoader, None] = None
 ) -> Tuple[DictStrAny, Spec]:
     return create_schema_and_spec(path, schema_loader=schema_loader)

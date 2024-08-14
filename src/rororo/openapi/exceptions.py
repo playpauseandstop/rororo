@@ -234,7 +234,7 @@ class ValidationError(OpenAPIError):
         return self
 
     @classmethod
-    def from_dict(  # type: ignore[misc]
+    def from_dict(
         cls, data: Union[DictPathItemAny, None] = None, **kwargs: Any
     ) -> "ValidationError":
         if data and kwargs:
@@ -258,7 +258,7 @@ class ValidationError(OpenAPIError):
         return cls(errors=errors)
 
     @classmethod
-    def from_request_errors(  # type: ignore[misc]
+    def from_request_errors(
         cls,
         errors: List[CoreOpenAPIError],
         *,
@@ -292,7 +292,7 @@ class ValidationError(OpenAPIError):
         )
 
     @classmethod
-    def from_response_errors(  # type: ignore[misc]
+    def from_response_errors(
         cls, errors: List[CoreOpenAPIError]
     ) -> "ValidationError":
         result: List[ValidationErrorItem] = []
