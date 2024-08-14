@@ -110,13 +110,13 @@ speedups = ["Brotli", "aiodns", "cchardet"]
 
 [[package]]
 name = "aiohttp-middlewares"
-version = "2.2.0"
+version = "2.4.0"
 description = "Collection of useful middlewares for aiohttp applications."
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "aiohttp_middlewares-2.2.0-py3-none-any.whl", hash = "sha256:f4b87665667d4d3e818d70495e832e368f11a1fdc9c2fd8157a7d9e5d5147c5d"},
-    {file = "aiohttp_middlewares-2.2.0.tar.gz", hash = "sha256:3967b2a0d17a2c094681e7c2f246977a365479a2820e48f8a01136c910f4aa93"},
+    {file = "aiohttp_middlewares-2.4.0-py3-none-any.whl", hash = "sha256:c71a7ca1af6f704aad9e6851c8f12debac7c2aac28aa11a5905f45e39370a490"},
+    {file = "aiohttp_middlewares-2.4.0.tar.gz", hash = "sha256:ee240fc21b7eb9154b4447e4bc9bab7b212584d93a35aa8f56333c79ca3cd0e8"},
 ]
 
 [package.dependencies]
@@ -1295,6 +1295,7 @@ description = "parse() is the opposite of format()"
 optional = false
 python-versions = "*"
 files = [
+    {file = "parse-1.19.0-py2.py3-none-any.whl", hash = "sha256:6ce007645384a91150cb7cd7c8a9db2559e273c2e2542b508cd1e342508c2601"},
     {file = "parse-1.19.0.tar.gz", hash = "sha256:9ff82852bcb65d139813e2a5197627a94966245c897796760a3a2a8eb66f020b"},
 ]
 
