@@ -121,7 +121,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 aiohttp = "^3.8.1"
 aiohttp-middlewares = ">=1.2.0,<3"
 attrs = ">=19.2.0,<24"
@@ -174,12 +174,11 @@ filterwarnings = [
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py37,py38,py39,py310,py310-minimum-requirements,py311
+envlist = py38,py39,py310,py310-minimum-requirements,py311
 skipsdist = True
 
 [gh-actions]
 python =
-  3.7: py37
   3.8: py38
   3.9: py39
   3.10: py310
