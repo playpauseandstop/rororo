@@ -1,3 +1,20 @@
+3.3.0 (2024-08-16)
+==================
+
+**Features:**
+
+- Ensure support of latest aiohttp, attrs, environ-config, and pyrsistent versions (#412)
+- Use Python 3.12.5 as dev version (#413)
+- Ensure Python 3.13 support (#415)
+
+**Other:**
+
+- (**deps**) bump typing-extensions from 4.5.0 to 4.6.2 (#367)
+- (**deps**) bump cryptography from 39.0.1 to 41.0.0 (#368)
+- (**deps-dev**) bump hiredis from 2.2.2 to 2.2.3 (#366)
+- (**deps-dev**) bump pytest-cov from 4.0.0 to 4.1.0 (#365)
+- Monthly maintenance (Aug 2024) (#395)
+
 3.2.0 (2023-05-29)
 ==================
 
