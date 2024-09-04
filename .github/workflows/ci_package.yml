@@ -34,4 +34,4 @@ jobs:
 
       - name: "Publish package"
         if: "${{ startsWith(github.ref, 'refs/tags/') }}"
-        uses: "pypa/gh-action-pypi-publish@v1.9.0"
+        uses: "pypa/gh-action-pypi-publish@v1.10.1"
